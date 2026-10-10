@@ -1,0 +1,1 @@
+Read runs\2026-10-10T11-18-45.diagnosis.md. Make exactly the change it describes under 'Chosen fix', editing only mend/worker.py. Keep the change small. Do not edit any other file, do not run anything, and do not mention specific library modules or bugs.
