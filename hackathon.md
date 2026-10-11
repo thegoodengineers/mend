@@ -309,6 +309,45 @@ Not done / blocked:
   version). Reading back tool-call counts for 4 key runs from neatlogs traces (in progress).
 - Scout pass 4 (overnight changes) running.
 
+### 2026-10-11 ~10:05-10:25 IST (commit times) - research-driven features, round 7, teammate PRs
+- Music bed added to the demo video (`fd6fdec`). Speech is about −17 dB; the music is about 19 dB
+  below it in the gaps.
+- Scout pass 4: a new near-clone entry (pitstop) appeared overnight, and neatlogs' founder
+  published a post, "Self-healing is self-defeating". We answered the post in the README and on
+  the site (`1412c38`). Fact-check: my first draft said GATE.md was committed before the rounds.
+  It was committed after round 6, so I corrected the wording before committing.
+- The site's "Check it yourself" section now has a button that fetches the raw run files and
+  re-applies the keep rule to every round in the browser. Tested locally: every decision
+  matches.
+- Behaviour table from neatlogs traces (`216d1f7`): whole-file writes went 31 → 2 → 0 → 0 and
+  model calls 235 → 107. 0 traces were missing. The numbers are checked by `mend.verify`.
+- Research agent: ranked 7 features from the neatlogs blog, the Entire CLI and papers on
+  self-improving agents (DGM, Miller 2024). Built from it:
+  - **Ask once, remember** (`6a3b2c2`). If the diagnosis judges its fix a choice rather than a
+    correction, the round stops and asks a person. Answers go to `docs/precedents.json`, and
+    every later diagnosis follows them. Covered by a unit test.
+  - **Paired statistics** (`8b1db8c`). A sign test plus a 95% bootstrap interval per round.
+    Honest result: rounds 3–5 are solid; rounds 1–2 rest on a single task flip.
+  - **Gate amendment 1** (`3493a8f`), effective from round 8. Revert if any passing task breaks,
+    and a token-only win needs a paired interval below 1.0. `gate()` was extracted and tested.
+  - **Who wrote the worker** (`6ffecac`). `entire blame` joined to round records: 69% of the
+    worker prompt was written by Mend's own self-repair sessions.
+- **Round 7** (clean runner, first round with the judgment step). The step judged the fix a
+  correction, so it went ahead: "read_file returns the whole file by default". Result: 29/29,
+  tokens −4.6%, so **reverted** by the gate. Its paired interval [0.82, 1.113] spans 1.
+- **Privacy findings, not pushed and needing a human decision:**
+  - The round 7 checkpoint contains the user's email from Claude Code's session context.
+  - The three already-public checkpoints (3A, V2, 9N) contain it too.
+  - The main repo has 3 local-only refs (5Z, B0, VY) holding this chat's transcript, captured
+    by the Entire hooks in `.claude/settings.json`.
+  - Nothing new was pushed. Round 7 came into main via `git fetch ../mend-runner main`, which
+    copies no checkpoint refs.
+- Merged Bhumika's PRs #7, #9–#12: report polish, video pipeline, evidence index, business-plan
+  scenarios, posts tracker. Fixed one arithmetic error in her break-even line (about 218 teams,
+  not about 120).
+- Leave-one-out ablation running for rounds 2, 3 and 5. The reverts of rounds 1 and 4 conflict,
+  because later fixes build on them.
+
 ## Demo
 pending
 
