@@ -4,6 +4,7 @@
     python -m mend.suite 01 05 15     # selected tasks
     python -m mend.suite --heldout    # the held-out tasks the supervisor never sees
     python -m mend.suite --realworld  # bugs in the vendored open-source inflection library (also never seen)
+    python -m mend.suite --hardware   # bugs in digital-logic designs, checked by simulation (also never seen)
 """
 
 import json
@@ -18,7 +19,7 @@ import neatlogs
 import tempfile
 from pathlib import Path
 
-from mend.tasks import HELDOUT_FILE, REALWORLD_FILE, ROOT, TASKS_FILE, load_tasks, prepare
+from mend.tasks import HARDWARE_FILE, HELDOUT_FILE, REALWORLD_FILE, ROOT, TASKS_FILE, load_tasks, prepare
 
 RUNS = Path(os.environ.get("MEND_RUNS_DIR", ROOT / "runs"))  # override for side experiments
 
@@ -45,12 +46,13 @@ def count_tool_calls(worker, counter: dict) -> None:
     worker.HANDLERS = {name: wrap(name, fn) for name, fn in worker.HANDLERS.items()}
 
 
-def run_suite(task_ids: list[str] | None = None, label: str = "", heldout: bool = False, realworld: bool = False) -> dict:
+def run_suite(task_ids: list[str] | None = None, label: str = "", heldout: bool = False, realworld: bool = False,
+              hardware: bool = False) -> dict:
     from mend import worker  # imported after neatlogs.init (see worker docstring)
 
-    source = REALWORLD_FILE if realworld else HELDOUT_FILE if heldout else TASKS_FILE
+    source = HARDWARE_FILE if hardware else REALWORLD_FILE if realworld else HELDOUT_FILE if heldout else TASKS_FILE
     tasks = [t for t in load_tasks(source) if not task_ids or t["id"] in task_ids]
-    if realworld:
+    if tasks and tasks[0].get("library"):
         use_library_name(worker, tasks[0]["library"])
     label = "-".join(x for x in (label, os.environ.get("MEND_RUN_LABEL", "")) if x)  # parallel runs need distinct ids
     run_id = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S") + (f"-{label}" if label else "")
@@ -59,8 +61,9 @@ def run_suite(task_ids: list[str] | None = None, label: str = "", heldout: bool 
         "worker_commit": git("rev-parse", "--short", "HEAD"),
         "worker_dirty": bool(git("status", "--porcelain", "mend/worker.py", "mend/prompts")),
         "model": worker.MODEL,
-        "heldout": heldout or realworld,
+        "heldout": heldout or realworld or hardware,
         "realworld": realworld,
+        "hardware": hardware,
         "tasks": [],
     }
     counts: dict = {}
@@ -92,8 +95,9 @@ if __name__ == "__main__":
     neatlogs.init(api_key=os.environ["NEATLOGS_API_KEY"], workflow_name=os.environ.get("MEND_WORKFLOW", "mend-worker"))
     try:
         args = [a for a in sys.argv[1:] if not a.startswith("--")]
-        held, real = "--heldout" in sys.argv, "--realworld" in sys.argv
-        run_suite(args or None, label="realworld" if real else "heldout" if held else "", heldout=held, realworld=real)
+        held, real, hw = "--heldout" in sys.argv, "--realworld" in sys.argv, "--hardware" in sys.argv
+        label = "hardware" if hw else "realworld" if real else "heldout" if held else ""
+        run_suite(args or None, label=label, heldout=held, realworld=real, hardware=hw)
     finally:
         neatlogs.flush()
         neatlogs.shutdown()

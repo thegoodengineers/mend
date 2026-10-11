@@ -15,6 +15,7 @@ SANDBOX = ROOT / "sandbox"
 TASKS_FILE = ROOT / "tasks" / "tasks.json"
 HELDOUT_FILE = ROOT / "tasks" / "heldout.json"  # never shown to the supervisor
 REALWORLD_FILE = ROOT / "tasks" / "realworld.json"  # bugs in a real open-source library; never shown either
+HARDWARE_FILE = ROOT / "tasks" / "hardware.json"  # bugs in digital-logic designs (Amaranth HDL); never shown either
 
 
 def load_tasks(path: Path = TASKS_FILE) -> list[dict]:
@@ -49,11 +50,11 @@ def run_tests(work: Path, pattern: str = "", timeout: int = 60) -> tuple[bool, s
 
 def check() -> bool:
     good = True
-    for root in (SANDBOX, ROOT / "realworld" / "inflection"):
+    for root in (SANDBOX, ROOT / "realworld" / "inflection", ROOT / "hardware"):
         ok, _ = run_tests(root)
         print(f"correct {root.name}: {'PASS' if ok else 'FAIL'}")
         good &= ok
-    for task in load_tasks() + load_tasks(HELDOUT_FILE) + load_tasks(REALWORLD_FILE):
+    for task in load_tasks() + load_tasks(HELDOUT_FILE) + load_tasks(REALWORLD_FILE) + load_tasks(HARDWARE_FILE):
         work = prepare(task)
         passed, _ = run_tests(work)
         shutil.rmtree(work, ignore_errors=True)

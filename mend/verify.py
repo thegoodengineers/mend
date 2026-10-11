@@ -48,7 +48,7 @@ def expected_strings(rs: dict[str, dict]) -> list[str]:
                 f"{ma:,.0f} ({pct(mb, ma)})"]
     for kind in ("heldout", "realworld"):
         def pick(r, kind=kind):
-            return bool(r.get("realworld")) == (kind == "realworld") and r.get("heldout")
+            return bool(r.get("realworld")) == (kind == "realworld") and r.get("heldout") and not r.get("hardware")
         hb = group(lambda r: pick(r) and r["worker_commit"] == "13defdb")
         ha = group(lambda r: pick(r) and r["worker_commit"] != "13defdb")
         if hb and ha:

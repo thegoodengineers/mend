@@ -1,0 +1,56 @@
+[
+ {
+  "id": "HW01", "difficulty": "easy", "title": "counter overshoots modulus",
+  "report": "A mod-10 ModCounter shows 10 before going back to 0, and its wrap pulse comes one cycle late. A mod-4 counter never raises wrap at all.",
+  "sandbox": "hardware", "library": "hwlib",
+  "edits": [{"file": "hwlib/counter.py", "find": "last = self.count == self.modulus - 1", "replace": "last = self.count == self.modulus"}]
+ },
+ {
+  "id": "HW02", "difficulty": "medium", "title": "gray decode wrong above 3",
+  "report": "GrayToBin gives the wrong number for most codes above 3: converting a value to Gray code and back does not return the original value.",
+  "sandbox": "hardware", "library": "hwlib",
+  "edits": [{"file": "hwlib/gray.py", "find": "bits[i] = bits[i + 1] ^ self.gray[i]", "replace": "bits[i] = self.gray[i + 1] ^ self.gray[i]"}]
+ },
+ {
+  "id": "HW03", "difficulty": "easy", "title": "ALU subtracts the wrong way round",
+  "report": "The ALU's SUB operation returns 249 for 10 - 3 and raises the borrow flag.",
+  "sandbox": "hardware", "library": "hwlib",
+  "edits": [{"file": "hwlib/alu.py", "find": "m.d.comb += wide.eq(self.a - self.b)", "replace": "m.d.comb += wide.eq(self.b - self.a)"}]
+ },
+ {
+  "id": "HW04", "difficulty": "medium", "title": "ALU carry flag wrong",
+  "report": "The ALU raises carry on 100 + 50 even though the sum fits in 8 bits, and misses the carry on 200 + 100.",
+  "sandbox": "hardware", "library": "hwlib",
+  "edits": [{"file": "hwlib/alu.py", "find": "m.d.comb += self.carry.eq(wide[8])", "replace": "m.d.comb += self.carry.eq(wide[7])"}]
+ },
+ {
+  "id": "HW05", "difficulty": "easy", "title": "FIFO full one entry early",
+  "report": "A 4-entry SyncFIFO reports full after only 3 writes and drops the 4th write.",
+  "sandbox": "hardware", "library": "hwlib",
+  "edits": [{"file": "hwlib/fifo.py", "find": "self.full.eq(self.level == self.depth),", "replace": "self.full.eq(self.level == self.depth - 1),"}]
+ },
+ {
+  "id": "HW06", "difficulty": "medium", "title": "UART bytes arrive bit-reversed",
+  "report": "Bytes sent through UartTx arrive bit-reversed at the receiver: sending 0x01 is received as 0x80, and 0xA5 stays 0xA5.",
+  "sandbox": "hardware", "library": "hwlib",
+  "edits": [{"file": "hwlib/uart.py", "find": "frame.eq(Cat(Const(0, 1), self.data, Const(1, 1)))", "replace": "frame.eq(Cat(Const(0, 1), self.data[::-1], Const(1, 1)))"}]
+ },
+ {
+  "id": "HW07", "difficulty": "easy", "title": "PWM glitch at duty 0",
+  "report": "With duty set to 0 the PWM output still goes high for one cycle every period, and duty 3 gives 4 high cycles.",
+  "sandbox": "hardware", "library": "hwlib",
+  "edits": [{"file": "hwlib/pwm.py", "find": "m.d.comb += self.out.eq(phase < self.duty)", "replace": "m.d.comb += self.out.eq(phase <= self.duty)"}]
+ },
+ {
+  "id": "HW08", "difficulty": "hard", "title": "debouncer lets bounces through",
+  "report": "A bouncing button eventually registers as pressed with Debouncer(4), even though the input never stays high for 4 cycles in a row.",
+  "sandbox": "hardware", "library": "hwlib",
+  "edits": [{"file": "hwlib/debounce.py", "find": "m.d.sync += count.eq(0)\n", "replace": "m.d.sync += count.eq(count)\n"}]
+ },
+ {
+  "id": "HW09", "difficulty": "hard", "title": "CRC-8 check value wrong",
+  "report": "Crc8Byte does not produce the standard CRC-8 check value: chaining the bytes of b\"123456789\" from 0 should give 0xF4.",
+  "sandbox": "hardware", "library": "hwlib",
+  "edits": [{"file": "hwlib/crc.py", "find": "c = Mux(c[7], shifted ^ POLY, shifted)", "replace": "c = Mux(c[0], shifted ^ POLY, shifted)"}]
+ }
+]
