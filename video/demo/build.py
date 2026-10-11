@@ -47,7 +47,7 @@ SCENES = [
     ("heldout", "Is it overfitting? On ten bugs it never saw, it went from nine out of ten to ten out of ten.", ("shot", "#heldout")),
     ("realworld", "On bugs in a real open-source library, from two or three out of eight, to eight out of eight, with eighty-two percent fewer tokens.",
      ("shot", "#realworld")),
-    ("guards", "Every failure it diagnoses becomes a neatlogs detection, so a fixed bug that comes back gets flagged. And neatroots, "
+    ("guards", "Every failure it diagnoses becomes a neatlogs detection, and every gate verdict is written back into neatlogs as a trace. And neatroots, "
                "neatlogs' own checker, agrees: whole-file rewrites in every original run, none after the fix.",
      ("card", "neatlogs regression guards · neatroots", "Failures become detections.",
       "4 detections created from Mend's own failures. neatroots custom check: 4 of 4 original runs flagged, 0 of 4 repaired.")),
