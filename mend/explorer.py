@@ -12,6 +12,7 @@ import json
 import math
 import random
 
+from mend.circuit_art import CSS as ART_CSS, art_svg
 from mend.report import REPO
 from mend.site import CSS
 from mend.tasks import BOARD_FILE, ROOT, load_tasks
@@ -130,6 +131,7 @@ def render() -> str:
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;800&family=Instrument+Serif:ital@0;1&family=Pinyon+Script&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>{CSS}
+{ART_CSS}
 body{{background:#e6e6dd}} .app{{display:grid;grid-template-columns:360px 1fr;min-height:100vh}}
 aside{{background:#efefe7;border-right:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:14px;max-height:100vh;position:sticky;top:0;overflow:auto}}
 .brand{{font:800 20px 'Inter Tight',sans-serif;letter-spacing:-.02em;text-decoration:none}} .brand span{{font:500 12px Inter;color:var(--mute);margin-left:6px}}
@@ -162,10 +164,12 @@ main h1{{font:400 44px/1 'Instrument Serif',serif;margin:0}} main .lead{{color:v
 </aside>
 <main>
   <div class="top"><div><h1>Explorer</h1><p class="lead">The sensor circuit and how it connects, at schematic level. The parts a bug touched light up.</p></div>
-  <div class="toggle" role="tablist"><button class="on" data-view="graph">Graph</button><button data-view="table">Table</button></div></div>
-  <div class="chips">{chips}</div>
+  <div class="toggle" role="tablist"><button class="on" data-view="art">Circuit</button><button data-view="graph">Netlist</button><button data-view="table">Table</button></div></div>
+  <div class="chips" id="chips" style="display:none">{chips}</div>
   <div class="canvas">
-    <div class="view on" id="v-graph">{graph_svg(parts, blocks)}<p class="sub" style="font-size:12px">Coloured dots are parts, small dots are nets (wires). This is what a schematic is: parts joined by nets.</p></div>
+    <div class="view on" id="v-art">{art_svg()}<p class="sub" style="font-size:12px">Parts laid out in schematic order and wired as the netlist connects
+    them: blue is the 3.3 V rail, violet 5 V, orange the sensor signal. Not a PCB layout. Hover a part.</p></div>
+    <div class="view" id="v-graph">{graph_svg(parts, blocks)}<p class="sub" style="font-size:12px">Coloured dots are parts, small dots are nets (wires). This is what a schematic is: parts joined by nets.</p></div>
     <div class="view" id="v-table"><div class="tablewrap"><table><tr><th>Part</th><th>Block</th><th>Nets</th><th>Value</th><th>Note</th></tr>{rows}</table></div></div>
   </div>
 </main></div>
@@ -174,7 +178,8 @@ var B={json.dumps(data, ensure_ascii=False)};
 function esc(s){{var d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;}}
 document.querySelectorAll('.toggle button').forEach(function(t){{t.onclick=function(){{
   document.querySelectorAll('.toggle button').forEach(function(x){{x.classList.toggle('on',x===t)}});
-  document.querySelectorAll('.view').forEach(function(v){{v.classList.toggle('on',v.id==='v-'+t.dataset.view)}});}};}});
+  document.querySelectorAll('.view').forEach(function(v){{v.classList.toggle('on',v.id==='v-'+t.dataset.view)}});
+  document.getElementById('chips').style.display=t.dataset.view==='graph'?'flex':'none';}};}});
 function pick(id){{var b=B[id],h='';
   document.querySelectorAll('.bug').forEach(function(x){{x.classList.toggle('on',x.dataset.bug===id)}});
   h+='<div class="msg user"><span class="who">Bug report · '+id+'</span>'+esc(b.report)+'</div>';
@@ -185,6 +190,9 @@ function pick(id){{var b=B[id],h='';
   if(b.caveat)h+='<div class="caveat"><b>Honest note.</b> '+esc(b.caveat)+'</div>';
   h+='<div class="msg"><span class="who">Original worker on the same bug</span>'+(b.original.passed?'Fixed it in '+b.original.turns+' turns, '+b.original.tokens.toLocaleString()+' tokens.':'Refused in '+b.original.turns+' turn: “'+esc(b.original.said)+'”')+'</div>';
   document.getElementById('log').innerHTML=h;
+  var art=document.querySelector('.art');art.classList.add('dim');
+  document.querySelectorAll('.art .apart').forEach(function(g){{var nl=(g.dataset.nl||'').split(' ');
+    g.classList.toggle('lit',b.parts.indexOf(g.dataset.id)>=0||nl.some(function(n){{return b.parts.indexOf(n)>=0}}));}});
   document.querySelectorAll('.gnode').forEach(function(g){{g.classList.toggle('on',b.parts.indexOf(g.dataset.part)>=0)}});
   document.querySelectorAll('tr[data-part]').forEach(function(r){{r.classList.toggle('on',b.parts.indexOf(r.dataset.part)>=0)}});}}
 document.querySelectorAll('.bug').forEach(function(x){{x.onclick=function(){{pick(x.dataset.bug)}}}});

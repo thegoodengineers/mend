@@ -515,3 +515,11 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
   agent's real steps (from traces) on the left, the netlist graph or table on the right, with the
   parts the bug touched lit. The user decided to stay at schematic level, so the isometric PCB
   drawing was removed (`mend/board_iso.py` deleted).
+- Circuit explorer now opens on an Anatomy-style isometric illustration of the circuit
+  (`mend/circuit_art.py`, our own SVG; Anatomy was the inspiration, none of its code is used). It
+  has line-art parts in schematic order, wiring generated from per-part pin coordinates and the
+  netlist's nets, ground marks, glowing rails (5 V violet, 3.3 V blue) and the sensor signal
+  (orange), lit LEDs, and annotations. Selecting a bug lights the parts its fix touched.
+  Netlist graph and table remain as tabs.
+- **Mistake:** the first illustration had hand-placed wires that missed the pins. They are now
+  generated from pin coordinates.

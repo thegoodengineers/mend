@@ -153,7 +153,7 @@ td.rep{{color:var(--mute)}} .hero2{{font:800 clamp(56px,10vw,128px)/.88 'Inter T
   <p class="sub">USB 5 V in, an LM317-style regulator set to 3.3 V, an NTC temperature sensor with an op-amp buffer and a 1 kHz anti-aliasing
   filter into the microcontroller's ADC, a reset circuit, power and status LEDs, and I²C pull-ups. {len(checks)} bring-up checks, the ones an
   engineer runs on a new board: is the rail 3.3 V, are the LEDs safe, does the sensor read right, is anything over the MCU's 3.6 V limit.</p>
-  <p><a class="pill" href="circuit.html">Open the circuit explorer: every bug, the agent's steps, the netlist graph →</a></p>
+  <p><a class="pill" href="circuit.html">Open the circuit explorer: the circuit illustrated, every bug, the agent's steps →</a></p>
   <p class="sub" style="font-size:13px">The circuit: <a class="link" href="{REPO}/blob/main/schematics/circuits/board.cir">board.cir</a>,
   checked by <a class="link" href="{REPO}/blob/main/schematics/tests/test_board.py">test_board.py</a>. Schematic level only: no PCB layout.</p>
   {result_block(f["bd_before"], f["bd_after"], f"of {bd_n}")}

@@ -148,7 +148,7 @@ R2 out 0 20k
   <p class="sub">USB 5 V in, an LM317-style regulator set to 3.3 V, an NTC temperature sensor with an op-amp buffer and a 1 kHz anti-aliasing
   filter into the microcontroller's ADC, a reset circuit, power and status LEDs, and I²C pull-ups. 11 bring-up checks, the ones an
   engineer runs on a new board: is the rail 3.3 V, are the LEDs safe, does the sensor read right, is anything over the MCU's 3.6 V limit.</p>
-  <p><a class="pill" href="circuit.html">Open the circuit explorer: every bug, the agent's steps, the netlist graph →</a></p>
+  <p><a class="pill" href="circuit.html">Open the circuit explorer: the circuit illustrated, every bug, the agent's steps →</a></p>
   <p class="sub" style="font-size:13px">The circuit: <a class="link" href="https://github.com/thegoodengineers/mend/blob/main/schematics/circuits/board.cir">board.cir</a>,
   checked by <a class="link" href="https://github.com/thegoodengineers/mend/blob/main/schematics/tests/test_board.py">test_board.py</a>. Schematic level only: no PCB layout.</p>
   <h3 class="verdict">6, 7 → 8, 8 of 8 solved.</h3><div class="ba two-col"><div class="card "><span class="k">Original worker · 2 runs</span><span class="big">6, 7<em> / 8</em></span><span class="sub">mean 210,424 tokens per run</span></div><div class="card "><span class="k">After self-repair · 2 runs</span><span class="big">8, 8<em> / 8</em></span><span class="sub">mean 151,814 tokens per run</span></div></div>
