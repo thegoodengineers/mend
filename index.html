@@ -185,21 +185,37 @@ pytest -q                    # unit tests</pre></div>
   <pre id="vout" style="margin:14px 0 0;font:13px/1.7 'JetBrains Mono',monospace;white-space:pre-wrap"></pre></div>
 </div></section>
 <script>
-const VROUNDS = [{"before": "2026-10-10T09-15-17", "after": "2026-10-10T09-31-07-after", "kept": true}, {"before": "2026-10-10T10-17-27", "after": "2026-10-10T10-30-26-after", "kept": true}, {"before": "2026-10-10T10-30-26-after", "after": "2026-10-10T10-41-18-after", "kept": true}, {"before": "2026-10-10T10-41-18-after", "after": "2026-10-10T10-59-46-after", "kept": true}, {"before": "2026-10-10T11-18-45", "after": "2026-10-10T11-50-52-after", "kept": true}, {"before": "2026-10-10T11-50-52-after", "after": "2026-10-10T13-08-47-after", "kept": false}, {"before": "2026-10-10T13-28-51", "after": "2026-10-11T04-40-58-after", "kept": false}], VSETS = [{"label": "Held-out, original worker", "ids": ["2026-10-10T11-25-59-heldout-v0", "2026-10-10T11-32-56-heldout-v0"]}, {"label": "Held-out, after self-repair", "ids": ["2026-10-10T11-30-57-heldout", "2026-10-10T11-37-44-heldout"]}, {"label": "Real-world library, original worker", "ids": ["2026-10-10T12-10-47-realworld-v0", "2026-10-10T12-23-39-realworld-v0"]}, {"label": "Real-world library, after self-repair", "ids": ["2026-10-10T12-21-13-realworld", "2026-10-10T12-34-51-realworld"]}];
+const VROUNDS = [{"before": "2026-10-10T09-15-17", "after": "2026-10-10T09-31-07-after", "kept": true, "amended": false}, {"before": "2026-10-10T10-17-27", "after": "2026-10-10T10-30-26-after", "kept": true, "amended": false}, {"before": "2026-10-10T10-30-26-after", "after": "2026-10-10T10-41-18-after", "kept": true, "amended": false}, {"before": "2026-10-10T10-41-18-after", "after": "2026-10-10T10-59-46-after", "kept": true, "amended": false}, {"before": "2026-10-10T11-18-45", "after": "2026-10-10T11-50-52-after", "kept": true, "amended": false}, {"before": "2026-10-10T11-50-52-after", "after": "2026-10-10T13-08-47-after", "kept": false, "amended": false}, {"before": "2026-10-10T13-28-51", "after": "2026-10-11T04-40-58-after", "kept": false, "amended": false}], VSETS = [{"label": "Held-out, original worker", "ids": ["2026-10-10T11-25-59-heldout-v0", "2026-10-10T11-32-56-heldout-v0"]}, {"label": "Held-out, after self-repair", "ids": ["2026-10-10T11-30-57-heldout", "2026-10-10T11-37-44-heldout"]}, {"label": "Real-world library, original worker", "ids": ["2026-10-10T12-10-47-realworld-v0", "2026-10-10T12-23-39-realworld-v0"]}, {"label": "Real-world library, after self-repair", "ids": ["2026-10-10T12-21-13-realworld", "2026-10-10T12-34-51-realworld"]}];
 document.getElementById('vbtn').onclick = async () => {
   const out = document.getElementById('vout'), log = t => out.textContent += t + String.fromCharCode(10);
   out.textContent = ''; let bad = 0;
   const run = async id => {
     const r = await (await fetch('runs/' + id + '.json')).json();
+    const tok = {}, pass = {};
+    r.tasks.forEach(t => { tok[t.task_id] = t.input_tokens + t.output_tokens; pass[t.task_id] = t.passed; });
     return {passed: r.tasks.filter(t => t.passed).length, total: r.tasks.length,
-             tokens: r.tasks.reduce((s, t) => s + t.input_tokens + t.output_tokens, 0)};
+             tokens: r.tasks.reduce((s, t) => s + t.input_tokens + t.output_tokens, 0), tok, pass};
+  };
+  const ciHigh = (b, a) => {  // amendment 1: 97.5th percentile of a paired bootstrap of tokens-after / tokens-before
+    const ids = Object.keys(b.tok).filter(k => k in a.tok); let seed = 1; const sims = [];
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    for (let n = 0; n < 4000; n++) {
+      let sb = 0, sa = 0;
+      for (let i = 0; i < ids.length; i++) { const k = ids[Math.floor(rnd() * ids.length)]; sb += b.tok[k]; sa += a.tok[k]; }
+      sims.push(sa / sb);
+    }
+    sims.sort((x, y) => x - y); return sims[Math.floor(0.975 * sims.length) - 1];
   };
   try {
     for (const [i, rd] of VROUNDS.entries()) {
       const b = await run(rd.before), a = await run(rd.after);
-      const keep = a.passed > b.passed || (a.passed === b.passed && a.tokens <= 0.85 * b.tokens);
+      let keep = a.passed > b.passed || (a.passed === b.passed && a.tokens <= 0.85 * b.tokens);
+      if (rd.amended) {
+        const broke = Object.keys(b.pass).filter(k => b.pass[k] && a.pass[k] === false).length;
+        keep = keep && broke === 0 && (a.passed > b.passed || ciHigh(b, a) < 1.0);
+      }
       const ok = keep === rd.kept; bad += !ok;
-      log(`${ok ? '✓' : '✗ MISMATCH'} round ${i + 1}: ${b.passed}/${b.total} → ${a.passed}/${a.total} solved, ${b.tokens.toLocaleString()} → ${a.tokens.toLocaleString()} tokens → gate says ${keep ? 'KEEP' : 'REVERT'} (recorded: ${rd.kept ? 'kept' : 'reverted'})`);
+      log(`${ok ? '✓' : '✗ MISMATCH'} round ${i + 1}: ${b.passed}/${b.total} → ${a.passed}/${a.total} solved, ${b.tokens.toLocaleString()} → ${a.tokens.toLocaleString()} tokens → ${rd.amended ? 'amended gate' : 'gate'} says ${keep ? 'KEEP' : 'REVERT'} (recorded: ${rd.kept ? 'kept' : 'reverted'})`);
     }
     for (const s of VSETS) {
       const rs = await Promise.all(s.ids.map(run));

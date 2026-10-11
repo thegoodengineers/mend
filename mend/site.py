@@ -145,7 +145,7 @@ def ablation_html() -> str:
 
 def render() -> str:
     f = facts()
-    vrounds = json.dumps([{"before": r["before"], "after": r["after"], "kept": r["kept"]} for r in f["rounds"]])
+    vrounds = json.dumps([{"before": r["before"], "after": r["after"], "kept": r["kept"], "amended": "stats" in r} for r in f["rounds"]])
     vsets = json.dumps([{"label": label, "ids": [r["run_id"] for r in f[key]]} for label, key in [
         ("Held-out, original worker", "held_before"), ("Held-out, after self-repair", "held_after"),
         ("Real-world library, original worker", "real_before"), ("Real-world library, after self-repair", "real_after")]])
@@ -384,15 +384,31 @@ document.getElementById('vbtn').onclick = async () => {{
   out.textContent = ''; let bad = 0;
   const run = async id => {{
     const r = await (await fetch('runs/' + id + '.json')).json();
+    const tok = {{}}, pass = {{}};
+    r.tasks.forEach(t => {{ tok[t.task_id] = t.input_tokens + t.output_tokens; pass[t.task_id] = t.passed; }});
     return {{passed: r.tasks.filter(t => t.passed).length, total: r.tasks.length,
-             tokens: r.tasks.reduce((s, t) => s + t.input_tokens + t.output_tokens, 0)}};
+             tokens: r.tasks.reduce((s, t) => s + t.input_tokens + t.output_tokens, 0), tok, pass}};
+  }};
+  const ciHigh = (b, a) => {{  // amendment 1: 97.5th percentile of a paired bootstrap of tokens-after / tokens-before
+    const ids = Object.keys(b.tok).filter(k => k in a.tok); let seed = 1; const sims = [];
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    for (let n = 0; n < 4000; n++) {{
+      let sb = 0, sa = 0;
+      for (let i = 0; i < ids.length; i++) {{ const k = ids[Math.floor(rnd() * ids.length)]; sb += b.tok[k]; sa += a.tok[k]; }}
+      sims.push(sa / sb);
+    }}
+    sims.sort((x, y) => x - y); return sims[Math.floor(0.975 * sims.length) - 1];
   }};
   try {{
     for (const [i, rd] of VROUNDS.entries()) {{
       const b = await run(rd.before), a = await run(rd.after);
-      const keep = a.passed > b.passed || (a.passed === b.passed && a.tokens <= 0.85 * b.tokens);
+      let keep = a.passed > b.passed || (a.passed === b.passed && a.tokens <= 0.85 * b.tokens);
+      if (rd.amended) {{
+        const broke = Object.keys(b.pass).filter(k => b.pass[k] && a.pass[k] === false).length;
+        keep = keep && broke === 0 && (a.passed > b.passed || ciHigh(b, a) < 1.0);
+      }}
       const ok = keep === rd.kept; bad += !ok;
-      log(`${{ok ? '✓' : '✗ MISMATCH'}} round ${{i + 1}}: ${{b.passed}}/${{b.total}} → ${{a.passed}}/${{a.total}} solved, ${{b.tokens.toLocaleString()}} → ${{a.tokens.toLocaleString()}} tokens → gate says ${{keep ? 'KEEP' : 'REVERT'}} (recorded: ${{rd.kept ? 'kept' : 'reverted'}})`);
+      log(`${{ok ? '✓' : '✗ MISMATCH'}} round ${{i + 1}}: ${{b.passed}}/${{b.total}} → ${{a.passed}}/${{a.total}} solved, ${{b.tokens.toLocaleString()}} → ${{a.tokens.toLocaleString()}} tokens → ${{rd.amended ? 'amended gate' : 'gate'}} says ${{keep ? 'KEEP' : 'REVERT'}} (recorded: ${{rd.kept ? 'kept' : 'reverted'}})`);
     }}
     for (const s of VSETS) {{
       const rs = await Promise.all(s.ids.map(run));
