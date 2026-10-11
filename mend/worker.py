@@ -27,16 +27,6 @@ _AUTO_TEST_NOTE = (
     "in this same turn so the automatic run sees the complete fix."
 )
 
-CONTRADICTION_NOTE = (
-    "The suite still fails after your edit. Before editing again, work out by hand what the bug report says the "
-    "failing call should return and compare it with the test's expected value. If your current code already "
-    "produces what the report describes and the test expects something the report rules out, the test contradicts "
-    "the report: do NOT change the code to match that test, and do not invent a new interpretation just to make it "
-    "pass. Stop now and reply with a short summary that states the fix you made and names the contradicting test "
-    "(file and test name) and why it conflicts with the report. Only if the report itself is not yet satisfied "
-    "should you continue fixing."
-)
-
 TOOLS = [
     {
         "name": "list_files",
@@ -260,8 +250,6 @@ def solve_task(task_id: str, report: str, work: Path) -> dict:
             tool_results.append({"type": "text", "text": "Automatic full test run after your edit(s):\n" + auto})
             if auto.startswith("PASSED"):
                 suite_passed = True
-        if edited_this_turn and not suite_passed:  # an edit ran the full suite (auto or model) and it still fails
-            tool_results.append({"type": "text", "text": CONTRADICTION_NOTE})
         messages.append({"role": "user", "content": tool_results})
         if suite_passed and edited:  # full suite green after an edit: done, skip the verify/summary turn
             result["stop"] = "suite_passed"
