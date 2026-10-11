@@ -42,6 +42,8 @@ SCENES = [
     ("result", "Same task, same model, after the fix: four turns, and it passes.", ("clip", 88.5)),
     ("gate", "Every change must earn its place. Mend re-runs all twenty-nine tasks and keeps a fix only if the numbers improve. "
              "Five fixes were kept. Two did not earn their place, and Mend reverted them on its own.", ("shot", "#rounds .card")),
+    ("ablation", "We tested the fixes too. Take one out and run again: without round five, sixty-one percent more tokens. "
+                 "Without round three, thirty-nine. Round two barely matters, and we say so.", ("shot", "#ablation")),
     ("heldout", "Is it overfitting? On ten bugs it never saw, it went from nine out of ten to ten out of ten.", ("shot", "#heldout")),
     ("realworld", "On bugs in a real open-source library, from two or three out of eight, to eight out of eight, with eighty-two percent fewer tokens.",
      ("shot", "#realworld")),

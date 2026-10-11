@@ -19,7 +19,7 @@ Demo: <YouTube or X video link> · site: https://thegoodengineers.github.io/mend
 |---|---|---|
 | Public code repository | done | https://github.com/thegoodengineers/mend |
 | Commits dated during the hackathon | done | first commit holds only pre-event plans (allowed); all code after 10 Oct 13:39 IST |
-| Demo video, 3 minutes or less | first cut done (2:09); polish Monday | `video/demo/mend-demo.mp4`, built by `video/demo/build.py` |
+| Demo video, 3 minutes or less | first cut done (2:42); polish Monday | `video/demo/mend-demo.mp4`, built by `video/demo/build.py` |
 | Video covers neatlogs, Entire and cfo.ai: architecture, implementation, runtime, reasoning, result for each | first cut covers all three; check per-tool depth Monday | scenes arch, runtime, reasoning, entire, guards, business |
 | Evidence: before/after runs with numbers | done | README rounds table, repeats, held-out, real-world; `mend.verify` |
 | Evidence: neatlogs traces (links or screenshots) | partial | trace read-backs in `evidence/`; **todo: dashboard screenshots** |
