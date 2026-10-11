@@ -1,0 +1,27 @@
+{
+  "agent": "analyst",
+  "before": "2026-10-11T17-04-06-base",
+  "after": "2026-10-11T17-09-16-after",
+  "before_passed": 20,
+  "after_passed": 20,
+  "total": 20,
+  "before_tokens": 105538,
+  "after_tokens": 64655,
+  "commit": "9931774",
+  "kept": true,
+  "title": "Inject database schema into the system prompt so the analyst can query immediately",
+  "diagnosis": "runs/analyst/2026-10-11T17-04-06-base.diagnosis.md",
+  "stats": {
+    "fixed": 0,
+    "broke": 0,
+    "p_passes": 1.0,
+    "token_ratio": 0.613,
+    "ci_low": 0.527,
+    "ci_high": 0.708
+  },
+  "diagnosis_usage": {
+    "model": "claude-opus-5-5",
+    "input_tokens": 10595,
+    "output_tokens": 1991
+  }
+}
