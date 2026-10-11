@@ -18,7 +18,7 @@ self-repair it passed in 4.*
 
 **At a glance:** 9 self-repair rounds, 5 kept and 4 reverted by a pre-registered gate · whole-file
 rewrites 31 → 0 · model calls 235 → 107 · cost per task $0.040 → $0.015 · bugs it never saw: 9/10 →
-10/10 · a real open-source library: 2–3/8 → 8/8 · hardware designs it never saw: same 9/9 at −58% tokens · every gate verdict written back into neatlogs.
+10/10 · a real open-source library: 2–3/8 → 8/8 · hardware designs it never saw: same 9/9 at −58% tokens · circuit schematics: same 8/8 at −64% tokens · every gate verdict written back into neatlogs.
 
 Every number in this README comes from a file in [`runs/`](runs/) or [`evidence/`](evidence/).
 If a number has no file behind it, it is not here.
@@ -263,6 +263,26 @@ check each design cycle by cycle against a plain-Python reference model.
 **Honest reading:** both workers fix all 9, so there is no gain in solve rate; these bugs are within
 reach of either. The repairs carried over as **efficiency**: the repaired worker used less than half
 the tokens and about 3 turns per bug instead of 7–8, on hardware it was never trained on.
+
+### Schematic transfer test: bugs in circuit netlists, another domain it never saw
+
+[`schematics/`](schematics/) holds seven board-level circuits as netlists, the text form of a
+schematic that KiCad exports and SPICE simulates: a voltage divider, an LED driver, RC low-pass and
+high-pass filters, two op-amp amplifiers, and a push-button pull-up
+([drawings](https://thegoodengineers.github.io/mend/hardware.html)). A small circuit simulator
+([`schematics/circuits/spice.py`](schematics/circuits/spice.py), Modified Nodal Analysis, checked
+against hand calculations) tests each circuit against its spec, for example 3.3 V out, LED at
+10 mA, or a 1 kHz cutoff. [`tasks/schematics.json`](tasks/schematics.json) plants 8 board
+bring-up bugs: a wrong value or unit, a reversed LED, a pull-down instead of a pull-up, R and C
+swapped, a resistor on the wrong net.
+
+| Worker | Runs | Solved | Mean tokens per run |
+|---|---|---|---|
+| Original (`13defdb`) | [v0](runs/2026-10-11T11-38-35-schematics-v0.json), [v0-r2](runs/2026-10-11T11-38-35-schematics-v0-r2.json) | 8, 8 of 8 | 273,764 |
+| After 5 self-repair rounds | [r1](runs/2026-10-11T11-38-35-schematics.json), [r2](runs/2026-10-11T11-38-35-schematics-r2.json) | 8, 8 of 8 | 97,234 (−64.5%) |
+
+As with the hardware designs, both workers fix every bug. The repaired worker does it in about 3–4
+turns instead of 7–10, with 64.5% fewer tokens.
 
 ### Live recording
 

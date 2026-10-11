@@ -60,11 +60,14 @@ def facts() -> dict:
     hw = [r for r in runs.values() if r.get("hardware")]
     hw_before = [r for r in hw if r["worker_commit"] == "13defdb"]
     hw_after = [r for r in hw if r["worker_commit"] != "13defdb"]
+    sc = [r for r in runs.values() if r.get("domain") == "schematics"]
+    sc_before = [r for r in sc if r["worker_commit"] == "13defdb"]
+    sc_after = [r for r in sc if r["worker_commit"] != "13defdb"]
     held = [r for r in runs.values() if r.get("heldout") and not r.get("realworld") and not r.get("hardware") and not r.get("domain")]
     held_before = [r for r in held if r["worker_commit"] == "13defdb"]
     held_after = [r for r in held if r["worker_commit"] != "13defdb"]
     return {"rounds": round_list, "first": first, "story": story, "haiku": haiku, "opus": opus, "held_before": held_before, "held_after": held_after, "real_before": real_before, "real_after": real_after,
-            "hw_before": hw_before, "hw_after": hw_after,
+            "hw_before": hw_before, "hw_after": hw_after, "sc_before": sc_before, "sc_after": sc_after,
             "before_runs": before_runs, "after_runs": after_runs,
             "runs_total": len(full), "tasks_total": max((r["total"] for r in full), default=0)}
 
@@ -145,6 +148,54 @@ def ablation_html() -> str:
   <div style="position:absolute;top:12px;bottom:12px;left:calc(24px + (100% - 48px) * {mean / top:.3f});border-left:2px dashed var(--mute)" title="today's worker, mean"></div></div>
   <p class="sub">One run each · <a class="link" href="{REPO}/blob/main/evidence/ablation.json">evidence/ablation.json</a></p>
 </div></section>"""
+
+
+CSS = """/* Editions-style, light: sage ground, giant tight sans titles, italic serif sub-lines with a swash initial,
+   thin line art, black pills for actions. Green/red only ever mean pass/fail. */
+:root{--bg:#e6e6dd;--paper:#f4f4ee;--ink:#0f0f0d;--mute:#5d5d55;--line:#cbcbbf;--accent:#0f0f0d;--ok:#16794a;--bad:#b83a3a}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,sans-serif}
+a{color:inherit} .wrap{max-width:1160px;margin:auto;padding:0 24px}
+nav{position:sticky;top:0;background:rgba(230,230,221,.86);backdrop-filter:blur(10px);z-index:5}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{text-decoration:none;display:flex;flex-direction:column;line-height:1.05}
+.logo b{font:800 17px 'Inter Tight',sans-serif;letter-spacing:-.01em} .logo span{font-size:12px;color:var(--mute)}
+nav .links{display:flex;align-items:center;gap:22px} nav .links a{color:var(--mute);text-decoration:none;font-size:14px}
+nav .links a:hover{color:var(--ink)} nav .links a.pill{color:#fff}
+.pill{display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:9px 18px;font-weight:600;font-size:14px;text-decoration:none;border:1px solid var(--ink)}
+.pill.ghost{background:transparent;color:var(--ink)}
+header{position:relative;overflow:hidden;padding:72px 0 64px}
+header svg.art{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+header .wrap{position:relative;z-index:1}
+.mega{font:800 clamp(96px,19vw,248px)/.82 'Inter Tight',sans-serif;letter-spacing:-.055em;margin:0}
+.lede{font:italic 400 clamp(26px,3.4vw,40px)/1.15 'Instrument Serif',Georgia,serif;margin:18px 0 0;max-width:820px}
+.cap{font:400 1.9em/0 'Pinyon Script',cursive;font-style:normal;vertical-align:-.12em;margin-right:.03em}
+.intro{color:var(--mute);font-size:18px;max-width:600px;margin:22px 0 0}
+.cta{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+.hero-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:end;margin-top:28px}
+.stat,.card{background:var(--paper);border-radius:22px;padding:26px;box-shadow:0 1px 1px rgba(15,15,13,.04),0 18px 40px rgba(15,15,13,.07);display:flex;flex-direction:column;gap:6px}
+.k{font:600 13px/1.2 Inter,sans-serif;color:var(--ink)}
+.big{font:800 56px/1 'Inter Tight',sans-serif;letter-spacing:-.04em} .big em{font-style:normal;color:var(--mute);font-size:24px;letter-spacing:0}
+.sub{color:var(--mute);font-size:14px} .link{color:var(--ink);text-decoration:underline;text-underline-offset:3px;font-weight:600;font-size:14px;margin-top:6px}
+section{padding:96px 0} section:nth-of-type(even){background:var(--paper)}
+section:nth-of-type(even) .stat,section:nth-of-type(even) .card,section:nth-of-type(even) .step{background:var(--bg)}
+.eyebrow{font:600 14px/1 Inter,sans-serif;color:var(--ink);margin:0 0 14px}
+h2{font:800 clamp(40px,6vw,76px)/.95 'Inter Tight',sans-serif;letter-spacing:-.045em;margin:0 0 18px}
+h2 + .sub, .wrap > .sub{font:italic 400 22px/1.3 'Instrument Serif',Georgia,serif;color:var(--mute);max-width:760px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px}
+.step{background:var(--paper);border-radius:20px;padding:24px;box-shadow:0 1px 1px rgba(15,15,13,.04),0 12px 28px rgba(15,15,13,.05)}
+.step b{display:block;margin:8px 0 6px;font:800 24px 'Inter Tight',sans-serif;letter-spacing:-.02em} .step p{margin:0;color:var(--mute);font-size:15px}
+.n{font:400 30px/1 'Pinyon Script',cursive;color:var(--mute)}
+.two{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center} .two p{color:var(--mute);font-size:17px} .two b{color:var(--ink)}
+.ba{display:grid;gap:16px} .two-col{grid-template-columns:1fr 1fr;margin-top:28px} .card.bad .big em,.card.ok .big em{color:var(--mute)} .card.bad .big{color:var(--bad)} .card.ok .big{color:var(--ok)}
+.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
+.tool h3{margin:0 0 6px;font:800 26px 'Inter Tight',sans-serif;letter-spacing:-.02em} .tool p{margin:0 0 10px;color:var(--mute);font-size:15px}
+table{width:100%;border-collapse:collapse;margin-top:24px;font-size:14px}
+th,td{text-align:left;padding:12px 8px;border-bottom:1px solid var(--line)} th{color:var(--mute);font-weight:500}
+td:nth-child(3){white-space:nowrap} td.ok{color:var(--ok);font-weight:600} td.miss{color:#a26a12;font-weight:600} .tablewrap{overflow-x:auto}
+footer{padding:48px 0;color:var(--mute);font-size:14px}
+@media (max-width:820px){.hero-grid,.two,.two-col{grid-template-columns:1fr} .steps,.tools{grid-template-columns:1fr} nav .links a.hide{display:none} section{padding:64px 0}}
+@media (prefers-reduced-motion:no-preference){.art circle,.art path{stroke-dasharray:1600;animation:draw 2.4s ease-out both} @keyframes draw{from{stroke-dashoffset:1600}to{stroke-dashoffset:0}}}"""
 
 
 def render() -> str:
@@ -249,28 +300,24 @@ def render() -> str:
     else:
         real_html = ""
 
-    if f["hw_before"] and f["hw_after"]:
-        hb = sum(tokens(r) for r in f["hw_before"]) / len(f["hw_before"])
-        ha = sum(tokens(r) for r in f["hw_after"]) / len(f["hw_after"])
-        pb = sum(r["passed"] for r in f["hw_before"]) / len(f["hw_before"])
-        pa = sum(r["passed"] for r in f["hw_after"]) / len(f["hw_after"])
-        if pa > pb:
-            verdict = f"{pb:g} → {pa:g} of {f['hw_before'][0]['total']} solved."
-        elif pa == pb and ha < hb * 0.85:
-            verdict = f"Same {pa:g}/{f['hw_before'][0]['total']}, at {(1 - ha / hb) * 100:.0f}% fewer tokens."
-        else:
-            verdict = "No clear gain carried over."
-        hw_html = f"""
+    def gain(before, after):  # "same 9/9 at 58% fewer tokens" from the run files
+        if not (before and after):
+            return ""
+        tb, ta = (sum(tokens(r) for r in g) / len(g) for g in (before, after))
+        pb, pa = (sum(r["passed"] for r in g) / len(g) for g in (before, after))
+        return (f"{pb:g} → {pa:g} of {before[0]['total']} solved" if pa > pb
+                else f"same {pa:g}/{before[0]['total']}, {(1 - ta / tb) * 100:.0f}% fewer tokens")
+    hw_line, sc_line = gain(f["hw_before"], f["hw_after"]), gain(f["sc_before"], f["sc_after"])
+    hw_html = f"""
 <section id="hardware"><div class="wrap">
-  <p class="eyebrow">Hardware transfer test: a domain it never saw</p><h2>{verdict}</h2>
-  <p class="sub">{f["hw_before"][0]["total"]} bugs planted in eight digital-logic designs written in
-  <a class="link" href="{REPO}/tree/main/hardware">Amaranth HDL</a> (counter, ALU, FIFO, UART, PWM, debouncer, CRC-8, Gray code),
-  each checked cycle by cycle by a simulation testbench. Never shown to the supervisor. Original worker against the self-repaired one,
-  each run twice. Mean tokens per run changed by {(ha - hb) / hb * 100:+.1f}%.</p>
-  <div class="ba two-col">{repeat_card("Original worker", f["hw_before"], None, "bad")}{repeat_card("After self-repair", f["hw_after"], None, "ok")}</div>
-</div></section>"""
-    else:
-        hw_html = ""
+  <p class="eyebrow">Beyond software</p><h2>It carries over to hardware.</h2>
+  <p class="sub">Bugs in chip designs and circuit schematics the supervisor never saw, checked in simulation.</p>
+  <div class="tools" style="grid-template-columns:repeat(2,1fr)">
+    <div class="tool card"><h3>Chip designs</h3><p>9 bugs in 8 Amaranth HDL designs (ALU, FIFO, UART...): {esc(hw_line)}.</p></div>
+    <div class="tool card"><h3>Circuit schematics</h3><p>8 board bring-up bugs in 7 circuit netlists: {esc(sc_line)}.</p></div>
+  </div>
+  <p><a class="pill" href="hardware.html">See the waveforms, schematics and bugs →</a></p>
+</div></section>""" if hw_line or sc_line else ""
 
     def run_row(r):
         return (f"<tr><td>{esc(r['run_id'][5:16].replace('T', ' '))}</td><td>{esc(r['model'].replace('claude-', ''))}</td>"
@@ -285,56 +332,11 @@ def render() -> str:
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;800&family=Instrument+Serif:ital@0;1&family=Pinyon+Script&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-/* Editions-style, light: sage ground, giant tight sans titles, italic serif sub-lines with a swash initial,
-   thin line art, black pills for actions. Green/red only ever mean pass/fail. */
-:root{{--bg:#e6e6dd;--paper:#f4f4ee;--ink:#0f0f0d;--mute:#5d5d55;--line:#cbcbbf;--accent:#0f0f0d;--ok:#16794a;--bad:#b83a3a}}
-*{{box-sizing:border-box}} html{{scroll-behavior:smooth}}
-body{{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,sans-serif}}
-a{{color:inherit}} .wrap{{max-width:1160px;margin:auto;padding:0 24px}}
-nav{{position:sticky;top:0;background:rgba(230,230,221,.86);backdrop-filter:blur(10px);z-index:5}}
-nav .wrap{{display:flex;align-items:center;justify-content:space-between;height:64px}}
-.logo{{text-decoration:none;display:flex;flex-direction:column;line-height:1.05}}
-.logo b{{font:800 17px 'Inter Tight',sans-serif;letter-spacing:-.01em}} .logo span{{font-size:12px;color:var(--mute)}}
-nav .links{{display:flex;align-items:center;gap:22px}} nav .links a{{color:var(--mute);text-decoration:none;font-size:14px}}
-nav .links a:hover{{color:var(--ink)}} nav .links a.pill{{color:#fff}}
-.pill{{display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:9px 18px;font-weight:600;font-size:14px;text-decoration:none;border:1px solid var(--ink)}}
-.pill.ghost{{background:transparent;color:var(--ink)}}
-header{{position:relative;overflow:hidden;padding:72px 0 64px}}
-header svg.art{{position:absolute;inset:0;width:100%;height:100%;z-index:0}}
-header .wrap{{position:relative;z-index:1}}
-.mega{{font:800 clamp(96px,19vw,248px)/.82 'Inter Tight',sans-serif;letter-spacing:-.055em;margin:0}}
-.lede{{font:italic 400 clamp(26px,3.4vw,40px)/1.15 'Instrument Serif',Georgia,serif;margin:18px 0 0;max-width:820px}}
-.cap{{font:400 1.9em/0 'Pinyon Script',cursive;font-style:normal;vertical-align:-.12em;margin-right:.03em}}
-.intro{{color:var(--mute);font-size:18px;max-width:600px;margin:22px 0 0}}
-.cta{{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}}
-.hero-grid{{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:end;margin-top:28px}}
-.stat,.card{{background:var(--paper);border-radius:22px;padding:26px;box-shadow:0 1px 1px rgba(15,15,13,.04),0 18px 40px rgba(15,15,13,.07);display:flex;flex-direction:column;gap:6px}}
-.k{{font:600 13px/1.2 Inter,sans-serif;color:var(--ink)}}
-.big{{font:800 56px/1 'Inter Tight',sans-serif;letter-spacing:-.04em}} .big em{{font-style:normal;color:var(--mute);font-size:24px;letter-spacing:0}}
-.sub{{color:var(--mute);font-size:14px}} .link{{color:var(--ink);text-decoration:underline;text-underline-offset:3px;font-weight:600;font-size:14px;margin-top:6px}}
-section{{padding:96px 0}} section:nth-of-type(even){{background:var(--paper)}}
-section:nth-of-type(even) .stat,section:nth-of-type(even) .card,section:nth-of-type(even) .step{{background:var(--bg)}}
-.eyebrow{{font:600 14px/1 Inter,sans-serif;color:var(--ink);margin:0 0 14px}}
-h2{{font:800 clamp(40px,6vw,76px)/.95 'Inter Tight',sans-serif;letter-spacing:-.045em;margin:0 0 18px}}
-h2 + .sub, .wrap > .sub{{font:italic 400 22px/1.3 'Instrument Serif',Georgia,serif;color:var(--mute);max-width:760px}}
-.steps{{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px}}
-.step{{background:var(--paper);border-radius:20px;padding:24px;box-shadow:0 1px 1px rgba(15,15,13,.04),0 12px 28px rgba(15,15,13,.05)}}
-.step b{{display:block;margin:8px 0 6px;font:800 24px 'Inter Tight',sans-serif;letter-spacing:-.02em}} .step p{{margin:0;color:var(--mute);font-size:15px}}
-.n{{font:400 30px/1 'Pinyon Script',cursive;color:var(--mute)}}
-.two{{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center}} .two p{{color:var(--mute);font-size:17px}} .two b{{color:var(--ink)}}
-.ba{{display:grid;gap:16px}} .two-col{{grid-template-columns:1fr 1fr;margin-top:28px}} .card.bad .big em,.card.ok .big em{{color:var(--mute)}} .card.bad .big{{color:var(--bad)}} .card.ok .big{{color:var(--ok)}}
-.tools{{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}}
-.tool h3{{margin:0 0 6px;font:800 26px 'Inter Tight',sans-serif;letter-spacing:-.02em}} .tool p{{margin:0 0 10px;color:var(--mute);font-size:15px}}
-table{{width:100%;border-collapse:collapse;margin-top:24px;font-size:14px}}
-th,td{{text-align:left;padding:12px 8px;border-bottom:1px solid var(--line)}} th{{color:var(--mute);font-weight:500}}
-td:nth-child(3){{white-space:nowrap}} td.ok{{color:var(--ok);font-weight:600}} td.miss{{color:#a26a12;font-weight:600}} .tablewrap{{overflow-x:auto}}
-footer{{padding:48px 0;color:var(--mute);font-size:14px}}
-@media (max-width:820px){{.hero-grid,.two,.two-col{{grid-template-columns:1fr}} .steps,.tools{{grid-template-columns:1fr}} nav .links a.hide{{display:none}} section{{padding:64px 0}}}}
-@media (prefers-reduced-motion:no-preference){{.art circle,.art path{{stroke-dasharray:1600;animation:draw 2.4s ease-out both}} @keyframes draw{{from{{stroke-dashoffset:1600}}to{{stroke-dashoffset:0}}}}}}
+{CSS}
 </style></head><body>
 <nav><div class="wrap"><a class="logo" href="#"><b>Mend</b><span>neatHack 2026</span></a>
 <div class="links"><a class="hide" href="#how">How it works</a><a class="hide" href="#rounds">Rounds</a><a class="hide" href="#evidence">Evidence</a>
-<a class="hide" href="report.html">Full report</a><a class="pill" href="{REPO}">View the code</a></div></div></nav>
+<a class="hide" href="hardware.html">Hardware</a><a class="hide" href="report.html">Full report</a><a class="pill" href="{REPO}">View the code</a></div></div></nav>
 
 <header>
 <svg class="art" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true" fill="none" stroke="#b9b9ad" stroke-width="1">
@@ -471,3 +473,6 @@ if __name__ == "__main__":
     out = ROOT / ("site_preview.html" if "preview" in sys.argv else "index.html")
     out.write_text(render(), encoding="utf-8")
     print(f"wrote {out.name}")
+    from mend import beyond
+    (ROOT / "hardware.html").write_text(beyond.render(), encoding="utf-8")
+    print("wrote hardware.html")

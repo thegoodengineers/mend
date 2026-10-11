@@ -54,7 +54,7 @@ footer{padding:48px 0;color:var(--mute);font-size:14px}
 </style></head><body>
 <nav><div class="wrap"><a class="logo" href="#"><b>Mend</b><span>neatHack 2026</span></a>
 <div class="links"><a class="hide" href="#how">How it works</a><a class="hide" href="#rounds">Rounds</a><a class="hide" href="#evidence">Evidence</a>
-<a class="hide" href="report.html">Full report</a><a class="pill" href="https://github.com/thegoodengineers/mend">View the code</a></div></div></nav>
+<a class="hide" href="hardware.html">Hardware</a><a class="hide" href="report.html">Full report</a><a class="pill" href="https://github.com/thegoodengineers/mend">View the code</a></div></div></nav>
 
 <header>
 <svg class="art" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true" fill="none" stroke="#b9b9ad" stroke-width="1">
@@ -124,12 +124,13 @@ footer{padding:48px 0;color:var(--mute);font-size:14px}
 </div></section>
 
 <section id="hardware"><div class="wrap">
-  <p class="eyebrow">Hardware transfer test: a domain it never saw</p><h2>Same 9/9, at 58% fewer tokens.</h2>
-  <p class="sub">9 bugs planted in eight digital-logic designs written in
-  <a class="link" href="https://github.com/thegoodengineers/mend/tree/main/hardware">Amaranth HDL</a> (counter, ALU, FIFO, UART, PWM, debouncer, CRC-8, Gray code),
-  each checked cycle by cycle by a simulation testbench. Never shown to the supervisor. Original worker against the self-repaired one,
-  each run twice. Mean tokens per run changed by -57.7%.</p>
-  <div class="ba two-col"><div class="card bad"><span class="k">Original worker · 2 runs</span><span class="big">9, 9<em> / 9</em></span><span class="sub">mean 188,336 tokens per run</span></div><div class="card ok"><span class="k">After self-repair · 2 runs</span><span class="big">9, 9<em> / 9</em></span><span class="sub">mean 79,656 tokens per run</span></div></div>
+  <p class="eyebrow">Beyond software</p><h2>It carries over to hardware.</h2>
+  <p class="sub">Bugs in chip designs and circuit schematics the supervisor never saw, checked in simulation.</p>
+  <div class="tools" style="grid-template-columns:repeat(2,1fr)">
+    <div class="tool card"><h3>Chip designs</h3><p>9 bugs in 8 Amaranth HDL designs (ALU, FIFO, UART...): same 9/9, 58% fewer tokens.</p></div>
+    <div class="tool card"><h3>Circuit schematics</h3><p>8 board bring-up bugs in 7 circuit netlists: same 8/8, 64% fewer tokens.</p></div>
+  </div>
+  <p><a class="pill" href="hardware.html">See the waveforms, schematics and bugs →</a></p>
 </div></section>
 
 <section id="rounds"><div class="wrap">

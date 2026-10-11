@@ -1,0 +1,157 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mend on hardware</title>
+<meta name="description" content="Mend's self-repairs, tested on chip designs and circuit schematics it never saw.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;800&family=Instrument+Serif:ital@0;1&family=Pinyon+Script&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Editions-style, light: sage ground, giant tight sans titles, italic serif sub-lines with a swash initial,
+   thin line art, black pills for actions. Green/red only ever mean pass/fail. */
+:root{--bg:#e6e6dd;--paper:#f4f4ee;--ink:#0f0f0d;--mute:#5d5d55;--line:#cbcbbf;--accent:#0f0f0d;--ok:#16794a;--bad:#b83a3a}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,sans-serif}
+a{color:inherit} .wrap{max-width:1160px;margin:auto;padding:0 24px}
+nav{position:sticky;top:0;background:rgba(230,230,221,.86);backdrop-filter:blur(10px);z-index:5}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{text-decoration:none;display:flex;flex-direction:column;line-height:1.05}
+.logo b{font:800 17px 'Inter Tight',sans-serif;letter-spacing:-.01em} .logo span{font-size:12px;color:var(--mute)}
+nav .links{display:flex;align-items:center;gap:22px} nav .links a{color:var(--mute);text-decoration:none;font-size:14px}
+nav .links a:hover{color:var(--ink)} nav .links a.pill{color:#fff}
+.pill{display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:9px 18px;font-weight:600;font-size:14px;text-decoration:none;border:1px solid var(--ink)}
+.pill.ghost{background:transparent;color:var(--ink)}
+header{position:relative;overflow:hidden;padding:72px 0 64px}
+header svg.art{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+header .wrap{position:relative;z-index:1}
+.mega{font:800 clamp(96px,19vw,248px)/.82 'Inter Tight',sans-serif;letter-spacing:-.055em;margin:0}
+.lede{font:italic 400 clamp(26px,3.4vw,40px)/1.15 'Instrument Serif',Georgia,serif;margin:18px 0 0;max-width:820px}
+.cap{font:400 1.9em/0 'Pinyon Script',cursive;font-style:normal;vertical-align:-.12em;margin-right:.03em}
+.intro{color:var(--mute);font-size:18px;max-width:600px;margin:22px 0 0}
+.cta{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+.hero-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:end;margin-top:28px}
+.stat,.card{background:var(--paper);border-radius:22px;padding:26px;box-shadow:0 1px 1px rgba(15,15,13,.04),0 18px 40px rgba(15,15,13,.07);display:flex;flex-direction:column;gap:6px}
+.k{font:600 13px/1.2 Inter,sans-serif;color:var(--ink)}
+.big{font:800 56px/1 'Inter Tight',sans-serif;letter-spacing:-.04em} .big em{font-style:normal;color:var(--mute);font-size:24px;letter-spacing:0}
+.sub{color:var(--mute);font-size:14px} .link{color:var(--ink);text-decoration:underline;text-underline-offset:3px;font-weight:600;font-size:14px;margin-top:6px}
+section{padding:96px 0} section:nth-of-type(even){background:var(--paper)}
+section:nth-of-type(even) .stat,section:nth-of-type(even) .card,section:nth-of-type(even) .step{background:var(--bg)}
+.eyebrow{font:600 14px/1 Inter,sans-serif;color:var(--ink);margin:0 0 14px}
+h2{font:800 clamp(40px,6vw,76px)/.95 'Inter Tight',sans-serif;letter-spacing:-.045em;margin:0 0 18px}
+h2 + .sub, .wrap > .sub{font:italic 400 22px/1.3 'Instrument Serif',Georgia,serif;color:var(--mute);max-width:760px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px}
+.step{background:var(--paper);border-radius:20px;padding:24px;box-shadow:0 1px 1px rgba(15,15,13,.04),0 12px 28px rgba(15,15,13,.05)}
+.step b{display:block;margin:8px 0 6px;font:800 24px 'Inter Tight',sans-serif;letter-spacing:-.02em} .step p{margin:0;color:var(--mute);font-size:15px}
+.n{font:400 30px/1 'Pinyon Script',cursive;color:var(--mute)}
+.two{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center} .two p{color:var(--mute);font-size:17px} .two b{color:var(--ink)}
+.ba{display:grid;gap:16px} .two-col{grid-template-columns:1fr 1fr;margin-top:28px} .card.bad .big em,.card.ok .big em{color:var(--mute)} .card.bad .big{color:var(--bad)} .card.ok .big{color:var(--ok)}
+.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
+.tool h3{margin:0 0 6px;font:800 26px 'Inter Tight',sans-serif;letter-spacing:-.02em} .tool p{margin:0 0 10px;color:var(--mute);font-size:15px}
+table{width:100%;border-collapse:collapse;margin-top:24px;font-size:14px}
+th,td{text-align:left;padding:12px 8px;border-bottom:1px solid var(--line)} th{color:var(--mute);font-weight:500}
+td:nth-child(3){white-space:nowrap} td.ok{color:var(--ok);font-weight:600} td.miss{color:#a26a12;font-weight:600} .tablewrap{overflow-x:auto}
+footer{padding:48px 0;color:var(--mute);font-size:14px}
+@media (max-width:820px){.hero-grid,.two,.two-col{grid-template-columns:1fr} .steps,.tools{grid-template-columns:1fr} nav .links a.hide{display:none} section{padding:64px 0}}
+@media (prefers-reduced-motion:no-preference){.art circle,.art path{stroke-dasharray:1600;animation:draw 2.4s ease-out both} @keyframes draw{from{stroke-dashoffset:1600}to{stroke-dashoffset:0}}}
+.wave{max-width:100%;height:auto;margin:10px 0;font:12px 'JetBrains Mono',monospace} .wave .lane{fill:var(--mute)}
+.wave .bus{fill:var(--ink)} .wave .mark{fill:var(--bad);font-size:11px}
+.waves{display:grid;gap:18px;margin-top:28px} .waves .card{overflow-x:auto}
+.sch{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:28px}
+.sch figure{margin:0} .sch img{width:100%;height:190px;object-fit:contain;background:#fff;border-radius:14px}
+pre.code{font:12.5px/1.55 'JetBrains Mono',monospace;background:#fff;border-radius:16px;padding:18px;overflow:auto;max-height:420px;margin:0}
+.verdict{font:800 clamp(26px,3.4vw,40px)/1.05 'Inter Tight',sans-serif;letter-spacing:-.03em;margin:28px 0 0}
+td.rep{color:var(--mute)} .hero2{font:800 clamp(56px,10vw,128px)/.88 'Inter Tight',sans-serif;letter-spacing:-.05em;margin:0}
+</style></head><body>
+<nav><div class="wrap"><a class="logo" href="index.html"><b>Mend</b><span>neatHack 2026</span></a>
+<div class="links"><a class="hide" href="#chips">Chip designs</a><a class="hide" href="#schematics">Schematics</a>
+<a class="hide" href="index.html">Main page</a><a class="pill" href="https://github.com/thegoodengineers/mend">View the code</a></div></div></nav>
+
+<header><div class="wrap">
+  <p class="eyebrow">Beyond software</p>
+  <h1 class="hero2">Same repairs.<br>New domains.</h1>
+  <p class="lede"><span class="cap">M</span>end repaired itself on Python bugs. Then we gave both workers bugs in chip designs and
+  circuit schematics they had never seen.</p>
+  <p class="intro">Nothing here was shown to the supervisor or used in a self-repair round. The "hardware" is checked in simulation,
+  as chip and board designers check designs before manufacturing.</p>
+</div></header>
+
+<section id="chips"><div class="wrap">
+  <p class="eyebrow">Digital chip designs · Amaranth HDL → Verilog</p><h2>9 bugs in 8 designs.</h2>
+  <p class="sub">A counter, Gray-code converters, an 8-bit ALU, a FIFO, a UART transmitter, a PWM generator, a debouncer and a CRC-8 unit,
+  written in <a class="link" href="https://amaranth-lang.org">Amaranth HDL</a> and checked cycle by cycle by 26 simulation testbenches.</p>
+  <h3 class="verdict">Same 9/9, at 58% fewer tokens.</h3><div class="ba two-col"><div class="card "><span class="k">Original worker · 2 runs</span><span class="big">9, 9<em> / 9</em></span><span class="sub">mean 188,336 tokens per run</span></div><div class="card "><span class="k">After self-repair · 2 runs</span><span class="big">9, 9<em> / 9</em></span><span class="sub">mean 79,656 tokens per run</span></div></div>
+  <div class="waves"><div class="card"><span class="k">UartTx(1) sends 0x31 (ASCII &#x27;1&#x27;), one bit per cycle</span><span class="sub">Planted bug HW06: Bytes sent through UartTx arrive bit-reversed at the receiver: sending 0x01 is received as 0x80, and 0xA5 stays 0xA5.</span><svg class="wave" width="544" height="234" viewBox="0 0 544 234" role="img" aria-label="timing diagram"><rect x="160" y="0" width="34" height="212" fill="var(--bad)" opacity=".13"/><text x="177.0" y="228" text-anchor="middle" class="mark">▲</text><rect x="228" y="0" width="34" height="212" fill="var(--bad)" opacity=".13"/><text x="245.0" y="228" text-anchor="middle" class="mark">▲</text><rect x="262" y="0" width="34" height="212" fill="var(--bad)" opacity=".13"/><text x="279.0" y="228" text-anchor="middle" class="mark">▲</text><rect x="296" y="0" width="34" height="212" fill="var(--bad)" opacity=".13"/><text x="313.0" y="228" text-anchor="middle" class="mark">▲</text><rect x="330" y="0" width="34" height="212" fill="var(--bad)" opacity=".13"/><text x="347.0" y="228" text-anchor="middle" class="mark">▲</text><rect x="398" y="0" width="34" height="212" fill="var(--bad)" opacity=".13"/><text x="415.0" y="228" text-anchor="middle" class="mark">▲</text><line x1="92" y1="0" x2="92" y2="212" stroke="var(--line)"/><line x1="126" y1="0" x2="126" y2="212" stroke="var(--line)"/><line x1="160" y1="0" x2="160" y2="212" stroke="var(--line)"/><line x1="194" y1="0" x2="194" y2="212" stroke="var(--line)"/><line x1="228" y1="0" x2="228" y2="212" stroke="var(--line)"/><line x1="262" y1="0" x2="262" y2="212" stroke="var(--line)"/><line x1="296" y1="0" x2="296" y2="212" stroke="var(--line)"/><line x1="330" y1="0" x2="330" y2="212" stroke="var(--line)"/><line x1="364" y1="0" x2="364" y2="212" stroke="var(--line)"/><line x1="398" y1="0" x2="398" y2="212" stroke="var(--line)"/><line x1="432" y1="0" x2="432" y2="212" stroke="var(--line)"/><line x1="466" y1="0" x2="466" y2="212" stroke="var(--line)"/><line x1="500" y1="0" x2="500" y2="212" stroke="var(--line)"/><line x1="534" y1="0" x2="534" y2="212" stroke="var(--line)"/><text x="0" y="24" class="lane">start</text><polyline fill="none" stroke="var(--ink)" stroke-width="2" points="92,10 126,10 126,30 160,30 160,30 194,30 194,30 228,30 228,30 262,30 262,30 296,30 296,30 330,30 330,30 364,30 364,30 398,30 398,30 432,30 432,30 466,30 466,30 500,30 500,30 534,30"/><text x="0" y="58" class="lane">busy</text><polyline fill="none" stroke="var(--ink)" stroke-width="2" points="92,64 126,64 126,44 160,44 160,44 194,44 194,44 228,44 228,44 262,44 262,44 296,44 296,44 330,44 330,44 364,44 364,44 398,44 398,44 432,44 432,44 466,44 466,64 500,64 500,64 534,64"/><text x="0" y="92" class="lane">tx</text><polyline fill="none" stroke="var(--ink)" stroke-width="2" points="92,78 126,78 126,98 160,98 160,78 194,78 194,98 228,98 228,98 262,98 262,98 296,98 296,78 330,78 330,78 364,78 364,98 398,98 398,98 432,98 432,78 466,78 466,78 500,78 500,78 534,78"/><text x="0" y="126" class="lane">start (bug)</text><polyline fill="none" stroke="var(--ink)" stroke-width="2" points="92,112 126,112 126,132 160,132 160,132 194,132 194,132 228,132 228,132 262,132 262,132 296,132 296,132 330,132 330,132 364,132 364,132 398,132 398,132 432,132 432,132 466,132 466,132 500,132 500,132 534,132"/><text x="0" y="160" class="lane">busy (bug)</text><polyline fill="none" stroke="var(--ink)" stroke-width="2" points="92,166 126,166 126,146 160,146 160,146 194,146 194,146 228,146 228,146 262,146 262,146 296,146 296,146 330,146 330,146 364,146 364,146 398,146 398,146 432,146 432,146 466,146 466,166 500,166 500,166 534,166"/><text x="0" y="194" class="lane">tx (bug)</text><polyline fill="none" stroke="var(--ink)" stroke-width="2" points="92,180 126,180 126,200 160,200 160,200 194,200 194,200 228,200 228,180 262,180 262,180 296,180 296,200 330,200 330,200 364,200 364,200 398,200 398,180 432,180 432,180 466,180 466,180 500,180 500,180 534,180"/></svg><span class="sub">▲ marks the cycles where the bug shows.</span></div><div class="card"><span class="k">PWM(8) with duty 3: high for 3 of every 8 cycles</span><span class="sub">Planted bug HW07: With duty set to 0 the PWM output still goes high for one cycle every period, and duty 3 gives 4 high cycles.</span><svg class="wave" width="646" height="98" viewBox="0 0 646 98" role="img" aria-label="timing diagram"><rect x="194" y="0" width="34" height="76" fill="var(--bad)" opacity=".13"/><text x="211.0" y="92" text-anchor="middle" class="mark">▲</text><rect x="466" y="0" width="34" height="76" fill="var(--bad)" opacity=".13"/><text x="483.0" y="92" text-anchor="middle" class="mark">▲</text><line x1="92" y1="0" x2="92" y2="76" stroke="var(--line)"/><line x1="126" y1="0" x2="126" y2="76" stroke="var(--line)"/><line x1="160" y1="0" x2="160" y2="76" stroke="var(--line)"/><line x1="194" y1="0" x2="194" y2="76" stroke="var(--line)"/><line x1="228" y1="0" x2="228" y2="76" stroke="var(--line)"/><line x1="262" y1="0" x2="262" y2="76" stroke="var(--line)"/><line x1="296" y1="0" x2="296" y2="76" stroke="var(--line)"/><line x1="330" y1="0" x2="330" y2="76" stroke="var(--line)"/><line x1="364" y1="0" x2="364" y2="76" stroke="var(--line)"/><line x1="398" y1="0" x2="398" y2="76" stroke="var(--line)"/><line x1="432" y1="0" x2="432" y2="76" stroke="var(--line)"/><line x1="466" y1="0" x2="466" y2="76" stroke="var(--line)"/><line x1="500" y1="0" x2="500" y2="76" stroke="var(--line)"/><line x1="534" y1="0" x2="534" y2="76" stroke="var(--line)"/><line x1="568" y1="0" x2="568" y2="76" stroke="var(--line)"/><line x1="602" y1="0" x2="602" y2="76" stroke="var(--line)"/><line x1="636" y1="0" x2="636" y2="76" stroke="var(--line)"/><text x="0" y="24" class="lane">out</text><polyline fill="none" stroke="var(--ink)" stroke-width="2" points="92,10 126,10 126,10 160,10 160,10 194,10 194,30 228,30 228,30 262,30 262,30 296,30 296,30 330,30 330,30 364,30 364,10 398,10 398,10 432,10 432,10 466,10 466,30 500,30 500,30 534,30 534,30 568,30 568,30 602,30 602,30 636,30"/><text x="0" y="58" class="lane">out (bug)</text><polyline fill="none" stroke="var(--ink)" stroke-width="2" points="92,44 126,44 126,44 160,44 160,44 194,44 194,44 228,44 228,64 262,64 262,64 296,64 296,64 330,64 330,64 364,64 364,44 398,44 398,44 432,44 432,44 466,44 466,44 500,44 500,64 534,64 534,64 568,64 568,64 602,64 602,64 636,64"/></svg><span class="sub">▲ marks the cycles where the bug shows.</span></div><div class="card"><span class="k">ModCounter(4), enabled: counts 0-3, wrap pulses on 3</span><span class="sub">Planted bug HW01: A mod-10 ModCounter shows 10 before going back to 0, and its wrap pulse comes one cycle late. A mod-4 counter never raises wrap at all.</span><svg class="wave" width="442" height="166" viewBox="0 0 442 166" role="img" aria-label="timing diagram"><rect x="194" y="0" width="34" height="144" fill="var(--bad)" opacity=".13"/><text x="211.0" y="160" text-anchor="middle" class="mark">▲</text><rect x="330" y="0" width="34" height="144" fill="var(--bad)" opacity=".13"/><text x="347.0" y="160" text-anchor="middle" class="mark">▲</text><line x1="92" y1="0" x2="92" y2="144" stroke="var(--line)"/><line x1="126" y1="0" x2="126" y2="144" stroke="var(--line)"/><line x1="160" y1="0" x2="160" y2="144" stroke="var(--line)"/><line x1="194" y1="0" x2="194" y2="144" stroke="var(--line)"/><line x1="228" y1="0" x2="228" y2="144" stroke="var(--line)"/><line x1="262" y1="0" x2="262" y2="144" stroke="var(--line)"/><line x1="296" y1="0" x2="296" y2="144" stroke="var(--line)"/><line x1="330" y1="0" x2="330" y2="144" stroke="var(--line)"/><line x1="364" y1="0" x2="364" y2="144" stroke="var(--line)"/><line x1="398" y1="0" x2="398" y2="144" stroke="var(--line)"/><line x1="432" y1="0" x2="432" y2="144" stroke="var(--line)"/><text x="0" y="24" class="lane">count</text><rect x="94" y="8" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="109.0" y="24" text-anchor="middle" class="bus">0</text><rect x="128" y="8" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="143.0" y="24" text-anchor="middle" class="bus">1</text><rect x="162" y="8" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="177.0" y="24" text-anchor="middle" class="bus">2</text><rect x="196" y="8" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="211.0" y="24" text-anchor="middle" class="bus">3</text><rect x="230" y="8" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="245.0" y="24" text-anchor="middle" class="bus">0</text><rect x="264" y="8" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="279.0" y="24" text-anchor="middle" class="bus">1</text><rect x="298" y="8" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="313.0" y="24" text-anchor="middle" class="bus">2</text><rect x="332" y="8" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="347.0" y="24" text-anchor="middle" class="bus">3</text><rect x="366" y="8" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="381.0" y="24" text-anchor="middle" class="bus">0</text><rect x="400" y="8" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="415.0" y="24" text-anchor="middle" class="bus">1</text><text x="0" y="58" class="lane">wrap</text><polyline fill="none" stroke="var(--ink)" stroke-width="2" points="92,64 126,64 126,64 160,64 160,64 194,64 194,44 228,44 228,64 262,64 262,64 296,64 296,64 330,64 330,44 364,44 364,64 398,64 398,64 432,64"/><text x="0" y="92" class="lane">count (bug)</text><rect x="94" y="76" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="109.0" y="92" text-anchor="middle" class="bus">0</text><rect x="128" y="76" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="143.0" y="92" text-anchor="middle" class="bus">1</text><rect x="162" y="76" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="177.0" y="92" text-anchor="middle" class="bus">2</text><rect x="196" y="76" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="211.0" y="92" text-anchor="middle" class="bus">3</text><rect x="230" y="76" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="245.0" y="92" text-anchor="middle" class="bus">0</text><rect x="264" y="76" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="279.0" y="92" text-anchor="middle" class="bus">1</text><rect x="298" y="76" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="313.0" y="92" text-anchor="middle" class="bus">2</text><rect x="332" y="76" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="347.0" y="92" text-anchor="middle" class="bus">3</text><rect x="366" y="76" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="381.0" y="92" text-anchor="middle" class="bus">0</text><rect x="400" y="76" width="30" height="22" rx="5" fill="none" stroke="var(--ink)"/><text x="415.0" y="92" text-anchor="middle" class="bus">1</text><text x="0" y="126" class="lane">wrap (bug)</text><polyline fill="none" stroke="var(--ink)" stroke-width="2" points="92,132 126,132 126,132 160,132 160,132 194,132 194,132 228,132 228,132 262,132 262,132 296,132 296,132 330,132 330,132 364,132 364,132 398,132 398,132 432,132"/></svg><span class="sub">▲ marks the cycles where the bug shows.</span></div></div>
+  <div class="two" style="margin-top:36px;align-items:start">
+    <div><p class="eyebrow">Real hardware output</p><p>Every design exports as Verilog, the language chip toolchains take.
+    This is the PWM generator, emitted by Amaranth through Yosys
+    (<a class="link" href="https://github.com/thegoodengineers/mend/tree/main/hardware/verilog">hardware/verilog</a>).</p></div>
+    <pre class="code">/* Generated by Amaranth Yosys 0.50 (PyPI ver 0.50.0.0.post129, git sha1 b5170e139) */
+
+(* top =  1  *)
+(* generator = &quot;Amaranth&quot; *)
+module pwm(clk, rst, out, duty);
+  reg \$auto$verilog_backend.cc:2355:dump_module$1  = 0;
+  wire \$1 ;
+  wire [3:0] \$2 ;
+  reg [2:0] \$3 ;
+  input clk;
+  wire clk;
+  input [3:0] duty;
+  wire [3:0] duty;
+  output out;
+  wire out;
+  reg [2:0] phase = 3&#x27;h0;
+  input rst;
+  wire rst;
+  assign \$1  = phase == 3&#x27;h7;
+  assign \$2  = phase + 1&#x27;h1;
+  assign out = phase &lt; duty;
+  always @(posedge clk)
+    phase &lt;= \$3 ;
+  always @* begin
+    if (\$auto$verilog_backend.cc:2355:dump_module$1 ) begin end
+    (* full_case = 32&#x27;d1 *)
+    if (\$1 ) begin
+      \$3  = 3&#x27;h0;
+    end else begin
+      \$3  = \$2 [2:0];
+    end
+    if (rst) begin
+      \$3  = 3&#x27;h0;
+    end
+  end
+endmodule
+
+</pre>
+  </div>
+  <p class="eyebrow" style="margin-top:36px">The planted bugs</p><div class="tablewrap"><table><tr><th>Bug</th><th>What it is</th><th>Bug report the agent got</th></tr><tr><td>HW01</td><td>counter overshoots modulus</td><td class='rep'>A mod-10 ModCounter shows 10 before going back to 0, and its wrap pulse comes one cycle late. A mod-4 counter never raises wrap at all.</td></tr><tr><td>HW02</td><td>gray decode wrong above 3</td><td class='rep'>GrayToBin gives the wrong number for most codes above 3: converting a value to Gray code and back does not return the original value.</td></tr><tr><td>HW03</td><td>ALU subtracts the wrong way round</td><td class='rep'>The ALU&#x27;s SUB operation returns 249 for 10 - 3 and raises the borrow flag.</td></tr><tr><td>HW04</td><td>ALU carry flag wrong</td><td class='rep'>The ALU raises carry on 100 + 50 even though the sum fits in 8 bits, and misses the carry on 200 + 100.</td></tr><tr><td>HW05</td><td>FIFO full one entry early</td><td class='rep'>A 4-entry SyncFIFO reports full after only 3 writes and drops the 4th write.</td></tr><tr><td>HW06</td><td>UART bytes arrive bit-reversed</td><td class='rep'>Bytes sent through UartTx arrive bit-reversed at the receiver: sending 0x01 is received as 0x80, and 0xA5 stays 0xA5.</td></tr><tr><td>HW07</td><td>PWM glitch at duty 0</td><td class='rep'>With duty set to 0 the PWM output still goes high for one cycle every period, and duty 3 gives 4 high cycles.</td></tr><tr><td>HW08</td><td>debouncer lets bounces through</td><td class='rep'>A bouncing button eventually registers as pressed with Debouncer(4), even though the input never stays high for 4 cycles in a row.</td></tr><tr><td>HW09</td><td>CRC-8 check value wrong</td><td class='rep'>Crc8Byte does not produce the standard CRC-8 check value: chaining the bytes of b&quot;123456789&quot; from 0 should give 0xF4.</td></tr></table></div>
+</div></section>
+
+<section id="schematics"><div class="wrap">
+  <p class="eyebrow">Circuit schematics · netlists checked by circuit simulation</p><h2>8 bugs in 7 circuits.</h2>
+  <p class="sub">A netlist is the text form of a schematic, the file KiCad exports and SPICE simulates. A small simulator (Modified Nodal Analysis,
+  checked against hand calculations) tests each circuit against its spec.</p>
+  <h3 class="verdict">Same 8/8, at 64% fewer tokens.</h3><div class="ba two-col"><div class="card "><span class="k">Original worker · 2 runs</span><span class="big">8, 8<em> / 8</em></span><span class="sub">mean 273,764 tokens per run</span></div><div class="card "><span class="k">After self-repair · 2 runs</span><span class="big">8, 8<em> / 8</em></span><span class="sub">mean 97,234 tokens per run</span></div></div>
+  <div class="sch"><figure class="card"><img src="docs/img/schematics/divider.svg" alt="Voltage divider: 5 V to 3.3 V schematic" loading="lazy"><figcaption class="k">Voltage divider: 5 V to 3.3 V</figcaption></figure><figure class="card"><img src="docs/img/schematics/led.svg" alt="LED driver: 10 mA schematic" loading="lazy"><figcaption class="k">LED driver: 10 mA</figcaption></figure><figure class="card"><img src="docs/img/schematics/lowpass.svg" alt="RC low-pass, 1 kHz schematic" loading="lazy"><figcaption class="k">RC low-pass, 1 kHz</figcaption></figure><figure class="card"><img src="docs/img/schematics/highpass.svg" alt="RC high-pass, 1 kHz schematic" loading="lazy"><figcaption class="k">RC high-pass, 1 kHz</figcaption></figure><figure class="card"><img src="docs/img/schematics/noninv.svg" alt="Non-inverting amplifier, gain 11 schematic" loading="lazy"><figcaption class="k">Non-inverting amplifier, gain 11</figcaption></figure><figure class="card"><img src="docs/img/schematics/inverting.svg" alt="Inverting amplifier, gain -4.7 schematic" loading="lazy"><figcaption class="k">Inverting amplifier, gain -4.7</figcaption></figure><figure class="card"><img src="docs/img/schematics/pullup.svg" alt="Button with pull-up schematic" loading="lazy"><figcaption class="k">Button with pull-up</figcaption></figure></div>
+  <div class="two" style="margin-top:36px;align-items:start">
+    <div><p class="eyebrow">What the agent edits</p><p>The divider above, as the netlist the agent reads and fixes. A planted bug changes one
+    line, for example R2 20k becoming 2k, and the agent gets only the symptom: "the 3.3 V reference measures about 0.83 V".</p></div>
+    <pre class="code">* Voltage divider: 5 V supply down to a 3.3 V logic reference
+V1 in 0 DC 5
+R1 in out 10k
+R2 out 0 20k
+</pre>
+  </div>
+  <p class="eyebrow" style="margin-top:36px">The planted bugs</p><div class="tablewrap"><table><tr><th>Bug</th><th>What it is</th><th>Bug report the agent got</th></tr><tr><td>SC01</td><td>divider gives 0.83 V</td><td class='rep'>The 3.3 V reference from the voltage divider measures about 0.83 V.</td></tr><tr><td>SC02</td><td>LED overcurrent</td><td class='rep'>The status LED draws about 100 mA, five times its 20 mA rating, and runs hot.</td></tr><tr><td>SC03</td><td>LED never lights</td><td class='rep'>The status LED never lights: no current flows through it, although the rail is at 5 V.</td></tr><tr><td>SC04</td><td>anti-aliasing filter cutoff too high</td><td class='rep'>The 1 kHz anti-aliasing filter barely attenuates anything at 5 kHz; its cutoff is far too high.</td></tr><tr><td>SC05</td><td>amplifier has gain 1</td><td class='rep'>The gain-of-11 sensor amplifier outputs 0.1 V for its 0.1 V input, i.e. a gain of 1.</td></tr><tr><td>SC06</td><td>button input stuck low</td><td class='rep'>The push-button input reads low (0 V) even when the button is released.</td></tr><tr><td>SC07</td><td>high-pass filter acts as low-pass</td><td class='rep'>The high-pass filter does the opposite of its job: it passes 100 Hz and blocks 10 kHz.</td></tr><tr><td>SC08</td><td>inverting amplifier output stuck at 0 V</td><td class='rep'>The inverting amplifier&#x27;s output stays at about 0 V whatever the input.</td></tr></table></div>
+</div></section>
+
+<section id="honest"><div class="wrap">
+  <p class="eyebrow">What this shows, and what it doesn't</p><h2>The gain is efficiency.</h2>
+  <p class="sub">Both workers fix every hardware and schematic bug, so these sets show no gain in what gets solved. What carried over is how:
+  the self-repaired worker reads less, edits precisely and stops when the tests pass, so it needs far fewer turns and tokens.
+  Two runs per worker; the sets are small; everything is simulated, not built on a physical board.</p>
+  <div class="cta"><a class="pill" href="https://github.com/thegoodengineers/mend/tree/main/hardware">Hardware designs</a><a class="pill ghost" href="https://github.com/thegoodengineers/mend/tree/main/schematics">Circuits and simulator</a>
+  <a class="pill ghost" href="index.html">Back to the main page</a></div>
+</div></section>
+
+<footer><div class="wrap">Try it yourself: <code>python -m pytest -q hardware schematics</code>, then
+<code>python scripts/hw_demo.py bugs</code>. · <a href="https://github.com/thegoodengineers/mend">github.com/thegoodengineers/mend</a></div></footer>
+</body></html>

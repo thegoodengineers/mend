@@ -1,0 +1,338 @@
+{
+ "uart": {
+  "caption": "UartTx(1) sends 0x31 (ASCII '1'), one bit per cycle",
+  "task": "HW06",
+  "title": "UART bytes arrive bit-reversed",
+  "report": "Bytes sent through UartTx arrive bit-reversed at the receiver: sending 0x01 is received as 0x80, and 0xA5 stays 0xA5.",
+  "correct": [
+   {
+    "start": 1,
+    "busy": 0,
+    "tx": 1
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 0
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 1
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 0
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 0
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 0
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 1
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 1
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 0
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 0
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 1
+   },
+   {
+    "start": 0,
+    "busy": 0,
+    "tx": 1
+   },
+   {
+    "start": 0,
+    "busy": 0,
+    "tx": 1
+   }
+  ],
+  "buggy": [
+   {
+    "start": 1,
+    "busy": 0,
+    "tx": 1
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 0
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 0
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 0
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 1
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 1
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 0
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 0
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 0
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 1
+   },
+   {
+    "start": 0,
+    "busy": 1,
+    "tx": 1
+   },
+   {
+    "start": 0,
+    "busy": 0,
+    "tx": 1
+   },
+   {
+    "start": 0,
+    "busy": 0,
+    "tx": 1
+   }
+  ]
+ },
+ "pwm": {
+  "caption": "PWM(8) with duty 3: high for 3 of every 8 cycles",
+  "task": "HW07",
+  "title": "PWM glitch at duty 0",
+  "report": "With duty set to 0 the PWM output still goes high for one cycle every period, and duty 3 gives 4 high cycles.",
+  "correct": [
+   {
+    "out": 1
+   },
+   {
+    "out": 1
+   },
+   {
+    "out": 1
+   },
+   {
+    "out": 0
+   },
+   {
+    "out": 0
+   },
+   {
+    "out": 0
+   },
+   {
+    "out": 0
+   },
+   {
+    "out": 0
+   },
+   {
+    "out": 1
+   },
+   {
+    "out": 1
+   },
+   {
+    "out": 1
+   },
+   {
+    "out": 0
+   },
+   {
+    "out": 0
+   },
+   {
+    "out": 0
+   },
+   {
+    "out": 0
+   },
+   {
+    "out": 0
+   }
+  ],
+  "buggy": [
+   {
+    "out": 1
+   },
+   {
+    "out": 1
+   },
+   {
+    "out": 1
+   },
+   {
+    "out": 1
+   },
+   {
+    "out": 0
+   },
+   {
+    "out": 0
+   },
+   {
+    "out": 0
+   },
+   {
+    "out": 0
+   },
+   {
+    "out": 1
+   },
+   {
+    "out": 1
+   },
+   {
+    "out": 1
+   },
+   {
+    "out": 1
+   },
+   {
+    "out": 0
+   },
+   {
+    "out": 0
+   },
+   {
+    "out": 0
+   },
+   {
+    "out": 0
+   }
+  ]
+ },
+ "counter": {
+  "caption": "ModCounter(4), enabled: counts 0-3, wrap pulses on 3",
+  "task": "HW01",
+  "title": "counter overshoots modulus",
+  "report": "A mod-10 ModCounter shows 10 before going back to 0, and its wrap pulse comes one cycle late. A mod-4 counter never raises wrap at all.",
+  "correct": [
+   {
+    "count": 0,
+    "wrap": 0
+   },
+   {
+    "count": 1,
+    "wrap": 0
+   },
+   {
+    "count": 2,
+    "wrap": 0
+   },
+   {
+    "count": 3,
+    "wrap": 1
+   },
+   {
+    "count": 0,
+    "wrap": 0
+   },
+   {
+    "count": 1,
+    "wrap": 0
+   },
+   {
+    "count": 2,
+    "wrap": 0
+   },
+   {
+    "count": 3,
+    "wrap": 1
+   },
+   {
+    "count": 0,
+    "wrap": 0
+   },
+   {
+    "count": 1,
+    "wrap": 0
+   }
+  ],
+  "buggy": [
+   {
+    "count": 0,
+    "wrap": 0
+   },
+   {
+    "count": 1,
+    "wrap": 0
+   },
+   {
+    "count": 2,
+    "wrap": 0
+   },
+   {
+    "count": 3,
+    "wrap": 0
+   },
+   {
+    "count": 0,
+    "wrap": 0
+   },
+   {
+    "count": 1,
+    "wrap": 0
+   },
+   {
+    "count": 2,
+    "wrap": 0
+   },
+   {
+    "count": 3,
+    "wrap": 0
+   },
+   {
+    "count": 0,
+    "wrap": 0
+   },
+   {
+    "count": 1,
+    "wrap": 0
+   }
+  ]
+ }
+}
