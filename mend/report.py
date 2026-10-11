@@ -59,6 +59,99 @@ def hero_html(rounds: list[dict]) -> str:
     )
 
 
+def _demo_data(rounds: list[dict], runs: list[dict], tasks: list[dict]) -> str:
+    """Return a JSON string of the data needed by the demo overlay."""
+    if not rounds:
+        return "null"
+    r = rounds[0]
+    before_run = next((x for x in runs if x["run_id"] == r["before"]), None)
+    after_run = next((x for x in runs if x["run_id"] == r["after"]), None)
+    failing_task_id = None
+    failing_task_report = ""
+    if before_run and after_run:
+        for t in tasks:
+            b = next((x for x in before_run["tasks"] if x["task_id"] == t["id"]), None)
+            a = next((x for x in after_run["tasks"] if x["task_id"] == t["id"]), None)
+            if b and a and not b["passed"] and a["passed"]:
+                failing_task_id = t["id"]
+                failing_task_report = t.get("report", "")
+                break
+    diag_text = ""
+    diag_path = RUNS / (r["before"] + ".diagnosis.md")
+    if diag_path.exists():
+        lines = diag_path.read_text(encoding="utf-8").splitlines()
+        diag_text = "\n".join(lines[:12])
+    sha = r["commit"]
+    checkpoint_url = f"https://entire.io/gh/thegoodengineers/mend/commit/{sha}" if sha[:7] in CHECKPOINTED else ""
+    return json.dumps({
+        "before_passed": r["before_passed"],
+        "after_passed": r["after_passed"],
+        "total": r["total"],
+        "commit": sha,
+        "commit_url": f"{REPO}/commit/{sha}",
+        "checkpoint_url": checkpoint_url,
+        "failing_task": failing_task_id,
+        "failing_task_report": failing_task_report,
+        "diagnosis": diag_text,
+    }, ensure_ascii=False)
+
+
+DEMO_SCRIPT = r"""
+<div id="demo" aria-live="polite" aria-atomic="true" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:100;overflow:hidden"></div>
+<script>
+(function(){
+  if(!/[?&]demo=1/.test(location.search))return;
+  var d=document.getElementById('demo');
+  d.style.display='block';
+  var DATA=__DEMO_DATA__;
+  if(!DATA){d.innerHTML='<p style="padding:40px">No round data yet.</p>';return;}
+  var reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var DELAY=reduced?600:3000;
+  var steps=[
+    function(){
+      d.innerHTML='<div class="ds"><p class="dl">Step 1 of 4 — Failing task</p>'
+        +'<h2 class="dt">'+DATA.failing_task+' <span class="bad-tag">FAIL</span></h2>'
+        +'<p class="dd">'+escHtml(DATA.failing_task_report)+'</p></div>';
+    },
+    function(){
+      d.innerHTML='<div class="ds"><p class="dl">Step 2 of 4 — Diagnosis</p>'
+        +'<h2 class="dt">Supervisor identifies the cause</h2>'
+        +'<pre class="dpre">'+escHtml(DATA.diagnosis)+'</pre></div>';
+    },
+    function(){
+      var cp=DATA.checkpoint_url?'<a href="'+DATA.checkpoint_url+'" target="_blank">Entire checkpoint ↗</a> · ':'';
+      d.innerHTML='<div class="ds"><p class="dl">Step 3 of 4 — Patch applied</p>'
+        +'<h2 class="dt">Fix committed</h2>'
+        +'<p class="dd">'+cp+'<a href="'+DATA.commit_url+'" target="_blank">commit '+escHtml(DATA.commit.slice(0,7))+'</a></p></div>';
+    },
+    function(){
+      d.innerHTML='<div class="ds"><p class="dl">Step 4 of 4 — Verified</p>'
+        +'<h2 class="dt"><span class="score-b">'+DATA.before_passed+'/'+DATA.total+'</span>'
+        +' &rarr; <span class="score-a">'+DATA.after_passed+'/'+DATA.total+'</span></h2>'
+        +'<p class="dd">Tasks solved after self-repair</p>'
+        +'<p style="margin-top:32px"><a href="?" class="btn">View full report</a></p></div>';
+    }
+  ];
+  var i=0;
+  function next(){if(i<steps.length){steps[i]();i++;if(i<steps.length)setTimeout(next,DELAY);}}
+  next();
+  function escHtml(s){var e=document.createElement('div');e.textContent=s;return e.innerHTML;}
+})();
+</script>
+<style>
+#demo .ds{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;padding:40px;text-align:center;max-width:800px;margin:auto}
+#demo .dl{font:500 13px Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:0 0 16px}
+#demo .dt{font:800 clamp(32px,6vw,60px)/.95 'Inter Tight',sans-serif;letter-spacing:-.03em;margin:0 0 20px}
+#demo .dd{color:var(--mute);font-size:17px;margin:0}
+#demo .dpre{text-align:left;white-space:pre-wrap;font-size:13px;background:var(--card);border-radius:12px;padding:16px;max-height:50vh;overflow-y:auto;width:100%}
+#demo .bad-tag{color:var(--bad);font-size:.6em;vertical-align:middle;margin-left:8px}
+#demo .score-b{color:var(--bad);font-size:1.2em}
+#demo .score-a{color:var(--ok);font-size:1.2em}
+#demo .btn{display:inline-block;margin-top:8px;padding:12px 28px;background:var(--ink);color:var(--bg);border-radius:99px;text-decoration:none;font-weight:600;font-size:15px}
+</style>
+"""
+
+
 def render() -> str:
     runs, rounds = load_runs(), load_rounds()
     tasks = load_tasks()
@@ -91,6 +184,8 @@ def render() -> str:
         f"<div class='diag-body'><pre>{esc(p.read_text(encoding='utf-8'))}</pre></div></details>"
         for p in sorted(RUNS.glob("*.diagnosis.md"))
     )
+    demo_json = _demo_data(rounds, runs, tasks)
+    demo_html = DEMO_SCRIPT.replace("__DEMO_DATA__", demo_json)
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>Mend report</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -130,6 +225,7 @@ summary::before{{content:'▶';font-size:11px;color:var(--mute);transition:trans
   .hero-score{{gap:12px}}
 }}
 </style></head><body>
+{demo_html}
 <nav><div><a href="index.html" style="margin:0"><b>Mend</b></a><span><a href="index.html">Home</a><a href="{REPO}">GitHub</a></span></div></nav>
 <main>
 <h1>Full report</h1>

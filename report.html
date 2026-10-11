@@ -37,6 +37,60 @@ summary::before{content:'▶';font-size:11px;color:var(--mute);transition:transf
   .hero-score{gap:12px}
 }
 </style></head><body>
+
+<div id="demo" aria-live="polite" aria-atomic="true" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:100;overflow:hidden"></div>
+<script>
+(function(){
+  if(!/[?&]demo=1/.test(location.search))return;
+  var d=document.getElementById('demo');
+  d.style.display='block';
+  var DATA={"before_passed": 27, "after_passed": 28, "total": 28, "commit": "e8a6baf", "commit_url": "https://github.com/thegoodengineers/mend/commit/e8a6baf", "checkpoint_url": "", "failing_task": "23", "failing_task_report": "A customer's payment was applied to their newest invoice instead of the oldest one.", "diagnosis": "# Diagnosis of run 2026-10-10T09-15-17\n\n| Task | Failing step | Cause | General weakness |\n|---|---|---|---|\n| 23 | turn 6 write_file (invoicer/ledger.py) | The worker read only the first 200 lines of a longer file, because read_file pages at 200 lines by default and gives no sign that more lines exist. It then used write_file, which replaces the whole file, to submit the full content with a one-word change. Everything after line 200 was dropped, so late_interest, statement and export_rows broke. It spent its remaining turns re-reading the now-truncated file looking for a backup and hit max_turns. | To make a small edit, the worker regenerates whole files from memory with a replace-whole-file tool. It does this without having seen the complete file, so any unread content is silently deleted. It cannot recover because the original is gone. |\n| 24 | turn 7 write_file (invoicer/ledger.py) | Same failure as task 23. A one-character fix (< to <=) was made by rewriting the whole file from a 200-line partial read, which truncated it. Turns 8-12 went into noticing and repairing the truncation, including a second 20-second whole-file regeneration. The run only just passed at 15 turns. | The worker uses a whole-file write for a local change and does not confirm it has the complete file. This turns trivial fixes into long recovery loops. |\n| 22 | turn 8 write_file (invoicer/ledger.py) | The run passed, but the fix was one line. The worker still regenerated the entire ~9k-char file, which took 22 seconds of output and risked corrupting unrelated code. It also needed two read pages first just to have the whole file available to rewrite. | Every edit costs a full-file regeneration, which is slow and error-prone even when it succeeds. |\n| 06 | turns 8-9 run_tests + read_file after fix | It ran the targeted test and then the full suite as separate turns. After everything passed it re-read the file it had just written before giving its summary. That is two or three wasted turns. | The worker does redundant verification steps after success instead of stopping as soon as the full suite passes. |\n\n## Chosen fix: Add a targeted edit_file (exact string replace) tool and steer edits away from whole-file rewrites\n\nFile: `mend/worker.py`"};
+  if(!DATA){d.innerHTML='<p style="padding:40px">No round data yet.</p>';return;}
+  var reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var DELAY=reduced?600:3000;
+  var steps=[
+    function(){
+      d.innerHTML='<div class="ds"><p class="dl">Step 1 of 4 — Failing task</p>'
+        +'<h2 class="dt">'+DATA.failing_task+' <span class="bad-tag">FAIL</span></h2>'
+        +'<p class="dd">'+escHtml(DATA.failing_task_report)+'</p></div>';
+    },
+    function(){
+      d.innerHTML='<div class="ds"><p class="dl">Step 2 of 4 — Diagnosis</p>'
+        +'<h2 class="dt">Supervisor identifies the cause</h2>'
+        +'<pre class="dpre">'+escHtml(DATA.diagnosis)+'</pre></div>';
+    },
+    function(){
+      var cp=DATA.checkpoint_url?'<a href="'+DATA.checkpoint_url+'" target="_blank">Entire checkpoint ↗</a> · ':'';
+      d.innerHTML='<div class="ds"><p class="dl">Step 3 of 4 — Patch applied</p>'
+        +'<h2 class="dt">Fix committed</h2>'
+        +'<p class="dd">'+cp+'<a href="'+DATA.commit_url+'" target="_blank">commit '+escHtml(DATA.commit.slice(0,7))+'</a></p></div>';
+    },
+    function(){
+      d.innerHTML='<div class="ds"><p class="dl">Step 4 of 4 — Verified</p>'
+        +'<h2 class="dt"><span class="score-b">'+DATA.before_passed+'/'+DATA.total+'</span>'
+        +' &rarr; <span class="score-a">'+DATA.after_passed+'/'+DATA.total+'</span></h2>'
+        +'<p class="dd">Tasks solved after self-repair</p>'
+        +'<p style="margin-top:32px"><a href="?" class="btn">View full report</a></p></div>';
+    }
+  ];
+  var i=0;
+  function next(){if(i<steps.length){steps[i]();i++;if(i<steps.length)setTimeout(next,DELAY);}}
+  next();
+  function escHtml(s){var e=document.createElement('div');e.textContent=s;return e.innerHTML;}
+})();
+</script>
+<style>
+#demo .ds{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;padding:40px;text-align:center;max-width:800px;margin:auto}
+#demo .dl{font:500 13px Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:0 0 16px}
+#demo .dt{font:800 clamp(32px,6vw,60px)/.95 'Inter Tight',sans-serif;letter-spacing:-.03em;margin:0 0 20px}
+#demo .dd{color:var(--mute);font-size:17px;margin:0}
+#demo .dpre{text-align:left;white-space:pre-wrap;font-size:13px;background:var(--card);border-radius:12px;padding:16px;max-height:50vh;overflow-y:auto;width:100%}
+#demo .bad-tag{color:var(--bad);font-size:.6em;vertical-align:middle;margin-left:8px}
+#demo .score-b{color:var(--bad);font-size:1.2em}
+#demo .score-a{color:var(--ok);font-size:1.2em}
+#demo .btn{display:inline-block;margin-top:8px;padding:12px 28px;background:var(--ink);color:var(--bg);border-radius:99px;text-decoration:none;font-weight:600;font-size:15px}
+</style>
+
 <nav><div><a href="index.html" style="margin:0"><b>Mend</b></a><span><a href="index.html">Home</a><a href="https://github.com/thegoodengineers/mend">GitHub</a></span></div></nav>
 <main>
 <h1>Full report</h1>
