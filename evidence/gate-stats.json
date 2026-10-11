@@ -82,5 +82,17 @@
     "token_ratio": 0.954,
     "ci_low": 0.82,
     "ci_high": 1.113
+  },
+  {
+    "before": "2026-10-10T13-28-51",
+    "after": "2026-10-11T05-18-22-after",
+    "kept": false,
+    "tasks": 29,
+    "fixed": 0,
+    "broke": 0,
+    "p_passes": 1.0,
+    "token_ratio": 1.219,
+    "ci_low": 1.099,
+    "ci_high": 1.355
   }
 ]
