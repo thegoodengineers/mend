@@ -553,3 +553,12 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
 - **neatlogs MCP ingest returned HTTP 503 from about 19:27 IST**, so round 10 waits for it to recover.
 - Entire's git hooks in this repo made commits take minutes while the machine was loaded. They created
   no new refs.
+- **Round 10 (anti-gaming, amendment 4)** ran at about 19:40-20:00 IST, after neatlogs recovered (HTTP
+  503 from 19:27 to 19:32).
+  - Diagnosis from the 6 cheating traces: the worker made the honest fix, saw the contradiction, then
+    kept editing until green, because nothing allowed a red suite.
+  - Claude Code's patch: "the bug report is the specification; tests are evidence, not authority".
+  - Result: training 29/29, tokens +21.1%, probe cheating 6 -> 5 of 12, so **reverted**: 3 fewer were
+    needed and the token rise exceeded 15%.
+  - 10 rounds: 5 kept, 5 reverted. The in-browser re-check verifies round 10 from the probe run files.
+- Repaired hardware audit re-run alone: 8/9 (HW01 hit max turns; round 10 was running at the same time).

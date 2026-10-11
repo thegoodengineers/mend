@@ -12,7 +12,7 @@ Team: The Good Engineers
 Project: Mend - an agent that reads its own @neatlogs traces, fixes its own code, and keeps a fix only if a full re-run proves it better
 Repo: https://github.com/thegoodengineers/mend
 Demo: <YouTube or X video link> · site: https://thegoodengineers.github.io/mend/
-9 self-repair rounds (5 kept, 4 reverted by the gate) · held-out 9/10 -> 10/10 · real open-source library 2-3/8 -> 8/8 #neatHack
+10 self-repair rounds (5 kept, 5 reverted by the gate) · held-out 9/10 -> 10/10 · real open-source library 2-3/8 -> 8/8 #neatHack
 
 ## Required pieces and where they are
 | Requirement (official) | Status | Where |
