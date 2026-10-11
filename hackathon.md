@@ -469,7 +469,7 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
 - Round 9 started from the same input run as rounds 7-8. It is the first round with every new
   step: judgment, Entire guard, amended gate, audit trace.
 
-### 2026-10-11 16:10-17:40 IST (commit times) - hardware and schematic transfer tests, Beyond software page
+### 2026-10-11 16:41-17:15 IST (commit times) - hardware and schematic transfer tests, Beyond software page
 - **Hardware transfer test** (`a41d09b`). 8 Amaranth HDL designs (counter, Gray code, ALU, FIFO,
   UART, PWM, debouncer, CRC-8), 26 simulation testbenches, 9 planted bugs, all caught. Original vs
   repaired worker, 2 runs each: **both 9/9**, repaired −57.7% tokens (188,336 → 79,656 mean),
