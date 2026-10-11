@@ -306,16 +306,18 @@ def render() -> str:
             return ""
         tb, ta = (sum(tokens(r) for r in g) / len(g) for g in (before, after))
         pb, pa = (sum(r["passed"] for r in g) / len(g) for g in (before, after))
-        return (f"{pb:g} → {pa:g} of {before[0]['total']} solved" if pa > pb
+        runs_solved = lambda g: ", ".join(str(r["passed"]) for r in g)  # noqa: E731
+        return (f"{runs_solved(before)} → {runs_solved(after)} of {before[0]['total']} solved" if pa > pb
                 else f"same {pa:g}/{before[0]['total']}, {(1 - ta / tb) * 100:.0f}% fewer tokens")
-    hw_line, sc_line = gain(f["hw_before"], f["hw_after"]), gain(f["sc_before"], f["sc_after"])
+    hw_line, sc_line, bd_line = (gain(f[k + "_before"], f[k + "_after"]) for k in ("hw", "sc", "bd"))
     hw_html = f"""
 <section id="hardware"><div class="wrap">
   <p class="eyebrow">Beyond software</p><h2>It carries over to hardware.</h2>
   <p class="sub">Bugs in chip designs and circuit schematics the supervisor never saw, checked in simulation.</p>
-  <div class="tools" style="grid-template-columns:repeat(2,1fr)">
+  <div class="tools">
     <div class="tool card"><h3>Chip designs</h3><p>9 bugs in 8 Amaranth HDL designs (ALU, FIFO, UART...): {esc(hw_line)}.</p></div>
-    <div class="tool card"><h3>Circuit schematics</h3><p>8 board bring-up bugs in 7 circuit netlists: {esc(sc_line)}.</p></div>
+    <div class="tool card"><h3>Circuit schematics</h3><p>8 bring-up bugs in 7 circuit netlists: {esc(sc_line)}.</p></div>
+    <div class="tool card"><h3>A whole sensor board</h3><p>8 bring-up bugs on one board netlist: {esc(bd_line)}.</p></div>
   </div>
   <p><a class="pill" href="hardware.html">See the waveforms, schematics and bugs →</a></p>
 </div></section>""" if hw_line or sc_line else ""

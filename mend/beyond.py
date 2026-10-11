@@ -9,9 +9,10 @@ the Verilog sample from hardware/verilog (scripts/hw_demo.py). Building the page
 
 import json
 
+from mend.board_iso import CSS as ISO_CSS, board_block
 from mend.report import REPO
 from mend.site import CSS, esc, facts, repeat_card, tokens
-from mend.tasks import HARDWARE_FILE, ROOT, SCHEMATICS_FILE, load_tasks
+from mend.tasks import BOARD_FILE, HARDWARE_FILE, ROOT, SCHEMATICS_FILE, load_tasks
 
 CYCLE, ROW, LEFT = 34, 34, 92  # timing diagram geometry, px
 
@@ -55,7 +56,8 @@ def result_block(before: list, after: list, total_label: str) -> str:
         return '<p class="sub">Runs not recorded yet.</p>'
     pb, pa = (sum(r["passed"] for r in g) / len(g) for g in (before, after))
     tb, ta = (sum(tokens(r) for r in g) / len(g) for g in (before, after))
-    head = (f"{pb:g} → {pa:g} {total_label} solved." if pa > pb else
+    solved = lambda g: ", ".join(str(r["passed"]) for r in g)  # noqa: E731
+    head = (f"{solved(before)} → {solved(after)} {total_label} solved." if pa > pb else
             f"Same {pa:g}/{before[0]['total']}, at {(1 - ta / tb) * 100:.0f}% fewer tokens." if ta < tb * 0.85 else
             "No clear gain carried over.")
     return (f'<h3 class="verdict">{esc(head)}</h3><div class="ba two-col">'
@@ -85,6 +87,9 @@ def render() -> str:
     netlist = (ROOT / "schematics" / "circuits" / "divider.cir").read_text(encoding="utf-8")
     hw_n = len(load_tasks(HARDWARE_FILE))
     sc_n = len(load_tasks(SCHEMATICS_FILE))
+    bd_n = len(load_tasks(BOARD_FILE))
+    checks = [line.split("def ")[1].split("(")[0] for line in
+              (ROOT / "schematics" / "tests" / "test_board.py").read_text(encoding="utf-8").splitlines() if line.startswith("def test_")]
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mend on hardware</title>
@@ -100,10 +105,11 @@ def render() -> str:
 .sch figure{{margin:0}} .sch img{{width:100%;height:190px;object-fit:contain;background:#fff;border-radius:14px}}
 pre.code{{font:12.5px/1.55 'JetBrains Mono',monospace;background:#fff;border-radius:16px;padding:18px;overflow:auto;max-height:420px;margin:0}}
 .verdict{{font:800 clamp(26px,3.4vw,40px)/1.05 'Inter Tight',sans-serif;letter-spacing:-.03em;margin:28px 0 0}}
+{ISO_CSS}
 td.rep{{color:var(--mute)}} .hero2{{font:800 clamp(56px,10vw,128px)/.88 'Inter Tight',sans-serif;letter-spacing:-.05em;margin:0}}
 </style></head><body>
 <nav><div class="wrap"><a class="logo" href="index.html"><b>Mend</b><span>neatHack 2026</span></a>
-<div class="links"><a class="hide" href="#chips">Chip designs</a><a class="hide" href="#schematics">Schematics</a>
+<div class="links"><a class="hide" href="#chips">Chip designs</a><a class="hide" href="#schematics">Schematics</a><a class="hide" href="#board">Sensor board</a>
 <a class="hide" href="index.html">Main page</a><a class="pill" href="{REPO}">View the code</a></div></div></nav>
 
 <header><div class="wrap">
@@ -144,9 +150,24 @@ td.rep{{color:var(--mute)}} .hero2{{font:800 clamp(56px,10vw,128px)/.88 'Inter T
   <p class="eyebrow" style="margin-top:36px">The planted bugs</p>{bug_table(SCHEMATICS_FILE)}
 </div></section>
 
+<section id="board"><div class="wrap">
+  <p class="eyebrow">A whole board · one netlist, shared power rails</p><h2>A sensor board, brought up in simulation.</h2>
+  <p class="sub">USB 5 V in, an LM317-style regulator set to 3.3 V, an NTC temperature sensor with an op-amp buffer and a 1 kHz anti-aliasing
+  filter into the microcontroller's ADC, a reset circuit, power and status LEDs, and I²C pull-ups. {len(checks)} bring-up checks, the ones an
+  engineer runs on a new board: is the rail 3.3 V, are the LEDs safe, does the sensor read right, is anything over the MCU's 3.6 V limit.</p>
+  {board_block()}
+  <p class="sub" style="font-size:13px">The drawing is illustrative; the circuit is <a class="link" href="{REPO}/blob/main/schematics/circuits/board.cir">board.cir</a>,
+  checked by <a class="link" href="{REPO}/blob/main/schematics/tests/test_board.py">test_board.py</a>.</p>
+  {result_block(f["bd_before"], f["bd_after"], f"of {bd_n}")}
+  <p class="sub" style="font-size:15px">Where the gap comes from: the original worker <b>refused</b> BD01 (both runs) and BD02 (one run) in a
+  single turn, replying that a sensor-board report is "a hardware issue, not a bug in the Python library", without running a check. Both workers
+  get the same prompt. The repaired worker's learned workflow starts by running the tests, so it engaged and fixed all 8.</p>
+  <p class="eyebrow" style="margin-top:36px">The planted bring-up bugs</p>{bug_table(BOARD_FILE)}
+</div></section>
+
 <section id="honest"><div class="wrap">
   <p class="eyebrow">What this shows, and what it doesn't</p><h2>The gain is efficiency.</h2>
-  <p class="sub">Both workers fix every hardware and schematic bug, so these sets show no gain in what gets solved. What carried over is how:
+  <p class="sub">Both workers fix every chip-design and schematic bug, so these sets show no gain in what gets solved. What carried over is how:
   the self-repaired worker reads less, edits precisely and stops when the tests pass, so it needs far fewer turns and tokens.
   Two runs per worker; the sets are small; everything is simulated, not built on a physical board.</p>
   <div class="cta"><a class="pill" href="{REPO}/tree/main/hardware">Hardware designs</a><a class="pill ghost" href="{REPO}/tree/main/schematics">Circuits and simulator</a>

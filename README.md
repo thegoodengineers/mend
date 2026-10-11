@@ -18,7 +18,7 @@ self-repair it passed in 4.*
 
 **At a glance:** 9 self-repair rounds, 5 kept and 4 reverted by a pre-registered gate · whole-file
 rewrites 31 → 0 · model calls 235 → 107 · cost per task $0.040 → $0.015 · bugs it never saw: 9/10 →
-10/10 · a real open-source library: 2–3/8 → 8/8 · hardware designs it never saw: same 9/9 at −58% tokens · circuit schematics: same 8/8 at −64% tokens · every gate verdict written back into neatlogs.
+10/10 · a real open-source library: 2–3/8 → 8/8 · hardware designs it never saw: same 9/9 at −58% tokens · circuit schematics: same 8/8 at −64% tokens · a whole sensor board: 6–7/8 → 8/8 · every gate verdict written back into neatlogs.
 
 Every number in this README comes from a file in [`runs/`](runs/) or [`evidence/`](evidence/).
 If a number has no file behind it, it is not here.
@@ -283,6 +283,29 @@ swapped, a resistor on the wrong net.
 
 As with the hardware designs, both workers fix every bug. The repaired worker does it in about 3–4
 turns instead of 7–10, with 64.5% fewer tokens.
+
+### Board transfer test: bring-up bugs on a whole sensor board
+
+[`schematics/circuits/board.cir`](schematics/circuits/board.cir) is one netlist for a complete small
+board: USB 5 V in, an LM317-style regulator set to 3.3 V, an NTC temperature sensor with an op-amp
+buffer and a 1 kHz anti-aliasing filter into the microcontroller's ADC, a reset circuit, power and
+status LEDs, and I²C pull-ups. 11 bring-up checks
+([`schematics/tests/test_board.py`](schematics/tests/test_board.py)) cover the rail, LED currents,
+the sensor at 25 °C and warm, the ADC path, reset, and the MCU's 3.6 V pin limit.
+[`tasks/board.json`](tasks/board.json) plants 8 bring-up bugs (explore them on the
+[board explorer](https://thegoodengineers.github.io/mend/hardware.html#board)).
+
+| Worker | Runs | Solved | Mean tokens per run |
+|---|---|---|---|
+| Original (`13defdb`) | [v0-r2](runs/2026-10-11T11-51-29-board-v0-r2.json), [v0](runs/2026-10-11T11-51-29-board-v0.json) | 6, 7 of 8 | 210,424 |
+| After 5 self-repair rounds | [r1](runs/2026-10-11T11-51-29-board.json), [r2](runs/2026-10-11T11-51-29-board-r2.json) | 8, 8 of 8 | 151,814 (−27.9%) |
+
+**Where the gap comes from:** the original worker did not fail these bugs by trying. It *refused*
+BD01 (both runs) and BD02 (one run) in a single turn, replying that a sensor-board report "is a
+hardware issue, not a bug in the Python library", without running a check. (Both workers get the
+same prompt, which calls the netlist folder a Python library.) The repaired worker's learned
+workflow starts by running the tests, so it engaged and fixed all 8. One of its runs needed 11
+turns on BD01, so it is not uniformly fast.
 
 ### Live recording
 
