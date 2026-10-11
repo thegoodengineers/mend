@@ -57,10 +57,14 @@ def facts() -> dict:
     real = [r for r in runs.values() if r.get("realworld")]
     real_before = [r for r in real if r["worker_commit"] == "13defdb"]
     real_after = [r for r in real if r["worker_commit"] != "13defdb"]
+    hw = [r for r in runs.values() if r.get("hardware")]
+    hw_before = [r for r in hw if r["worker_commit"] == "13defdb"]
+    hw_after = [r for r in hw if r["worker_commit"] != "13defdb"]
     held = [r for r in runs.values() if r.get("heldout") and not r.get("realworld") and not r.get("hardware")]
     held_before = [r for r in held if r["worker_commit"] == "13defdb"]
     held_after = [r for r in held if r["worker_commit"] != "13defdb"]
     return {"rounds": round_list, "first": first, "story": story, "haiku": haiku, "opus": opus, "held_before": held_before, "held_after": held_after, "real_before": real_before, "real_after": real_after,
+            "hw_before": hw_before, "hw_after": hw_after,
             "before_runs": before_runs, "after_runs": after_runs,
             "runs_total": len(full), "tasks_total": max((r["total"] for r in full), default=0)}
 
@@ -148,7 +152,8 @@ def render() -> str:
     vrounds = json.dumps([{"before": r["before"], "after": r["after"], "kept": r["kept"], "amended": "stats" in r} for r in f["rounds"]])
     vsets = json.dumps([{"label": label, "ids": [r["run_id"] for r in f[key]]} for label, key in [
         ("Held-out, original worker", "held_before"), ("Held-out, after self-repair", "held_after"),
-        ("Real-world library, original worker", "real_before"), ("Real-world library, after self-repair", "real_after")]])
+        ("Real-world library, original worker", "real_before"), ("Real-world library, after self-repair", "real_after"),
+        ("Hardware designs, original worker", "hw_before"), ("Hardware designs, after self-repair", "hw_after")] if f[key]])
     demo = demo_block(f["first"], f["story"]["title"] if f["story"] else "")
     first, story = f["first"], f["story"]
     kept = [r for r in f["rounds"] if r["kept"]]
@@ -243,6 +248,24 @@ def render() -> str:
 </div></section>"""
     else:
         real_html = ""
+
+    if f["hw_before"] and f["hw_after"]:
+        hb = sum(tokens(r) for r in f["hw_before"]) / len(f["hw_before"])
+        ha = sum(tokens(r) for r in f["hw_after"]) / len(f["hw_after"])
+        pb = sum(r["passed"] for r in f["hw_before"]) / len(f["hw_before"])
+        pa = sum(r["passed"] for r in f["hw_after"]) / len(f["hw_after"])
+        verdict = "The repairs carried over." if pa > pb or (pa == pb and ha < hb * 0.85) else "No clear gain carried over."
+        hw_html = f"""
+<section id="hardware"><div class="wrap">
+  <p class="eyebrow">Hardware transfer test: a domain it never saw</p><h2>{verdict}</h2>
+  <p class="sub">{f["hw_before"][0]["total"]} bugs planted in eight digital-logic designs written in
+  <a class="link" href="{REPO}/tree/main/hardware">Amaranth HDL</a> (counter, ALU, FIFO, UART, PWM, debouncer, CRC-8, Gray code),
+  each checked cycle by cycle by a simulation testbench. Never shown to the supervisor. Original worker against the self-repaired one,
+  each run twice. Mean tokens per run changed by {(ha - hb) / hb * 100:+.1f}%.</p>
+  <div class="ba two-col">{repeat_card("Original worker", f["hw_before"], None, "bad")}{repeat_card("After self-repair", f["hw_after"], None, "ok")}</div>
+</div></section>"""
+    else:
+        hw_html = ""
 
     def run_row(r):
         return (f"<tr><td>{esc(r['run_id'][5:16].replace('T', ' '))}</td><td>{esc(r['model'].replace('claude-', ''))}</td>"
@@ -341,6 +364,7 @@ footer{{padding:48px 0;color:var(--mute);font-size:14px}}
 {repeat_html}
 {heldout_html}
 {real_html}
+{hw_html}
 {rounds_html}
 {provenance_html()}
 {ablation_html()}

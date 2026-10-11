@@ -123,6 +123,7 @@ footer{padding:48px 0;color:var(--mute);font-size:14px}
   <div class="ba two-col"><div class="card bad"><span class="k">Original worker · 2 runs</span><span class="big">2, 3<em> / 8</em></span><span class="sub">mean 1,462,537 tokens per run</span></div><div class="card ok"><span class="k">After self-repair · 2 runs</span><span class="big">8, 8<em> / 8</em></span><span class="sub">mean 268,926 tokens per run</span></div></div>
 </div></section>
 
+
 <section id="rounds"><div class="wrap">
   <p class="eyebrow">Every self-repair round</p><h2>Each fix was diagnosed from traces and written by the agent.</h2>
   <p class="sub">A round keeps its patch only if more tasks pass, or the same tasks pass with at least 15% fewer tokens. Each fix is a commit written by Claude Code. From round 4 the supervisor runs in a clean clone, and Entire links each fix to the session that wrote it.</p>
