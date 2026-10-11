@@ -1,0 +1,61 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mend post pack</title><style>
+body{margin:0;background:#e6e6dd;color:#0f0f0d;font:16px/1.5 Inter,system-ui,sans-serif} main{max-width:760px;margin:0 auto;padding:32px 16px}
+article{background:#f4f4ee;border-radius:20px;padding:22px;margin:18px 0} h1{font-size:28px;margin:0 0 6px} h2{margin:4px 0 12px;font-size:22px}
+.when{margin:0;font-weight:600;color:#5d5d55} pre{white-space:pre-wrap;font:15px/1.5 inherit;background:#fff;border-radius:12px;padding:14px;margin:0}
+.meta{color:#5d5d55;font-size:13px} img,video{max-width:100%;border-radius:12px;display:block;margin:8px 0}
+.btn,button{display:inline-block;background:#0f0f0d;color:#fff;border:0;border-radius:999px;padding:9px 16px;font:600 14px inherit;text-decoration:none;cursor:pointer;margin-right:8px}
+button{background:#5d5d55}</style></head><body><main>
+<h1>#neatHack posts, ready to publish</h1>
+<p>For each card: press <b>Open in X</b>, attach the file listed, press Post, then paste the post link into
+<code>hackathon.md</code>. Every number is from the README. Built by <code>scripts/post_pack.py</code>; nothing here posts on its own.</p>
+<article><p class="when">1. Now</p><h2>The bug it found in itself</h2>
+<pre>our agent found a bug in itself: it read 200 of 233 lines, then rewrote the whole file to change one word, deleting the rest. it saw this in its own @neatlogs traces and gave itself an edit tool.
+same task, live: failed in 15 turns -&gt; passed in 4 #neatHack
+https://thegoodengineers.github.io/mend/</pre><p class="meta">280/280 characters · attach: <code>video/live/mend-live.mp4</code></p>
+<video src="../video/live/mend-live.mp4" controls preload="metadata"></video><p><a class="btn" href="https://x.com/intent/post?text=our%20agent%20found%20a%20bug%20in%20itself%3A%20it%20read%20200%20of%20233%20lines%2C%20then%20rewrote%20the%20whole%20file%20to%20change%20one%20word%2C%20deleting%20the%20rest.%20it%20saw%20this%20in%20its%20own%20%40neatlogs%20traces%20and%20gave%20itself%20an%20edit%20tool.%0Asame%20task%2C%20live%3A%20failed%20in%2015%20turns%20-%3E%20passed%20in%204%20%23neatHack%0Ahttps%3A//thegoodengineers.github.io/mend/" target="_blank" rel="noopener">Open in X with this text</a>
+<button onclick="navigator.clipboard.writeText(this.dataset.t)" data-t="our agent found a bug in itself: it read 200 of 233 lines, then rewrote the whole file to change one word, deleting the rest. it saw this in its own @neatlogs traces and gave itself an edit tool.
+same task, live: failed in 15 turns -&gt; passed in 4 #neatHack
+https://thegoodengineers.github.io/mend/">Copy text</button></p></article>
+<article><p class="when">2. +1 hour</p><h2>Is it overfitting?</h2>
+<pre>does self-repair just overfit? we tested on bugs it never saw.
+10 held-out bugs: 9/10 -&gt; 10/10
+8 bugs in a real open-source library: 2-3/8 -&gt; 8/8, 82% fewer tokens
+#neatHack
+https://thegoodengineers.github.io/mend/#heldout</pre><p class="meta">197/280 characters · attach: <code>docs/img/post-realworld.png</code></p>
+<img src="../docs/img/post-realworld.png" alt=""><p><a class="btn" href="https://x.com/intent/post?text=does%20self-repair%20just%20overfit%3F%20we%20tested%20on%20bugs%20it%20never%20saw.%0A10%20held-out%20bugs%3A%209/10%20-%3E%2010/10%0A8%20bugs%20in%20a%20real%20open-source%20library%3A%202-3/8%20-%3E%208/8%2C%2082%25%20fewer%20tokens%0A%23neatHack%0Ahttps%3A//thegoodengineers.github.io/mend/%23heldout" target="_blank" rel="noopener">Open in X with this text</a>
+<button onclick="navigator.clipboard.writeText(this.dataset.t)" data-t="does self-repair just overfit? we tested on bugs it never saw.
+10 held-out bugs: 9/10 -&gt; 10/10
+8 bugs in a real open-source library: 2-3/8 -&gt; 8/8, 82% fewer tokens
+#neatHack
+https://thegoodengineers.github.io/mend/#heldout">Copy text</button></p></article>
+<article><p class="when">3. +2 hours</p><h2>The gate said no, four times</h2>
+<pre>our agent has tried to change itself 9 times. it kept 5. it reverted 4, including one that saved a real 12% but missed the 15% bar we wrote down in advance. a gate that bends for a near miss isn&#x27;t a gate #neatHack
+https://thegoodengineers.github.io/mend/#rounds</pre><p class="meta">237/280 characters · attach: <code>docs/img/post-rounds.png</code></p>
+<img src="../docs/img/post-rounds.png" alt=""><p><a class="btn" href="https://x.com/intent/post?text=our%20agent%20has%20tried%20to%20change%20itself%209%20times.%20it%20kept%205.%20it%20reverted%204%2C%20including%20one%20that%20saved%20a%20real%2012%25%20but%20missed%20the%2015%25%20bar%20we%20wrote%20down%20in%20advance.%20a%20gate%20that%20bends%20for%20a%20near%20miss%20isn%27t%20a%20gate%20%23neatHack%0Ahttps%3A//thegoodengineers.github.io/mend/%23rounds" target="_blank" rel="noopener">Open in X with this text</a>
+<button onclick="navigator.clipboard.writeText(this.dataset.t)" data-t="our agent has tried to change itself 9 times. it kept 5. it reverted 4, including one that saved a real 12% but missed the 15% bar we wrote down in advance. a gate that bends for a near miss isn&#x27;t a gate #neatHack
+https://thegoodengineers.github.io/mend/#rounds">Copy text</button></p></article>
+<article><p class="when">4. This evening</p><h2>69% of its own instructions</h2>
+<pre>ran `entire blame` on our agent&#x27;s system prompt: 9 of 13 lines were written by its own self-repair sessions. each line traces to an @EntireHQ checkpoint, the diagnosis behind it, and the @neatlogs traces it read #neatHack
+https://thegoodengineers.github.io/mend/#provenance</pre><p class="meta">245/280 characters · attach: <code>docs/img/post-11-provenance.png</code></p>
+<img src="../docs/img/post-11-provenance.png" alt=""><p><a class="btn" href="https://x.com/intent/post?text=ran%20%60entire%20blame%60%20on%20our%20agent%27s%20system%20prompt%3A%209%20of%2013%20lines%20were%20written%20by%20its%20own%20self-repair%20sessions.%20each%20line%20traces%20to%20an%20%40EntireHQ%20checkpoint%2C%20the%20diagnosis%20behind%20it%2C%20and%20the%20%40neatlogs%20traces%20it%20read%20%23neatHack%0Ahttps%3A//thegoodengineers.github.io/mend/%23provenance" target="_blank" rel="noopener">Open in X with this text</a>
+<button onclick="navigator.clipboard.writeText(this.dataset.t)" data-t="ran `entire blame` on our agent&#x27;s system prompt: 9 of 13 lines were written by its own self-repair sessions. each line traces to an @EntireHQ checkpoint, the diagnosis behind it, and the @neatlogs traces it read #neatHack
+https://thegoodengineers.github.io/mend/#provenance">Copy text</button></p></article>
+<article><p class="when">5. This evening</p><h2>Answering &#x27;self-healing is self-defeating&#x27;</h2>
+<pre>@neatlogs&#x27; founder argues self-healing agents drift unless someone defines &quot;better&quot;. so our agent only auto-fixes what has an objective answer, stops and asks a person when a fix is a choice, and follows that answer forever after #neatHack
+https://thegoodengineers.github.io/mend/#judgment</pre><p class="meta">263/280 characters · attach: <code>docs/img/post-10-judgment.png</code></p>
+<img src="../docs/img/post-10-judgment.png" alt=""><p><a class="btn" href="https://x.com/intent/post?text=%40neatlogs%27%20founder%20argues%20self-healing%20agents%20drift%20unless%20someone%20defines%20%22better%22.%20so%20our%20agent%20only%20auto-fixes%20what%20has%20an%20objective%20answer%2C%20stops%20and%20asks%20a%20person%20when%20a%20fix%20is%20a%20choice%2C%20and%20follows%20that%20answer%20forever%20after%20%23neatHack%0Ahttps%3A//thegoodengineers.github.io/mend/%23judgment" target="_blank" rel="noopener">Open in X with this text</a>
+<button onclick="navigator.clipboard.writeText(this.dataset.t)" data-t="@neatlogs&#x27; founder argues self-healing agents drift unless someone defines &quot;better&quot;. so our agent only auto-fixes what has an objective answer, stops and asks a person when a fix is a choice, and follows that answer forever after #neatHack
+https://thegoodengineers.github.io/mend/#judgment">Copy text</button></p></article>
+<article><p class="when">6. Tonight</p><h2>Error bars on our own gate</h2>
+<pre>we put error bars on every keep/revert decision our agent made about itself, then removed each kept fix one at a time. two fixes carry the savings (+61% and +39% tokens without them). one barely matters. we say so #neatHack
+https://thegoodengineers.github.io/mend/#ablation</pre><p class="meta">247/280 characters · attach: <code>docs/img/post-12-ablation.png</code></p>
+<img src="../docs/img/post-12-ablation.png" alt=""><p><a class="btn" href="https://x.com/intent/post?text=we%20put%20error%20bars%20on%20every%20keep/revert%20decision%20our%20agent%20made%20about%20itself%2C%20then%20removed%20each%20kept%20fix%20one%20at%20a%20time.%20two%20fixes%20carry%20the%20savings%20%28%2B61%25%20and%20%2B39%25%20tokens%20without%20them%29.%20one%20barely%20matters.%20we%20say%20so%20%23neatHack%0Ahttps%3A//thegoodengineers.github.io/mend/%23ablation" target="_blank" rel="noopener">Open in X with this text</a>
+<button onclick="navigator.clipboard.writeText(this.dataset.t)" data-t="we put error bars on every keep/revert decision our agent made about itself, then removed each kept fix one at a time. two fixes carry the savings (+61% and +39% tokens without them). one barely matters. we say so #neatHack
+https://thegoodengineers.github.io/mend/#ablation">Copy text</button></p></article>
+<article><p class="when">7. Monday afternoon</p><h2>Verdicts written back into neatlogs</h2>
+<pre>every keep/revert verdict our agent makes about itself now lands in @neatlogs as its own trace, one span per rule, with a detection on every revert. its observability tool doubles as its audit log #neatHack
+https://github.com/thegoodengineers/mend</pre><p class="meta">230/280 characters · attach: <code>your neatlogs dashboard screenshot of the mend-gate workflow</code></p>
+<p><a class="btn" href="https://x.com/intent/post?text=every%20keep/revert%20verdict%20our%20agent%20makes%20about%20itself%20now%20lands%20in%20%40neatlogs%20as%20its%20own%20trace%2C%20one%20span%20per%20rule%2C%20with%20a%20detection%20on%20every%20revert.%20its%20observability%20tool%20doubles%20as%20its%20audit%20log%20%23neatHack%0Ahttps%3A//github.com/thegoodengineers/mend" target="_blank" rel="noopener">Open in X with this text</a>
+<button onclick="navigator.clipboard.writeText(this.dataset.t)" data-t="every keep/revert verdict our agent makes about itself now lands in @neatlogs as its own trace, one span per rule, with a detection on every revert. its observability tool doubles as its audit log #neatHack
+https://github.com/thegoodengineers/mend">Copy text</button></p></article></main></body></html>
