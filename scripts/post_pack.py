@@ -18,38 +18,26 @@ REPO = "https://github.com/thegoodengineers/mend"
 # (when, title, text, attachment path relative to the repo or "")
 POSTS = [
     ("Now", "The bug it found in itself",
-     "our agent found a bug in itself: it read 200 of 233 lines, then rewrote the whole file to change one word, "
-     "deleting the rest. it saw this in its own @neatlogs traces and gave itself an edit tool.\n"
-     f"same task, live: failed in 15 turns -> passed in 4 #neatHack\n{SITE}",
+     "our agent caught itself deleting the end of a file to change one word. found it in its own @neatlogs "
+     f"traces, patched itself. 15 turns -> 4 #neatHack\n{SITE}",
      "video/live/mend-live.mp4"),
     ("+1 hour", "Is it overfitting?",
-     "does self-repair just overfit? we tested on bugs it never saw.\n10 held-out bugs: 9/10 -> 10/10\n"
-     f"8 bugs in a real open-source library: 2-3/8 -> 8/8, 82% fewer tokens\n#neatHack\n{SITE}#heldout",
+     f"tested it on bugs it never saw. 9/10 -> 10/10. real open-source lib: 2-3/8 -> 8/8 #neatHack\n{SITE}#heldout",
      "docs/img/post-realworld.png"),
-    ("+2 hours", "The gate said no, four times",
-     "our agent has tried to change itself 9 times. it kept 5. it reverted 4, including one that saved a real 12% "
-     "but missed the 15% bar we wrote down in advance. a gate that bends for a near miss isn't a gate #neatHack\n"
-     f"{SITE}#rounds",
+    ("+2 hours", "The gate said no",
+     f"it tried to change itself 9 times. kept 5, threw out 4. even the one that saved 12%. bar was 15% #neatHack\n{SITE}#rounds",
      "docs/img/post-rounds.png"),
     ("This evening", "69% of its own instructions",
-     "ran `entire blame` on our agent's system prompt: 9 of 13 lines were written by its own self-repair sessions. "
-     "each line traces to an @EntireHQ checkpoint, the diagnosis behind it, and the @neatlogs traces it read "
-     f"#neatHack\n{SITE}#provenance",
+     f"69% of our agent's prompt was written by the agent. receipts via @EntireHQ blame #neatHack\n{SITE}#provenance",
      "docs/img/post-11-provenance.png"),
-    ("This evening", "Answering 'self-healing is self-defeating'",
-     "@neatlogs' founder argues self-healing agents drift unless someone defines \"better\". so our agent only "
-     "auto-fixes what has an objective answer, stops and asks a person when a fix is a choice, and follows that "
-     f"answer forever after #neatHack\n{SITE}#judgment",
+    ("This evening", "Self-healing is self-defeating?",
+     f"it only fixes what has a right answer. anything that's a judgment call, it asks once and remembers #neatHack\n{SITE}#judgment",
      "docs/img/post-10-judgment.png"),
-    ("Tonight", "Error bars on our own gate",
-     "we put error bars on every keep/revert decision our agent made about itself, then removed each kept fix "
-     "one at a time. two fixes carry the savings (+61% and +39% tokens without them). one barely matters. we say "
-     f"so #neatHack\n{SITE}#ablation",
+    ("Tonight", "Error bars",
+     f"pulled each fix out one at a time to see which ones actually mattered. two did. one didn't #neatHack\n{SITE}#ablation",
      "docs/img/post-12-ablation.png"),
-    ("Monday afternoon", "Verdicts written back into neatlogs",
-     "every keep/revert verdict our agent makes about itself now lands in @neatlogs as its own trace, one span "
-     "per rule, with a detection on every revert. its observability tool doubles as its audit log #neatHack\n"
-     f"{REPO}",
+    ("Monday afternoon", "Audit log in neatlogs",
+     f"every time our agent keeps or reverts a change to itself, it logs the verdict to @neatlogs #neatHack\n{REPO}",
      "your neatlogs dashboard screenshot of the mend-gate workflow"),
 ]
 
