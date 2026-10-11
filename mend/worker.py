@@ -35,10 +35,8 @@ TOOLS = [
     },
     {
         "name": "read_file",
-        "description": "Read a text file. By default returns the WHOLE file (from `start` to the end) as numbered lines; "
-        "pass `lines` only if you deliberately want a smaller window. "
-        "Each line is prefixed with its number and a TAB; the code starts right after the TAB. "
-        "To read several files, request them all in one turn.",
+        "description": "Read a text file. Returns numbered lines starting at `start` (1-based), at most `lines` lines. "
+        "Each line is prefixed with its number and a TAB; the code starts right after the TAB.",
         "input_schema": {
             "type": "object",
             "properties": {
@@ -115,9 +113,9 @@ def list_files(work: Path) -> str:
 
 
 @neatlogs.span(kind="TOOL", tool_name="read_file")
-def read_file(work: Path, path: str, start: int = 1, lines: int | None = None) -> str:
+def read_file(work: Path, path: str, start: int = 1, lines: int = 200) -> str:
     text = _safe_path(work, path).read_text(encoding="utf-8").splitlines()
-    chunk = text[start - 1 :] if lines is None else text[start - 1 : start - 1 + lines]
+    chunk = text[start - 1 : start - 1 + lines]
     out = "\n".join(f"{start + i}\t{line}" for i, line in enumerate(chunk))
     remaining = len(text) - (start - 1 + len(chunk))
     if remaining > 0:
