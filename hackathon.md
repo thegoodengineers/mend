@@ -454,7 +454,8 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
   `evidence/neatlogs-ingestion-11oct.md`. So the gate traces are **sent but not yet verified**.
   Rounds 7-8 were unaffected, because they diagnosed a run from 10 Oct.
 
-### 2026-10-11 ~12:00-12:50 IST - neatlogs write-back verified, Entire search memory, video motion
+### 2026-10-11 12:33-15:28 IST (commit times) - neatlogs write-back verified, Entire search memory, video motion
+- Correction: I first labelled this entry "~12:00-12:50 IST" from my own estimate. Commit times put it at 12:33-15:28.
 - neatlogs ingestion was delayed by about an hour, not capped. All 8 gate-verdict traces are now
   readable, with the right verdict on each (`evidence/gate-audit-readback.md`). New detection
   "Mend: gate reverted a self-repair" created; its preview matched 2 spans.

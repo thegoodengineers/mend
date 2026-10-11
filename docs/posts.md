@@ -78,5 +78,5 @@ https://thegoodengineers.github.io/mend/#provenance #neatHack
 Image: [`docs/img/post-12-ablation.png`](img/post-12-ablation.png)
 We ran a paired sign test and bootstrap interval on every self-repair decision. Honest result: rounds 3-5 are solid; rounds 1-2 were kept on a single task flipping. So we tightened the gate, publicly, before round 8: no task may break, and a token win must hold across tasks.
 
-Round 7 then saved 4.6%: under the bar, reverted. Round 8, the first under the stricter gate, cost 22% more: reverted. The gate has now said no three times.
+Round 7 then saved 4.6%: under the bar, reverted. Round 8, the first under the stricter gate, cost 22% more: reverted. Round 9 saved a real 12%, under the 15% bar fixed in advance: reverted too. The gate has said no four times.
 #neatHack

@@ -30,7 +30,7 @@ that per task, but the diagnosis would have nothing to read.
 > read fine. Is that a free-tier limit or an ingestion delay? Example trace IDs:
 > b814c1ca3a927f957cce9f8c3f538066, c8c7758186f80eee8fc53ce8d1288dbe. Thanks!
 
-## Update (~11:50 IST)
+## Update (12:33 IST, commit `3db8ad2`)
 The worker trace of run 05-18-22-after (`bf209101…`, sent around 05:25 UTC) now reads `success`
 with 17 spans. So this was **ingestion delay**, about an hour, not a free-tier cap. The gate audit
 traces were sent around 05:50 UTC and are still pending. No Discord message is needed unless the

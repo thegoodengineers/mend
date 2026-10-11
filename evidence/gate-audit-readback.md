@@ -1,4 +1,4 @@
-# Gate verdicts read back from neatlogs (get_trace_context over MCP, 11 Oct ~12:00 IST)
+# Gate verdicts read back from neatlogs (get_trace_context over MCP, 11 Oct 12:35 IST)
 
 Round 8 trace 684cb30df2268caf0897d8d5bb697f5d (workflow mend-gate), spans as neatlogs returns them:
 
@@ -13,7 +13,7 @@ Readable at this time: rounds 3, 4 (GATE KEPT), 7, 8 (GATE REVERTED). Rounds 1, 
 
 Detection created in group "Mend regression guards": "Mend: gate reverted a self-repair" (regex GATE REVERTED on gate_verdict spans), preview matched 2 spans.
 
-## Update (~12:45 IST): all 8 verdicts readable
+## Update (15:28 IST): all 8 verdicts readable
 
 | Round | Trace status | Spans | Verdict span output |
 |---|---|---|---|
