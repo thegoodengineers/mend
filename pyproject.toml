@@ -8,6 +8,7 @@ dependencies = ["neatlogs[anthropic]", "anthropic", "mcp"]
 [project.optional-dependencies]
 dev = ["pytest", "amaranth==0.5.4"]  # amaranth: the HDL the hardware transfer test is written in
 verilog = ["amaranth-yosys"]  # only for exporting the hardware designs as Verilog
+drawings = ["schemdraw==0.19"]  # only for redrawing docs/img/schematics
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

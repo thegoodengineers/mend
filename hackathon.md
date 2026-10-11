@@ -468,3 +468,30 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
   checkpoints stayed local.
 - Round 9 started from the same input run as rounds 7-8. It is the first round with every new
   step: judgment, Entire guard, amended gate, audit trace.
+
+### 2026-10-11 16:10-17:40 IST (commit times) - hardware and schematic transfer tests, Beyond software page
+- **Hardware transfer test** (`a41d09b`). 8 Amaranth HDL designs (counter, Gray code, ALU, FIFO,
+  UART, PWM, debouncer, CRC-8), 26 simulation testbenches, 9 planted bugs, all caught. Original vs
+  repaired worker, 2 runs each: **both 9/9**, repaired −57.7% tokens (188,336 → 79,656 mean),
+  about 3 turns vs 7-8.
+- **Schematic transfer test** (`90b7284`). 7 circuit netlists (divider, LED, RC low/high-pass, 2
+  op-amp amplifiers, pull-up), a small MNA circuit simulator checked against hand calculations, 15
+  tests, 8 board bring-up bugs, all caught. **Both 8/8**, repaired −64.5% tokens (273,764 →
+  97,234 mean), about 3-4 turns vs 7-10.
+- Honest reading: no solve-rate gain on these sets, only efficiency, which is stated on the page
+  and in the README.
+- **Mistake:** the README said the designs "can be emitted as Verilog" before I had tried it. The
+  first try failed (Amaranth needs Yosys). Installed `amaranth-yosys` (ISC), and the export now
+  works. Verilog samples are in `hardware/verilog/`. Also caught my own "deleting half a file" in
+  a post draft (it was 33 of 233 lines) and fixed it before publishing.
+- The user tested it themselves in cmd: 26 testbenches pass, all 9 bugs caught, UART exported to
+  Verilog.
+- **Beyond software page** (`hardware.html`, `c7a2986`):
+  - timing diagrams of correct vs buggy designs from real simulation (`evidence/waveforms.json`);
+    the idea came from @wheresryan22's "Anatomy" post (people respond to hardware they can see
+    move)
+  - 7 schematics drawn with schemdraw
+  - PWM Verilog
+  - both results, with the planted bugs table
+  - the main page has a short teaser linking to it
+- Post 2 published by the user: https://x.com/theintrodev/status/2109233575614927163
