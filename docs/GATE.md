@@ -31,3 +31,10 @@ the total alone. From round 8 on, a patch that passes rule 4 is still reverted i
   (tasks resampled) does not lie entirely below 1.0.
 
 Every round record now carries these statistics (`stats` in `*.round.json`).
+
+## Amendment 2 (11 Oct 2026, before round 9): no paying twice for a failed fix
+
+Before the patch is applied, the proposed fix's title is searched in Entire (`entire search`). If a
+hit scores at least 80 and is a commit the gate already reverted, the round is rejected before
+anything runs (`*.rejected.round.json`, reason names the commit). The calibration is in
+[`evidence/entire-search-repeat-guard.md`](../evidence/entire-search-repeat-guard.md).

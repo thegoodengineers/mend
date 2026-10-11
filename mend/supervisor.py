@@ -37,6 +37,9 @@ TASK_SPECIFIC = ("money.py", "dates.py", "tax.py", "discounts.py", "invoice.py",
 SPAN_TEXT_LIMIT = 700
 WASTEFUL_SAMPLE = 3  # passing tasks with the most turns, also shown to the diagnosis
 TOKEN_SAVING = 0.15  # same pass count with this much fewer tokens also counts as better
+# Entire search score above which a proposed fix counts as a repeat of a past one. Calibrated on 11 Oct:
+# re-proposing round 6's fix scored 94.6; four fixes never tried scored at most 42.7.
+ENTIRE_REPEAT_SCORE = 80
 PRECEDENTS = ROOT / "docs" / "precedents.json"  # answers people gave to judgment questions; asked once, reused
 
 DIAGNOSIS_SCHEMA = {
@@ -157,6 +160,29 @@ def answer(run_id: str, text: str) -> dict:
     entry = {"question": q["question"], "answer": text, "asked_in": run_id}
     PRECEDENTS.write_text(json.dumps(precedents() + [entry], indent=2), encoding="utf-8")
     return entry
+
+
+def entire_search(text: str) -> list[dict]:
+    """Commits Entire's search service finds for `text` (hybrid semantic + keyword); [] if unavailable."""
+    try:
+        out = subprocess.run(["entire", "search", text, "--compact"], cwd=ROOT, capture_output=True, text=True,
+                             timeout=120, encoding="utf-8", errors="replace").stdout
+        return [r for r in json.loads(out).get("results", []) if r.get("type") == "commit"]
+    except (OSError, subprocess.TimeoutExpired, ValueError):
+        return []
+
+
+def repeats_reverted_fix(title: str) -> str:
+    """Why this fix should not run again (Entire finds it is a reverted fix), or '' if it is new."""
+    reverted = {}
+    for p in sorted(RUNS.glob("*.round.json")):
+        r = json.loads(p.read_text(encoding="utf-8"))
+        if r.get("commit") and not r.get("kept"):
+            reverted[r["commit"][:7]] = r.get("title") or r["commit"]
+    for hit in entire_search(title)[:3]:
+        if hit.get("score", 0) >= ENTIRE_REPEAT_SCORE and hit["id"][:7] in reverted:
+            return f"Entire search: repeats reverted fix {hit['id'][:7]} '{reverted[hit['id'][:7]]}' (score {hit['score']:.0f})"
+    return ""
 
 
 def repair_history() -> str:
@@ -299,7 +325,8 @@ def one_round(run_id: str) -> dict:
         print(f"needs a person: {judgment['question']}\n"
               f"answer with: python -m mend.supervisor --answer {stem} \"<your decision>\"")
         return record
-    ok, why = apply_patch(diagnosis["fix"], diagnosis_file)
+    repeat = repeats_reverted_fix(diagnosis["fix"]["title"])  # don't pay for a re-run Entire says already failed
+    ok, why = (False, repeat) if repeat else apply_patch(diagnosis["fix"], diagnosis_file)
     if not ok:
         subprocess.run(["git", "checkout", "--", *ALLOWED_FILES], cwd=ROOT)
         print(f"patch rejected: {why}")

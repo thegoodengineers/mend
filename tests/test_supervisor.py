@@ -92,3 +92,18 @@ def test_audit_rules_agree_with_every_recorded_decision():
         base = met["more tasks pass"] or met["same tasks pass with >=15% fewer tokens"]
         amended = all(ok for rule, ok in met.items() if rule.startswith("amendment"))
         assert (base and amended) == r["kept"], n
+
+
+def test_entire_search_repeat_guard(tmp_path, monkeypatch):
+    import json
+    import mend.supervisor as sup
+    (tmp_path / "a.round.json").write_text(json.dumps({"commit": "49c99e2", "kept": False, "title": "batch edits"}))
+    (tmp_path / "b.round.json").write_text(json.dumps({"commit": "e8a6baf", "kept": True, "title": "edit tool"}))
+    monkeypatch.setattr(sup, "RUNS", tmp_path)
+    hits = {"batch edits again": [{"id": "49c99e27e4", "score": 94.6}], "weak match": [{"id": "49c99e27e4", "score": 42.7}],
+            "edit tool again": [{"id": "e8a6baf63c", "score": 99.0}]}
+    monkeypatch.setattr(sup, "entire_search", lambda text: hits.get(text, []))
+    assert "49c99e2" in sup.repeats_reverted_fix("batch edits again")
+    assert sup.repeats_reverted_fix("weak match") == ""      # below the calibrated score
+    assert sup.repeats_reverted_fix("edit tool again") == ""  # a kept fix is not a failed one
+    assert sup.repeats_reverted_fix("no entire") == ""        # Entire unavailable: never blocks
