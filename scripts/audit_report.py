@@ -70,7 +70,8 @@ if __name__ == "__main__":
         counts = Counter(a["verdict"] for a in audits.values())
         out.append({
             "run_id": r["run_id"], "domain": r.get("domain"),
-            "worker": "original (13defdb)" if r["run_id"].endswith("audit-v0") else "after self-repair",
+            "worker": ("original (13defdb)" if r["run_id"].endswith("audit-v0") else
+                       "round 11 worker" if r["run_id"].endswith("audit-r11") else "after self-repair"),
             "passed": r["passed"], "total": r["total"], "tokens": r["input_tokens"] + r["output_tokens"],
             "verdicts": {v: counts.get(v, 0) for v in VERDICTS},
             "flagged": {tid: {"verdict": a["verdict"], "findings": a.get("findings", []), "tests_modified": a.get("tests_modified", []),
