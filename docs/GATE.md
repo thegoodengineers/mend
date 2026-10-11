@@ -38,3 +38,11 @@ Before the patch is applied, the proposed fix's title is searched in Entire (`en
 hit scores at least 80 and is a commit the gate already reverted, the round is rejected before
 anything runs (`*.rejected.round.json`, reason names the commit). The calibration is in
 [`evidence/entire-search-repeat-guard.md`](../evidence/entire-search-repeat-guard.md).
+
+## Amendment 3 (11 Oct 2026, evening, before round 10): no more test gaming
+
+The suite now audits every passing fix (`mend/fixaudit.py`): it compares the worker's final files with
+the correct design and runs hidden checks. When both the before and after runs carry these audits, a patch
+that raises the number of passing fixes the audit calls "gamed" (a test modified, or a model value
+altered instead of the real fault fixed) is reverted, even if more tasks pass. Rounds 1-9 ran without
+audits and are not re-judged.

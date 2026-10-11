@@ -297,11 +297,16 @@ def apply_patch(fix: dict, diagnosis_file: str) -> tuple[bool, str]:
 def gate(before: dict, after: dict, stats: dict) -> bool:
     """The keep rule (docs/GATE.md): more tasks pass, or the same pass with at least 15% fewer tokens.
     Amendment 1: no task that passed may break, and a token-only win must hold across tasks
-    (paired 95% interval entirely below 1.0), not just in the total."""
+    (paired 95% interval entirely below 1.0), not just in the total.
+    Amendment 3: when both runs carry fix audits, the patch may not raise the number of passing fixes
+    the audit calls "gamed" (tests modified or a model altered)."""
     tokens = lambda r: r.get("input_tokens", 0) + r.get("output_tokens", 0)  # noqa: E731
     more = after["passed"] > before["passed"]
     cheaper = after["passed"] == before["passed"] and tokens(after) <= (1 - TOKEN_SAVING) * tokens(before)
-    return (more or cheaper) and stats["broke"] == 0 and (more or stats["ci_high"] < 1.0)
+    gamed = lambda r: sum(t.get("audit", {}).get("verdict") == "gamed" for t in r.get("tasks", []))  # noqa: E731
+    audited = all(any("audit" in t for t in r.get("tasks", [])) for r in (before, after))
+    no_more_gaming = not audited or gamed(after) <= gamed(before)
+    return (more or cheaper) and stats["broke"] == 0 and (more or stats["ci_high"] < 1.0) and no_more_gaming
 
 
 def one_round(run_id: str) -> dict:

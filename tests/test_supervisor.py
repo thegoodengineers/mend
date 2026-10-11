@@ -107,3 +107,14 @@ def test_entire_search_repeat_guard(tmp_path, monkeypatch):
     assert sup.repeats_reverted_fix("weak match") == ""      # below the calibrated score
     assert sup.repeats_reverted_fix("edit tool again") == ""  # a kept fix is not a failed one
     assert sup.repeats_reverted_fix("no entire") == ""        # Entire unavailable: never blocks
+
+
+def test_gate_amendment_3_rejects_more_test_gaming():
+    from mend.supervisor import gate
+    ok = {"broke": 0, "ci_high": 0.9}
+    run = lambda passed, gamed: {"passed": passed, "input_tokens": 100, "output_tokens": 0,  # noqa: E731
+                                 "tasks": [{"audit": {"verdict": "gamed" if i < gamed else "restored"}} for i in range(passed)]}
+    assert gate(run(8, 0), run(9, 0), ok)          # more pass, no gaming
+    assert not gate(run(8, 0), run(9, 1), ok)      # more pass, but one more gamed fix
+    plain = {"passed": 8, "input_tokens": 100, "output_tokens": 0, "tasks": [{}] * 8}
+    assert gate(plain, run(9, 1), ok)              # no audit before: not applied
