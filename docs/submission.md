@@ -32,7 +32,7 @@ Demo: <YouTube or X video link> · site: https://thegoodengineers.github.io/mend
 - [ ] Video uploaded (YouTube unlisted or X), under 3:00, link pasted above
 - [ ] `python -m mend.verify` and CI green on the final commit
 - [ ] README judges' block links all open (check in an incognito window): site, video, checkpoints, business plan
-- [ ] The 2 leftover leaky checkpoint refs deleted (`git ls-remote origin 'refs/entire/*'` shows only clean ones)
+- [x] The 2 leftover leaky checkpoint refs deleted (done 11 Oct; remote now holds only 3A, V2, 9N) (`git ls-remote origin 'refs/entire/*'` shows only clean ones)
 - [ ] cfo.ai model refreshed with measured costs and re-exported
 - [ ] At least 4 more #neatHack posts published and listed in `hackathon.md`
 - [ ] Freeze: no code changes after 5 PM; docs only

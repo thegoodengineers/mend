@@ -345,6 +345,16 @@ Not done / blocked:
 - Merged Bhumika's PRs #7, #9–#12: report polish, video pipeline, evidence index, business-plan
   scenarios, posts tracker. Fixed one arithmetic error in her break-even line (about 218 teams,
   not about 120).
+- **Privacy (user said "go with what is best").**
+  - Deleted locally: the 3 refs holding this chat's transcript, plus H2/NV in main and the runner.
+  - Then deleted H2/NV on GitHub. The remote now holds only the 3A, V2 and 9N checkpoints.
+  - Kept 3A, V2 and 9N, which contain only the email from Claude Code's session context. Two of
+    them are the round 4/5 Entire evidence, and any new checkpoint would capture the email the
+    same way.
+  - The round 7 checkpoint (9D) stays local.
+- **Mistake:** the 3 parallel ablation runs started in the same second and wrote the same run
+  file, so only the last survived. Fixed at the root with `MEND_RUN_LABEL` (`85a12bf`); rounds 2
+  and 3 are being re-run.
 - Leave-one-out ablation running for rounds 2, 3 and 5. The reverts of rounds 1 and 4 conflict,
   because later fixes build on them.
 
