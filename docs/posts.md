@@ -58,6 +58,7 @@ https://thegoodengineers.github.io/mend/
 #neatHack #AIAgents #BuildInPublic
 
 ## 10. Answering "Self-healing is self-defeating" (quote-reply the neatlogs blog post; day 2)
+Image: [`docs/img/post-10-judgment.png`](img/post-10-judgment.png)
 @neatlogs' founder argues that a self-healing agent drifts toward the median unless someone defines "better". His fix: automate what isn't a choice, ask when it is, remember the answer.
 
 So we built that into Mend:
@@ -68,11 +69,13 @@ So we built that into Mend:
 https://thegoodengineers.github.io/mend/#judgment #neatHack
 
 ## 11. 69% of its own instructions (screenshot: the site's "Who wrote the worker?" table)
+Image: [`docs/img/post-11-provenance.png`](img/post-11-provenance.png)
 `entire blame` on our agent's system prompt: 9 of 13 lines were written by its own self-repair sessions. Each line traces to an @EntireHQ checkpoint, the instruction the supervisor gave Claude Code, the diagnosis, and the @neatlogs traces it read.
 
 https://thegoodengineers.github.io/mend/#provenance #neatHack
 
 ## 12. Error bars on our own gate (screenshot: README "How sure is each decision?" table)
+Image: [`docs/img/post-12-ablation.png`](img/post-12-ablation.png)
 We ran a paired sign test and bootstrap interval on every self-repair decision. Honest result: rounds 3-5 are solid; rounds 1-2 were kept on a single task flipping. So we tightened the gate, publicly, before round 8: no task may break, and a token win must hold across tasks.
 
 Round 7 then saved 4.6%: under the bar, so it was reverted. The gate has now said no twice.
