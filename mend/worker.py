@@ -213,7 +213,16 @@ def solve_task(task_id: str, report: str, work: Path) -> dict:
     result = {"task_id": task_id, "trace_id": current_trace_id(), "turns": 0,
               "input_tokens": 0, "output_tokens": 0, "stop": None, "summary": ""}
     files = list_files(work)
-    messages = [{"role": "user", "content": f"Bug report: {report}\n\nProject files:\n{files}"}]
+    try:
+        passed, output = run_tests(work)
+    except Exception as exc:
+        passed, output = False, f"(initial test run failed: {exc})"
+    messages = [{"role": "user", "content": (
+        f"Bug report: {report}\n\nProject files:\n{files}\n\n"
+        f"Initial full test run (already done for you; do not call run_tests to start):\n"
+        f"{'PASSED' if passed else 'FAILED'}\n{output}\n\n"
+        "Use the failing test names, assertions and tracebacks above to decide which source files to read; "
+        "request all needed files in one turn.")}]
     system = PROMPT_FILE.read_text(encoding="utf-8")
     edited = False
     while result["turns"] < MAX_TURNS:
