@@ -341,7 +341,7 @@ def render() -> str:
         runs_solved = lambda g: ", ".join(str(r["passed"]) for r in g)  # noqa: E731
         return (f"{runs_solved(before)} → {runs_solved(after)} of {before[0]['total']} solved" if pa > pb
                 else f"same {pa:g}/{before[0]['total']}, {(1 - ta / tb) * 100:.0f}% fewer tokens")
-    hw_line, sc_line, bd_line = (gain(f[k + "_before"], f[k + "_after"]) for k in ("hw", "sc", "bd"))
+    hw_line, sc_line, bd_line, se_line = (gain(f[k + "_before"], f[k + "_after"]) for k in ("hw", "sc", "bd", "se"))
     hw_html = f"""
 <section id="hardware"><div class="wrap">
   <p class="eyebrow">Beyond software</p><h2>It carries over to hardware.</h2>
@@ -350,6 +350,7 @@ def render() -> str:
     <div class="tool card"><h3>Chip designs</h3><p>9 bugs in 8 Amaranth HDL designs (ALU, FIFO, UART...): {esc(hw_line)}.</p></div>
     <div class="tool card"><h3>Circuit schematics</h3><p>8 bring-up bugs in 7 circuit netlists: {esc(sc_line)}.</p></div>
     <div class="tool card"><h3>A sensor circuit</h3><p>8 bring-up bugs in one larger schematic: {esc(bd_line)}.</p></div>
+    <div class="tool card"><h3>Security</h3><p>8 vulnerabilities, each checked by an exploit test: {esc(se_line) or "runs in progress"}.</p></div>
   </div>
   <p><a class="pill" href="hardware.html">See the waveforms, schematics and bugs →</a></p>
 </div></section>""" if hw_line or sc_line else ""

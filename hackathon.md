@@ -581,3 +581,19 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
 - New neatlogs detection "Mend: worker named a test that contradicts the bug report" (honest refusals);
   it matched 5 spans when created.
 - Logged #neatHack post 3 (hardware).
+
+### 2026-10-11 ~21:30-22:40 IST - scout 7, licence/pin fixes, security transfer test
+- Scout 7: pitstop now has a video, a second agent, real pull requests, and a design-only "won't game
+  the evals" claim. Two quick fixes it found:
+  - GitHub read our licence as NOASSERTION. The extra line moved to `NOTICE`, so it is detected as MIT.
+  - Our scorer was not hash-pinned. Added `evidence/scorer-pin.json` (task and test files), which
+    `mend.verify` checks on every push; plus a `git ls-remote` command for the Entire refs.
+- **Security transfer test** (the user's ask: more new domains like hardware): a `vault` service with 8
+  vulnerability classes and 16 tests, including exploit tests. 8 planted vulnerabilities, all caught by
+  their exploits.
+  - Results: original 8, 8/8 at 173,019 tokens; current (round 11) worker 8, 8/8 at 69,588 (−59.8%),
+    3-4 turns vs 7-13.
+  - Every fix the audit marked "review" was read by a person: all secure, none touched a test
+    (`evidence/security-review.md`).
+- Round 11 worker fix audits: board 8/8 with BD04 still gamed (model-altering shortcut, not covered by
+  the anti-gaming fix); schematics 8/8. Not repaired tonight, because a fix would be circuit-specific.

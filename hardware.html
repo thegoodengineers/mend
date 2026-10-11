@@ -61,7 +61,7 @@ pre.code{font:12.5px/1.55 'JetBrains Mono',monospace;background:#fff;border-radi
 td.rep{color:var(--mute)} .hero2{font:800 clamp(56px,10vw,128px)/.88 'Inter Tight',sans-serif;letter-spacing:-.05em;margin:0}
 </style></head><body>
 <nav><div class="wrap"><a class="logo" href="index.html"><b>Mend</b><span>neatHack 2026</span></a>
-<div class="links"><a class="hide" href="#chips">Chip designs</a><a class="hide" href="#schematics">Schematics</a><a class="hide" href="#board">Sensor circuit</a>
+<div class="links"><a class="hide" href="#chips">Chip designs</a><a class="hide" href="#schematics">Schematics</a><a class="hide" href="#board">Sensor circuit</a><a class="hide" href="#security">Security</a>
 <a class="hide" href="index.html">Main page</a><a class="pill" href="https://github.com/thegoodengineers/mend">View the code</a></div></div></nav>
 
 <header><div class="wrap">
@@ -156,6 +156,26 @@ R2 out 0 20k
   single turn, replying that a sensor-board report is "a hardware issue, not a bug in the Python library", without running a check. Both workers
   get the same prompt. The repaired worker's learned workflow starts by running the tests, so it engaged and fixed all 8.</p>
   <p class="eyebrow" style="margin-top:36px">The planted bring-up bugs</p><div class="tablewrap"><table><tr><th>Bug</th><th>What it is</th><th>Bug report the agent got</th></tr><tr><td>BD01</td><td>3.3 V rail at 2.5 V</td><td class='rep'>On the sensor board the 3.3 V rail measures 2.5 V and the microcontroller browns out.</td></tr><tr><td>BD02</td><td>power LED dark</td><td class='rep'>The sensor board&#x27;s green power-on LED never lights, although the 3.3 V rail is fine.</td></tr><tr><td>BD03</td><td>temperature reads far too low</td><td class='rep'>At room temperature (25 C) the sensor board&#x27;s temperature voltage reads about 0.3 V instead of about 1.65 V.</td></tr><tr><td>BD04</td><td>ADC pin pinned beyond full scale</td><td class='rep'>On the sensor board the microcontroller&#x27;s ADC pin reads far beyond full scale (well above 3.3 V) whatever the temperature.</td></tr><tr><td>BD05</td><td>anti-aliasing cutoff too high</td><td class='rep'>The sensor board&#x27;s 1 kHz anti-aliasing filter in front of the ADC barely attenuates at 5 kHz.</td></tr><tr><td>BD06</td><td>board stuck in reset</td><td class='rep'>The sensor board stays in reset: the RESET pin reads 0 V even with the reset button released.</td></tr><tr><td>BD07</td><td>status LED overloads the GPIO</td><td class='rep'>The sensor board&#x27;s status LED is far too bright and its GPIO pin is overloaded: about 59 mA, the pin&#x27;s limit is 20 mA.</td></tr><tr><td>BD08</td><td>I2C data line at 5 V</td><td class='rep'>On the sensor board the I2C data line (SDA) idles at 5 V, above the microcontroller&#x27;s 3.6 V absolute maximum.</td></tr></table></div>
+</div></section>
+
+<section id="security"><div class="wrap">
+  <p class="eyebrow">Security · every fix checked by an exploit</p><h2>8 vulnerabilities, closed or not.</h2>
+  <p class="sub">A small notes service with eight vulnerability classes (SQL injection, path traversal, unpickling client data, broken access
+  control, stored XSS, predictable reset tokens, open redirect, double-extension uploads). A fix counts only if the exploit fails and the feature
+  still works; the fix audit flags any patch that touches the tests.</p>
+  <h3 class="verdict">Same 8/8, at 60% fewer tokens.</h3><div class="ba two-col"><div class="card "><span class="k">Original worker · 2 runs</span><span class="big">8, 8<em> / 8</em></span><span class="sub">mean 173,019 tokens per run</span></div><div class="card "><span class="k">After self-repair · 2 runs</span><span class="big">8, 8<em> / 8</em></span><span class="sub">mean 69,588 tokens per run</span></div></div>
+  <div class="two" style="margin-top:36px;align-items:start">
+    <div><p class="eyebrow">An exploit test</p><p>The SQL-injection check. With the planted bug, both queries return every user; the fix must make them
+    return nothing, while ordinary searches (including a name with an apostrophe) keep working.</p></div>
+    <pre class="code">def test_exploit_sql_injection_returns_nothing():
+    conn = connect(USERS)
+    assert find_user(conn, &quot;x&#x27; OR &#x27;1&#x27;=&#x27;1&quot;) == []
+    assert find_user(conn, &quot;x&#x27; UNION SELECT name, role FROM users --&quot;) == []
+
+
+</pre>
+  </div>
+  <p class="eyebrow" style="margin-top:36px">The planted vulnerabilities</p><div class="tablewrap"><table><tr><th>Bug</th><th>What it is</th><th>Bug report the agent got</th></tr><tr><td>SE01</td><td>SQL injection in user search</td><td class='rep'>Security: searching users for  x&#x27; OR &#x27;1&#x27;=&#x27;1  returns every user (SQL injection). Searching for o&#x27;brien also crashes.</td></tr><tr><td>SE02</td><td>path traversal in notes</td><td class='rep'>Security: a note name like ../secret.txt reads files outside the notes folder (path traversal).</td></tr><tr><td>SE03</td><td>pickled sessions accepted</td><td class='rep'>Security: a session cookie containing a pickled Python object is accepted and decoded (pickle can run code). Normal JSON sessions no longer load either.</td></tr><tr><td>SE04</td><td>any user can delete others&#x27; notes</td><td class='rep'>Security: any logged-in user can delete another user&#x27;s notes (broken access control); only admins&#x27; own notes are protected.</td></tr><tr><td>SE05</td><td>stored XSS in comments</td><td class='rep'>Security: a comment containing &lt;script&gt; is rendered as live HTML (stored XSS). The author name is escaped correctly.</td></tr><tr><td>SE06</td><td>predictable reset tokens</td><td class='rep'>Security: password-reset tokens for the same user are identical every time, so anyone who knows a username can compute one.</td></tr><tr><td>SE07</td><td>open redirect after login</td><td class='rep'>Security: after login, ?next=//evil.example/x sends users to another site (open redirect).</td></tr><tr><td>SE08</td><td>double-extension uploads accepted</td><td class='rep'>Security: an upload named invoice.png.exe is accepted, because the check only looks for an allowed extension anywhere in the name.</td></tr></table></div>
 </div></section>
 
 <section id="honest"><div class="wrap">

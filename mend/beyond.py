@@ -11,7 +11,7 @@ import json
 
 from mend.report import REPO
 from mend.site import CSS, esc, facts, repeat_card, tokens
-from mend.tasks import BOARD_FILE, HARDWARE_FILE, ROOT, SCHEMATICS_FILE, load_tasks
+from mend.tasks import BOARD_FILE, HARDWARE_FILE, ROOT, SCHEMATICS_FILE, SECURITY_FILE, load_tasks
 
 CYCLE, ROW, LEFT = 34, 34, 92  # timing diagram geometry, px
 
@@ -87,6 +87,8 @@ def render() -> str:
     hw_n = len(load_tasks(HARDWARE_FILE))
     sc_n = len(load_tasks(SCHEMATICS_FILE))
     bd_n = len(load_tasks(BOARD_FILE))
+    se_n = len(load_tasks(SECURITY_FILE))
+    exploit = (ROOT / "security" / "tests" / "test_injection.py").read_text(encoding="utf-8").split("def test_exploit_sql")[1].split("def test_session")[0]
     checks = [line.split("def ")[1].split("(")[0] for line in
               (ROOT / "schematics" / "tests" / "test_board.py").read_text(encoding="utf-8").splitlines() if line.startswith("def test_")]
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -107,7 +109,7 @@ pre.code{{font:12.5px/1.55 'JetBrains Mono',monospace;background:#fff;border-rad
 td.rep{{color:var(--mute)}} .hero2{{font:800 clamp(56px,10vw,128px)/.88 'Inter Tight',sans-serif;letter-spacing:-.05em;margin:0}}
 </style></head><body>
 <nav><div class="wrap"><a class="logo" href="index.html"><b>Mend</b><span>neatHack 2026</span></a>
-<div class="links"><a class="hide" href="#chips">Chip designs</a><a class="hide" href="#schematics">Schematics</a><a class="hide" href="#board">Sensor circuit</a>
+<div class="links"><a class="hide" href="#chips">Chip designs</a><a class="hide" href="#schematics">Schematics</a><a class="hide" href="#board">Sensor circuit</a><a class="hide" href="#security">Security</a>
 <a class="hide" href="index.html">Main page</a><a class="pill" href="{REPO}">View the code</a></div></div></nav>
 
 <header><div class="wrap">
@@ -161,6 +163,20 @@ td.rep{{color:var(--mute)}} .hero2{{font:800 clamp(56px,10vw,128px)/.88 'Inter T
   single turn, replying that a sensor-board report is "a hardware issue, not a bug in the Python library", without running a check. Both workers
   get the same prompt. The repaired worker's learned workflow starts by running the tests, so it engaged and fixed all 8.</p>
   <p class="eyebrow" style="margin-top:36px">The planted bring-up bugs</p>{bug_table(BOARD_FILE)}
+</div></section>
+
+<section id="security"><div class="wrap">
+  <p class="eyebrow">Security · every fix checked by an exploit</p><h2>{se_n} vulnerabilities, closed or not.</h2>
+  <p class="sub">A small notes service with eight vulnerability classes (SQL injection, path traversal, unpickling client data, broken access
+  control, stored XSS, predictable reset tokens, open redirect, double-extension uploads). A fix counts only if the exploit fails and the feature
+  still works; the fix audit flags any patch that touches the tests.</p>
+  {result_block(f["se_before"], f["se_after"], f"of {se_n}")}
+  <div class="two" style="margin-top:36px;align-items:start">
+    <div><p class="eyebrow">An exploit test</p><p>The SQL-injection check. With the planted bug, both queries return every user; the fix must make them
+    return nothing, while ordinary searches (including a name with an apostrophe) keep working.</p></div>
+    <pre class="code">def test_exploit_sql{esc(exploit)}</pre>
+  </div>
+  <p class="eyebrow" style="margin-top:36px">The planted vulnerabilities</p>{bug_table(SECURITY_FILE)}
 </div></section>
 
 <section id="honest"><div class="wrap">

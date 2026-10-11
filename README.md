@@ -18,7 +18,7 @@ self-repair it passed in 4.*
 
 **At a glance:** 11 self-repair rounds, 5 kept and 6 reverted by a pre-registered gate (one of them later accepted by a person) · whole-file
 rewrites 31 → 0 · model calls 235 → 107 · cost per task $0.040 → $0.015 · bugs it never saw: 9/10 →
-10/10 · a real open-source library: 2–3/8 → 8/8 · hardware designs it never saw: same 9/9 at −58% tokens · circuit schematics: same 8/8 at −64% tokens · a larger sensor schematic: 6–7/8 → 8/8 · every gate verdict written back into neatlogs.
+10/10 · a real open-source library: 2–3/8 → 8/8 · hardware designs it never saw: same 9/9 at −58% tokens · circuit schematics: same 8/8 at −64% tokens · a larger sensor schematic: 6–7/8 → 8/8 · security vulnerabilities checked by exploits: same 8/8 at −60% tokens · every gate verdict written back into neatlogs.
 
 Every number in this README comes from a file in [`runs/`](runs/) or [`evidence/`](evidence/).
 If a number has no file behind it, it is not here.
@@ -321,6 +321,26 @@ every check passes, but a real op-amp cannot be changed that way. The tests were
 fixing the board, which is the "what counts as correct" problem in action. The
 [circuit explorer](https://thegoodengineers.github.io/mend/circuit.html) shows every bug, the agent's
 steps and the exact lines it changed.
+
+### Security transfer test: vulnerabilities checked by exploits
+
+[`security/`](security/) is a small notes service in the standard library with eight vulnerability
+classes:
+- SQL injection, path traversal, unpickling client data, broken access control,
+- stored XSS, predictable reset tokens, open redirect, double-extension uploads.
+
+Each has a functionality test and an **exploit test** (16 tests). [`tasks/security.json`](tasks/security.json)
+plants 8 vulnerabilities, written the way a security report would describe them. A fix counts only if
+the exploit fails and the feature still works. The "after" worker here is the current one (round 11).
+
+| Worker | Runs | Solved | Mean tokens per run |
+|---|---|---|---|
+| Original (`13defdb`) | [v0](runs/2026-10-11T16-43-11-security-v0.json), [v0-r2](runs/2026-10-11T16-43-12-security-v0-r2.json) | 8, 8 of 8 | 173,019 |
+| After self-repair (round 11 worker) | [r1](runs/2026-10-11T16-43-12-security.json), [r2](runs/2026-10-11T16-43-11-security-r2.json) | 8, 8 of 8 | 69,588 (−59.8%) |
+
+Both workers close every vulnerability. The repaired one needs about 3-4 turns instead of 7-13. The fix
+audit marked several fixes "review" (they differ from the reference code), so a person read every one:
+**all are secure, and none touched a test** ([`evidence/security-review.md`](evidence/security-review.md)).
 
 ### Are the passing fixes real? Fix audit and impossible-task probes
 
