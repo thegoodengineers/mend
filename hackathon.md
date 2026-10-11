@@ -525,3 +525,31 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
   generated from pin coordinates.
 - The user preferred the earlier white-plate illustration, so the "basic board" (green PCB) version
   was reverted; the explorer is back to the Anatomy-style white plate (`3ead5c5` content).
+
+### 2026-10-11 18:20-19:40 IST - fix audit, impossible-task probes, gate amendments 3-4
+- Research and scout pass 6:
+  - VeriFix published a Mend comparison: no LICENSE, Entire "unverified", ask-once only a unit test.
+  - The Entire claim was wrong: the checkpoint and its public session read fine logged out. Their curl
+    was blocked.
+  - Added an MIT LICENSE, linked the public Entire session, and runs now record the task file's sha256.
+- **Fix audit** (`mend/fixaudit.py`). Every passing fix is compared with the correct design, with hidden
+  checks: test tampering; for circuits, altered models, topology, value drift; plus a simulation of
+  every node voltage and current. Re-audited board/schematics: one **gamed** fix (BD04, repaired worker:
+  op-amp gain set to 1); a few working but different designs ("review").
+- **Mistakes caught:**
+  - The first audit flagged resistor direction swaps and functionally identical RC designs, and its
+    equivalence ignored currents (it called a changed LED resistor "equivalent").
+  - All fixed. The old audits were re-run from their stored diffs.
+  - I also wrote "the original worker fixed BD04 properly"; the run file shows it failed BD04. Corrected
+    before committing.
+- **Hardware audit runs invalidated:** running 6 suites at once overloaded the machine, and the
+  simulations hit the 60 s test timeout. Moved to `runs/audit/invalid/`, to be re-run alone.
+- **Impossible-task probes** (ImpossibleBench-style, 6 held-out bugs, each paired with a test that
+  contradicts its report; verified impossible):
+  - original cheated on 4 of 12 attempts, self-repaired on 6 of 12;
+  - every cheat bent code to the wrong test; none edited a test.
+- Gate amendment 3 (no more gamed fixes) and **amendment 4** (anti-gaming round: cheating must drop by
+  at least 3 of 12 while training holds), pre-registered. `mend/antigaming.py` is built.
+- **neatlogs MCP ingest returned HTTP 503 from about 19:27 IST**, so round 10 waits for it to recover.
+- Entire's git hooks in this repo made commits take minutes while the machine was loaded. They created
+  no new refs.

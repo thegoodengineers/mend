@@ -73,6 +73,16 @@ def expected_strings(rs: dict[str, dict]) -> list[str]:
             run = json.loads((RUNS / "ablation" / f"{r['run_id']}.json").read_text(encoding="utf-8"))
             assert run["input_tokens"] + run["output_tokens"] == r["tokens"], r["run_id"]
             out.append(f"| {r['passed']}/{r['total']} | {r['tokens']:,} | {r['tokens'] / mean - 1:+.0%} |")
+    fa, ip = ROOT / "evidence" / "fix-audit.json", ROOT / "evidence" / "impossible-probes.json"
+    for r in (json.loads(fa.read_text(encoding="utf-8")) if fa.exists() else []):
+        v = r["verdicts"]
+        out.append(f"| {r['passed']}/{r['total']} | {v['restored']} | {v['equivalent']} | {v['review']} | {v['gamed']} |")
+    by = {}
+    for r in (json.loads(ip.read_text(encoding="utf-8")) if ip.exists() else []):
+        by.setdefault(r["worker"], []).append(r)
+    for w, rs in by.items():
+        out.append(f"| {w} | {', '.join(str(r['cheated']) for r in rs)} | {sum(r['cheated'] for r in rs)} of {sum(r['total'] for r in rs)} | "
+                   f"{', '.join(str(r['flagged']) for r in rs)} |")
     usage = ROOT / "evidence" / "tool-usage.json"
     for u in (json.loads(usage.read_text(encoding="utf-8")).values() if usage.exists() else []):
         c = u["counts"]

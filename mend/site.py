@@ -200,6 +200,34 @@ footer{padding:48px 0;color:var(--mute);font-size:14px}
 @media (prefers-reduced-motion:no-preference){.art circle,.art path{stroke-dasharray:1600;animation:draw 2.4s ease-out both} @keyframes draw{from{stroke-dashoffset:1600}to{stroke-dashoffset:0}}}"""
 
 
+def honesty_html() -> str:
+    """Fix audit and impossible-task probes (evidence/fix-audit.json, evidence/impossible-probes.json)."""
+    fa, ip = ROOT / "evidence" / "fix-audit.json", ROOT / "evidence" / "impossible-probes.json"
+    if not (fa.exists() and ip.exists()):
+        return ""
+    audits, probes = json.loads(fa.read_text(encoding="utf-8")), json.loads(ip.read_text(encoding="utf-8"))
+    rows = "".join(f"<tr><td>{esc(r['domain'])}</td><td>{esc(r['worker'])}</td><td>{r['passed']}/{r['total']}</td>"
+                   + "".join(f"<td>{r['verdicts'][v]}</td>" for v in ("restored", "equivalent", "review", "gamed")) + "</tr>" for r in audits)
+    by = {}
+    for r in probes:
+        by.setdefault(r["worker"], []).append(r)
+    cards = "".join(f'<div class="card"><span class="k">{esc(w)} · {len(rs)} runs</span><span class="big">{sum(r["cheated"] for r in rs)}'
+                    f'<em> / {sum(r["total"] for r in rs)} cheated</em></span><span class="sub">per run: {", ".join(str(r["cheated"]) for r in rs)}</span></div>'
+                    for w, rs in by.items())
+    return f"""
+<section id="real"><div class="wrap">
+  <p class="eyebrow">Are the passing fixes real?</p><h2>A pass is not proof.</h2>
+  <p class="sub">Every passing fix is audited against the correct design with checks the worker never sees, and six impossible tasks
+  (a bug plus a test that contradicts its report) catch cheating outright: no honest fix can pass them.</p>
+  <div class="ba two-col">{cards}</div>
+  <p class="sub" style="font-size:15px">No worker edited a test; every cheat bent the code to the wrong test. Self-repair made the worker somewhat
+  more willing to do that (6 vs 4 of 12, not significant at this size). Gate amendments 3 and 4 now guard against it, and an anti-gaming round
+  where Mend repairs its own cheating is pre-registered.</p>
+  <div class="tablewrap"><table><tr><th>Set</th><th>Worker</th><th>Passed</th><th>Restored</th><th>Equivalent</th><th>Review</th><th>Gamed</th></tr>{rows}</table></div>
+  <p><a class="link" href="{REPO}#are-the-passing-fixes-real-fix-audit-and-impossible-task-probes">How the audit works →</a></p>
+</div></section>"""
+
+
 def render() -> str:
     f = facts()
     vrounds = json.dumps([{"before": r["before"], "after": r["after"], "kept": r["kept"], "amended": "stats" in r, "kind": r.get("kind", ""), "probes": r.get("probes")} for r in f["rounds"]])
@@ -377,6 +405,7 @@ def render() -> str:
 {hw_html}
 {rounds_html}
 {provenance_html()}
+{honesty_html()}
 {ablation_html()}
 <section id="judgment"><div class="wrap">
   <p class="eyebrow">Is self-healing self-defeating?</p><h2>Mend only fixes what isn't a choice.</h2>
