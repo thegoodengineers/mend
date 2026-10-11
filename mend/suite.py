@@ -9,6 +9,7 @@
     python -m mend.suite --board      # bring-up bugs on a whole sensor board netlist (also never seen)
 """
 
+import hashlib
 import json
 import os
 import shutil
@@ -69,6 +70,7 @@ def run_suite(task_ids: list[str] | None = None, label: str = "", heldout: bool 
         "realworld": realworld,
         "hardware": hardware,
         "domain": "board" if board else "schematics" if schematics else "hardware" if hardware else None,
+        "tasks_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),  # proves the task set did not change between runs
         "tasks": [],
     }
     counts: dict = {}
