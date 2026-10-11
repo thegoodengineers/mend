@@ -27,3 +27,12 @@ Detection created in group "Mend regression guards": "Mend: gate reverted a self
 | 8 | success | 6 | GATE REVERTED badd7dd |
 
 Each verdict matches its round record. Round 8 has 2 extra spans for the amendment-1 rules.
+
+## Second agent (read back 11 Oct, ~23:40 IST)
+
+| Round | Trace status | Spans | Verdict span output |
+|---|---|---|---|
+| analyst-1 | success | 6 | GATE KEPT 9931774 |
+
+Trace `ccef269f420e5fe1aacf5ac469e92c2e`: the round span, 4 rule spans (the same rules as worker round 8 on),
+and the verdict. Read back over the neatlogs MCP server (`get_trace_context`) a few minutes after it was sent.

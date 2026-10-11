@@ -18,7 +18,7 @@ self-repair it passed in 4.*
 
 **At a glance:** 11 self-repair rounds, 5 kept and 6 reverted by a pre-registered gate (one of them later accepted by a person) · whole-file
 rewrites 31 → 0 · model calls 235 → 107 · cost per task $0.040 → $0.015 · bugs it never saw: 9/10 →
-10/10 · a real open-source library: 2–3/8 → 8/8 · hardware designs it never saw: same 9/9 at −58% tokens · circuit schematics: same 8/8 at −64% tokens · a larger sensor schematic: 6–7/8 → 8/8 · security vulnerabilities checked by exploits: same 8/8 at −60% tokens · a second, different agent (a SQL analyst): one round, same 20/20 at −37% tokens · every gate verdict written back into neatlogs.
+10/10 · a real open-source library: 2–3/8 → 8/8 · hardware designs it never saw: same 9/9 at −58% tokens · circuit schematics: same 8/8 at −64% tokens · a larger sensor schematic: 6–7/8 → 8/8 · security vulnerabilities checked by exploits: same 8/8 at −60% tokens · a second, different agent (a SQL analyst): one round, same 20/20 at −37% tokens, and −42% on a database it never saw · every gate verdict written back into neatlogs.
 
 Every number in this README comes from a file in [`runs/`](runs/) or [`evidence/`](evidence/).
 If a number has no file behind it, it is not here.
@@ -34,7 +34,7 @@ If a number has no file behind it, it is not here.
 | The improvement is real, not noise | [paired statistics per decision](#self-repair-rounds-five-kept-six-reverted) (rounds 3–5 solid; rounds 1–2 rest on one task flip, said plainly); [leave-one-out ablation](evidence/ablation.json) (removing round 5: +61% tokens); 4 fixes reverted by the gate; re-check every decision [in your browser](https://thegoodengineers.github.io/mend/#verify) |
 | The fixes are real, not test-gaming | [fix audit](#are-the-passing-fixes-real-fix-audit-and-impossible-task-probes) of every passing fix against the correct design (hidden checks, circuit simulation); 6 impossible-task probes catch cheating; the one gamed fix (BD04) is shown, not hidden; gate amendments 3-4 guard it |
 | It knows when not to fix itself | [ask once, remember](#is-self-healing-self-defeating): trade-offs the rules don't settle go to a person, and the answer becomes a precedent. First real case: round 11 (less test-gaming for more tokens), [decided by the team](docs/precedents.json). This answers neatlogs' "Self-healing is self-defeating" |
-| It is not tied to one agent | [a second, different agent](#a-second-agent-mend-repairs-a-data-analyst-it-was-not-built-for): a SQL data analyst; the same supervisor and gate cut its tokens by 36.5% (two runs each side) in one round, no answer lost |
+| It is not tied to one agent | [a second, different agent](#a-second-agent-mend-repairs-a-data-analyst-it-was-not-built-for): a SQL data analyst; the same supervisor and gate cut its tokens by 36.5% (two runs each side) in one round, no answer lost; on a held-out database −42.4%, with one new failure shown |
 | The agent recovers from failures | [run_tests timed out, then fixed](evidence/t17-recovery-from-timeout.txt); in the live recording a tool call fails ("Permission denied") and the worker carries on |
 | You built in public | #neatHack posts on X: [kickoff](https://x.com/theintrodev/status/2108851736765141188), [the bug it found in itself](https://x.com/theintrodev/status/2109233575614927163), [hardware it never saw](https://x.com/theintrodev/status/2109300098023006412); full list in [hackathon.md](hackathon.md#neathack-posts-on-x) |
 | Code written during the hackathon | [commit history](https://github.com/thegoodengineers/mend/commits/main) (first commit: plans only, as the rules allow) |
@@ -379,6 +379,29 @@ it is a fix a careful person would also make. The point is that no person made i
 coding agent found it in the traces of an agent it had never seen, and the same gate kept it. Two earlier
 runs hit a crash in our harness, not a wrong answer; they are kept in
 [`runs/analyst/invalid/`](runs/analyst/invalid/) and not used.
+
+**Held-out: a database the supervisor never saw.** To check the fix is not tied to the shop, both
+versions answered 10 new questions ([`tasks/analyst_heldout.json`](tasks/analyst_heldout.json)) on
+`clinic.db` ([builder](agents/analyst/make_clinic_db.py)). It is a different schema (patients, doctors,
+appointments, payments) with its own traps. The questions and both databases are in the scorer pin.
+
+| Analyst | Runs | Correct | Tokens per run | Turns per run |
+|---|---|---|---|---|
+| Original | [v0](runs/analyst/2026-10-11T17-37-34-heldout-v0.json), [v0-r2](runs/analyst/2026-10-11T17-37-34-heldout-v0-r2.json) | 9, 9 of 10 | 48,211 · 53,758 | 42 · 45 |
+| After one Mend round | [r1](runs/analyst/2026-10-11T17-37-34-heldout-r1.json), [r2](runs/analyst/2026-10-11T17-37-35-heldout-r2.json) | 9, 10 of 10 | 27,771 · 30,917 | 20 · 22 |
+
+Mean tokens per run: 50,984 → 29,344 (−42.4%). The saving carries over to a database it never saw.
+The wrong answers, said plainly:
+- **The original fell into a trap twice** on H06 (money still owed). It joined payments to appointments,
+  so a fee paid in two parts was counted twice (35,429.5 instead of 20,944.5). The repaired analyst got
+  it right both times.
+- **The repaired analyst was wrong once** on H05 (no-show rate): it answered 0.0. The three sample rows
+  in its new schema overview show only `completed`, so it guessed the value `'no-show'` instead of
+  `'no_show'` and did not check. The fix made it faster and, once, overconfident.
+  - The training questions could not show this, because their status words match the data. Finding
+    it is what a held-out test is for.
+  - We did not tune anything after seeing it. Judging a fix for it fairly would need a fresh held-out
+    set.
 
 ### Are the passing fixes real? Fix audit and impossible-task probes
 

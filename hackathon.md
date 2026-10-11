@@ -613,3 +613,10 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
   - Mean −36.5%, about 2 turns per question instead of 4.
 - Said plainly: a cost win only, and a fix a careful person would also make. The point is that the loop
   built for a coding agent found it without help.
+- **Held-out database** (23:05-23:20): 10 new questions on `clinic.db` (patients, doctors,
+  appointments, payments), never seen by the supervisor.
+  - Original: 9, 9/10 at 48,211 and 53,758 tokens. It fell into the join fan-out trap on H06 both times.
+  - After round 1: 9, 10/10 at 27,771 and 30,917 (−42.4%).
+  - A new failure the training set could not show: once, the repaired analyst guessed a status value
+    (`'no-show'`) that its three sample rows did not contain, and answered 0.0 without checking.
+    Reported, not tuned away.

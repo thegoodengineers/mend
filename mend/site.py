@@ -72,13 +72,15 @@ def facts() -> dict:
     an = [json.loads(q.read_text(encoding="utf-8")) for q in sorted(an_dir.glob("*.json")) if q.name.count(".") == 1]
     an_round = next((json.loads(q.read_text(encoding="utf-8")) for q in sorted(an_dir.glob("*.round.json"))), None)
     an_v0 = next((r["worker_commit"] for r in an if an_round and r["run_id"] == an_round["before"]), None)
-    an_before = [r for r in an if r["worker_commit"] == an_v0]
+    an_before = [r for r in an if r["worker_commit"] == an_v0 and not r.get("heldout")]
     an_after = [r for r in an if an_round and an_round["kept"] and r["worker_commit"] == an_round["commit"]]
+    an_ho = [r for r in an if r.get("heldout")]  # clinic.db: original version vs the version after the round
+    an_ho_before, an_ho_after = [r for r in an_ho if r["worker_commit"] == an_v0], [r for r in an_ho if r["worker_commit"] != an_v0]
     held = [r for r in runs.values() if r.get("heldout") and not r.get("realworld") and not r.get("hardware") and not r.get("domain")]
     held_before = [r for r in held if r["worker_commit"] == "13defdb"]
     held_after = [r for r in held if r["worker_commit"] != "13defdb"]
     return {"rounds": round_list, "first": first, "story": story, "haiku": haiku, "opus": opus, "held_before": held_before, "held_after": held_after, "real_before": real_before, "real_after": real_after,
-            "hw_before": hw_before, "hw_after": hw_after, "sc_before": sc_before, "sc_after": sc_after, "bd_before": bd_before, "bd_after": bd_after, "se_before": se_before, "se_after": se_after, "an_before": an_before, "an_after": an_after,
+            "hw_before": hw_before, "hw_after": hw_after, "sc_before": sc_before, "sc_after": sc_after, "bd_before": bd_before, "bd_after": bd_after, "se_before": se_before, "se_after": se_after, "an_before": an_before, "an_after": an_after, "an_ho_before": an_ho_before, "an_ho_after": an_ho_after,
             "before_runs": before_runs, "after_runs": after_runs,
             "runs_total": len(full), "tasks_total": max((r["total"] for r in full), default=0)}
 
@@ -348,6 +350,10 @@ def render() -> str:
         return (f"{runs_solved(before)} → {runs_solved(after)} of {before[0]['total']} solved" if pa > pb
                 else f"same {pa:g}/{before[0]['total']}, {(1 - ta / tb) * 100:.0f}% fewer tokens")
     hw_line, sc_line, bd_line, se_line, an_line = (gain(f[k + "_before"], f[k + "_after"]) for k in ("hw", "sc", "bd", "se", "an"))
+    hb, ha = f["an_ho_before"], f["an_ho_after"]
+    an_ho_line = (f" On a database it never saw: {', '.join(str(r['passed']) for r in hb)} → {', '.join(str(r['passed']) for r in ha)} of "
+                  f"{hb[0]['total']} right, {(1 - sum(map(tokens, ha)) / len(ha) / (sum(map(tokens, hb)) / len(hb))) * 100:.0f}% fewer tokens."
+                  if hb and ha else "")
     hw_html = f"""
 <section id="hardware"><div class="wrap">
   <p class="eyebrow">Beyond software</p><h2>It carries over.</h2>
@@ -357,7 +363,7 @@ def render() -> str:
     <div class="tool card"><h3>Circuit schematics</h3><p>8 bring-up bugs in 7 circuit netlists: {esc(sc_line)}.</p></div>
     <div class="tool card"><h3>A sensor circuit</h3><p>8 bring-up bugs in one larger schematic: {esc(bd_line)}.</p></div>
     <div class="tool card"><h3>Security</h3><p>8 vulnerabilities, each checked by an exploit test: {esc(se_line) or "runs in progress"}.</p></div>
-    <div class="tool card"><h3>A different agent</h3><p>A SQL data analyst, not a coder. One Mend round, same supervisor and gate: {esc(an_line) or "runs in progress"}.</p></div>
+    <div class="tool card"><h3>A different agent</h3><p>A SQL data analyst, not a coder. One Mend round, same supervisor and gate: {esc(an_line) or "runs in progress"}.{esc(an_ho_line)}</p></div>
   </div>
   <p><a class="pill" href="hardware.html">See the waveforms, schematics and bugs →</a></p>
 </div></section>""" if hw_line or sc_line else ""

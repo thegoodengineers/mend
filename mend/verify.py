@@ -61,15 +61,19 @@ def expected_strings(rs: dict[str, dict]) -> list[str]:
             mb, ma = (sum(map(tokens, g)) / len(g) for g in (hb, ha))
             out += [f"{', '.join(str(r['passed']) for r in hb)} of {hb[0]['total']}", f"{mb:,.0f}",
                     f"{', '.join(str(r['passed']) for r in ha)} of {ha[0]['total']}", f"{ma:,.0f} ({pct(mb, ma)})"]
-    an = runs(RUNS / "analyst")
-    for commit in dict.fromkeys(r["worker_commit"] for r in an.values()):  # the second agent, one row per version
-        g = sorted((r for r in an.values() if r["worker_commit"] == commit), key=lambda r: r["run_id"].endswith("-r2"))
-        out += [f"{', '.join(str(r['passed']) for r in g)} of {g[0]['total']}", " · ".join(f"{tokens(r):,}" for r in g),
-                " · ".join(str(sum(t.get("turns") or 0 for t in r["tasks"])) for r in g)]
-    groups = [[r for r in an.values() if r["worker_commit"] == c] for c in dict.fromkeys(r["worker_commit"] for r in an.values())]
-    if len(groups) > 1:
-        mb, ma = (sum(map(tokens, g)) / len(g) for g in (groups[0], groups[-1]))
-        out.append(f"{mb:,.0f} → {ma:,.0f} ({pct(mb, ma)})")
+    an = runs(RUNS / "analyst")  # the second agent: training questions, then the held-out database
+    first = next((json.loads(q.read_text(encoding="utf-8")) for q in sorted((RUNS / "analyst").glob("*.round.json"))), None)
+    v0 = an[first["before"]]["worker_commit"] if first else None
+    for heldout in (False, True):
+        rs_ = [r for r in an.values() if bool(r.get("heldout")) == heldout]
+        commits = sorted(dict.fromkeys(r["worker_commit"] for r in rs_), key=lambda c: c != v0)  # original version first
+        groups = [sorted((r for r in rs_ if r["worker_commit"] == c), key=lambda r: r["run_id"].endswith("-r2")) for c in commits]
+        for g in groups:
+            out += [f"{', '.join(str(r['passed']) for r in g)} of {g[0]['total']}", " · ".join(f"{tokens(r):,}" for r in g),
+                    " · ".join(str(sum(t.get("turns") or 0 for t in r["tasks"])) for r in g)]
+        if len(groups) > 1:
+            mb, ma = (sum(map(tokens, g)) / len(g) for g in (groups[0], groups[-1]))
+            out.append(f"{mb:,.0f} → {ma:,.0f} ({pct(mb, ma)})")
     from mend.stats import all_rounds
     for i, r in enumerate(all_rounds(), 1):
         out.append(f"| {i} | {r['fixed']} / {r['broke']} | {r['p_passes']} | {r['token_ratio']} | [{r['ci_low']}, {r['ci_high']}] |")

@@ -19,18 +19,21 @@ REPO = "https://github.com/thegoodengineers/mend"
 TOKEN_SAVING = 0.15  # same value as mend.supervisor; imported there would pull in the SDK
 
 
-def rounds() -> list[tuple[int, dict]]:
+def rounds() -> list[tuple[int | str, dict]]:
+    """Worker rounds numbered 1, 2, ...; then rounds on the second agent as "analyst-1", ..."""
     out = []
     for p in sorted(RUNS.glob("*.round.json")):
         r = json.loads(p.read_text(encoding="utf-8"))
         if not r.get("rejected") and "after" in r:
             out.append((len(out) + 1, r))
+    for k, p in enumerate(sorted((RUNS / "analyst").glob("*.round.json")), 1):
+        out.append((f"analyst-{k}", json.loads(p.read_text(encoding="utf-8"))))
     return out
 
 
 def checks(r: dict) -> list[tuple[str, bool, str]]:
     """(rule, met?, detail) for each keep rule that applied to this round."""
-    s = round_stats(r)
+    s = r["stats"] if r.get("agent") == "analyst" else round_stats(r)  # analyst runs live in runs/analyst/
     if r.get("kind") == "anti-gaming":  # gate amendment 4
         p = r["probes"]
         return [("training passes held", r["after_passed"] >= r["before_passed"], f"{r['before_passed']} -> {r['after_passed']} of {r['total']}"),
@@ -50,7 +53,7 @@ def checks(r: dict) -> list[tuple[str, bool, str]]:
     return out
 
 
-def log_round(n: int, r: dict) -> dict:
+def log_round(n: int | str, r: dict) -> dict:
     """Log one round as a neatlogs trace (idempotent per round number). Needs neatlogs.init first."""
     import neatlogs
 
@@ -67,7 +70,7 @@ def log_round(n: int, r: dict) -> dict:
         return f"GATE {'KEPT' if kept else 'REVERTED'} {commit}"
 
     @neatlogs.span(kind="WORKFLOW")
-    def gate_round(round_no: int, title: str, before_run: str, after_run: str, diagnosis: str) -> dict:
+    def gate_round(round_no: int | str, title: str, before_run: str, after_run: str, diagnosis: str) -> dict:
         carrier: dict[str, str] = {}
         neatlogs.inject_trace_context(carrier)
         for rule, met, detail in checks(r):
