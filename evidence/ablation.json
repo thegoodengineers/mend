@@ -1,0 +1,58 @@
+{
+  "baseline": [
+    {
+      "run_id": "2026-10-10T11-50-52-after",
+      "passed": 29,
+      "total": 29,
+      "tokens": 347960,
+      "worker_commit": "c07f702"
+    },
+    {
+      "run_id": "2026-10-10T13-23-02",
+      "passed": 29,
+      "total": 29,
+      "tokens": 346214,
+      "worker_commit": "b345094"
+    },
+    {
+      "run_id": "2026-10-10T13-28-51",
+      "passed": 29,
+      "total": 29,
+      "tokens": 302153,
+      "worker_commit": "8bc38a9"
+    }
+  ],
+  "ablated": [
+    {
+      "run_id": "2026-10-11T04-55-05-ablate-r2",
+      "passed": 29,
+      "total": 29,
+      "tokens": 353131,
+      "worker_commit": "348dc6d",
+      "round": 2,
+      "removed": "f9dae91"
+    },
+    {
+      "run_id": "2026-10-11T04-55-05-ablate-r3",
+      "passed": 29,
+      "total": 29,
+      "tokens": 461763,
+      "worker_commit": "8d2a1c9",
+      "round": 3,
+      "removed": "931ea51"
+    },
+    {
+      "run_id": "2026-10-11T04-47-06-ablate-r5",
+      "passed": 29,
+      "total": 29,
+      "tokens": 535826,
+      "worker_commit": "b5db7fb",
+      "round": 5,
+      "removed": "c07f702"
+    }
+  ],
+  "not_removable_alone": {
+    "1": "e8a6baf",
+    "4": "7e2148e"
+  }
+}

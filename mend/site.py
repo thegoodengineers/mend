@@ -119,6 +119,30 @@ def provenance_html() -> str:
 </div></section>"""
 
 
+def ablation_html() -> str:
+    """Leave-one-out ablation (scripts/ablation.py): which kept fixes carry the gain."""
+    f = ROOT / "evidence" / "ablation.json"
+    if not f.exists():
+        return ""
+    a = json.loads(f.read_text(encoding="utf-8"))
+    mean = sum(b["tokens"] for b in a["baseline"]) / len(a["baseline"])
+    top = max(r["tokens"] for r in a["ablated"])
+    bars = "".join(
+        f'<div style="margin:10px 0"><div class="k">Without round {r["round"]} · {r["passed"]}/{r["total"]} solved · '
+        f'{r["tokens"]:,} tokens ({r["tokens"] / mean - 1:+.0%})</div>'
+        f'<div style="height:10px;border-radius:4px;background:var(--ink);width:{r["tokens"] / top * 100:.0f}%"></div></div>'
+        for r in sorted(a["ablated"], key=lambda r: -r["tokens"]))
+    return f"""
+<section id="ablation"><div class="wrap">
+  <p class="eyebrow">Which fixes carry the gain?</p><h2>Take one out, run it again.</h2>
+  <p class="sub">Today's worker with one kept fix reverted, re-run on all 29 tasks. Today's worker itself, run 3 times: 29/29 each time,
+  {mean:,.0f} tokens on average (dashed line). Rounds 1 and 4 cannot be removed alone: later fixes build on them.</p>
+  <div class="card" style="margin-top:20px;position:relative">{bars}
+  <div style="position:absolute;top:12px;bottom:12px;left:calc(24px + (100% - 48px) * {mean / top:.3f});border-left:2px dashed var(--mute)" title="today's worker, mean"></div></div>
+  <p class="sub">One run each · <a class="link" href="{REPO}/blob/main/evidence/ablation.json">evidence/ablation.json</a></p>
+</div></section>"""
+
+
 def render() -> str:
     f = facts()
     vrounds = json.dumps([{"before": r["before"], "after": r["after"], "kept": r["kept"]} for r in f["rounds"]])
@@ -319,6 +343,7 @@ footer{{padding:48px 0;color:var(--mute);font-size:14px}}
 {real_html}
 {rounds_html}
 {provenance_html()}
+{ablation_html()}
 <section id="judgment"><div class="wrap">
   <p class="eyebrow">Is self-healing self-defeating?</p><h2>Mend only fixes what isn't a choice.</h2>
   <p class="sub">neatlogs' founder <a class="link" href="https://neatlogs.com/blog/self-healing-is-self-defeating">argues</a> that a loop which fixes

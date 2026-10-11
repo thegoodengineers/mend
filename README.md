@@ -148,6 +148,29 @@ What this says, plainly:
 **Caveat:** the interval resamples tasks, not repeated runs, so it does not capture one task's
 run-to-run noise.
 
+**Which fixes actually carry the gain? (leave-one-out ablation)** We took today's worker, removed
+one kept fix with `git revert`, and re-ran all 29 tasks once
+([`scripts/ablation.py`](scripts/ablation.py) → [`evidence/ablation.json`](evidence/ablation.json),
+run files in [`runs/ablation/`](runs/ablation/)). Today's worker, run 3 times: 29/29 each time,
+302,153–347,960 tokens.
+
+| Fix removed | Solved | Tokens | vs today's mean |
+|---|---|---|---|
+| Round 5: auto re-run the suite after an edit, finish on green | 29/29 | 535,826 | +61% |
+| Round 3: test-first workflow, stop on green | 29/29 | 461,763 | +39% |
+| Round 2: `edit_file` shows the near match on a miss | 29/29 | 353,131 | +6% |
+
+What this says:
+- **Rounds 5 and 3 carry the savings.** Removing either one costs far more than run-to-run noise.
+- **Round 2 adds little on its own today.** Its run lands just above today's range, which matches
+  the paired statistics above, where round 2 rested on one task flip.
+- **Rounds 1 and 4 cannot be removed alone.** Their reverts conflict, because later fixes build on
+  them; for example, every later round uses round 1's `edit_file`.
+- **No single removable fix changes the solve rate.** It stays 29/29 each time; the remaining
+  fixes compensate.
+
+Each ablation is one run.
+
 **The first bug Mend found in itself.** The worker read only the first 200 lines of the
 233-line `ledger.py`, then rewrote the whole file to change one word. That silently deleted
 everything after line 200. Task 23 failed at the 15-turn limit; after the fix it passed in 8

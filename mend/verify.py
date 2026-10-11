@@ -58,6 +58,16 @@ def expected_strings(rs: dict[str, dict]) -> list[str]:
     from mend.stats import all_rounds
     for i, r in enumerate(all_rounds(), 1):
         out.append(f"| {i} | {r['fixed']} / {r['broke']} | {r['p_passes']} | {r['token_ratio']} | [{r['ci_low']}, {r['ci_high']}] |")
+    abl = ROOT / "evidence" / "ablation.json"
+    if abl.exists():
+        a = json.loads(abl.read_text(encoding="utf-8"))
+        mean = sum(b["tokens"] for b in a["baseline"]) / len(a["baseline"])
+        lo, hi = min(b["tokens"] for b in a["baseline"]), max(b["tokens"] for b in a["baseline"])
+        out.append(f"{lo:,}–{hi:,} tokens")
+        for r in a["ablated"]:
+            run = json.loads((RUNS / "ablation" / f"{r['run_id']}.json").read_text(encoding="utf-8"))
+            assert run["input_tokens"] + run["output_tokens"] == r["tokens"], r["run_id"]
+            out.append(f"| {r['passed']}/{r['total']} | {r['tokens']:,} | {r['tokens'] / mean - 1:+.0%} |")
     usage = ROOT / "evidence" / "tool-usage.json"
     for u in (json.loads(usage.read_text(encoding="utf-8")).values() if usage.exists() else []):
         c = u["counts"]
