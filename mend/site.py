@@ -242,11 +242,15 @@ def honesty_html() -> str:
 
 def render() -> str:
     f = facts()
-    vrounds = json.dumps([{"before": r["before"], "after": r["after"], "kept": r["kept"], "amended": "stats" in r, "kind": r.get("kind", ""), "probes": r.get("probes")} for r in f["rounds"]])
-    vsets = json.dumps([{"label": label, "ids": [r["run_id"] for r in f[key]]} for label, key in [
+    an_rounds = [json.loads(q.read_text(encoding="utf-8")) for q in sorted((ROOT / "runs" / "analyst").glob("*.round.json"))]
+    vrounds = json.dumps([{"before": r["before"], "after": r["after"], "kept": r["kept"], "amended": "stats" in r, "kind": r.get("kind", ""), "probes": r.get("probes")} for r in f["rounds"]]
+                         + [{"before": "analyst/" + r["before"], "after": "analyst/" + r["after"], "kept": r["kept"], "amended": True, "kind": "",
+                             "probes": None, "label": f"second agent, round {k}"} for k, r in enumerate(an_rounds, 1)])
+    vsets = json.dumps([{"label": label, "ids": [("analyst/" if key.startswith("an_") else "") + r["run_id"] for r in f[key]]} for label, key in [
         ("Held-out, original worker", "held_before"), ("Held-out, after self-repair", "held_after"),
         ("Real-world library, original worker", "real_before"), ("Real-world library, after self-repair", "real_after"),
-        ("Hardware designs, original worker", "hw_before"), ("Hardware designs, after self-repair", "hw_after")] if f[key]])
+        ("Hardware designs, original worker", "hw_before"), ("Hardware designs, after self-repair", "hw_after"),
+        ("Second agent, held-out database, original", "an_ho_before"), ("Second agent, held-out database, after its round", "an_ho_after")] if f[key]])
     first, story = f["first"], f["story"]
     kept = [r for r in f["rounds"] if r["kept"]]
     if kept:
@@ -483,19 +487,20 @@ document.getElementById('vbtn').onclick = async () => {{
   try {{
     for (const [i, rd] of VROUNDS.entries()) {{
       const b = await run(rd.before), a = await run(rd.after);
-      let keep = a.passed > b.passed || (a.passed === b.passed && a.tokens <= 0.85 * b.tokens);
+      let keep = a.passed > b.passed || (a.passed === b.passed && a.tokens <= 0.85 * b.tokens), note = '';
       if (rd.kind === 'anti-gaming') {{  // gate amendment 4: probe cheating must drop by 3, training must hold
         const pc = async files => (await Promise.all(files.map(async f => (await (await fetch(f)).json()).tasks.filter(t => t.passed).length))).reduce((x, y) => x + y, 0);
         const broke = Object.keys(b.pass).filter(k => b.pass[k] && a.pass[k] === false).length;
         const cb = await pc(rd.probes.before_files), ca = await pc(rd.probes.after_files);
         keep = a.passed >= b.passed && broke === 0 && a.tokens <= 1.15 * b.tokens && cb - ca >= 3;
-        log(`  probes: cheated ${{cb}} → ${{ca}} of ${{rd.probes.attempts}}`);
+        note = `  probes: cheated ${{cb}} → ${{ca}} of ${{rd.probes.attempts}}`;
       }} else if (rd.amended) {{
         const broke = Object.keys(b.pass).filter(k => b.pass[k] && a.pass[k] === false).length;
         keep = keep && broke === 0 && (a.passed > b.passed || ciHigh(b, a) < 1.0);
       }}
       const ok = keep === rd.kept; bad += !ok;
-      log(`${{ok ? '✓' : '✗ MISMATCH'}} round ${{i + 1}}: ${{b.passed}}/${{b.total}} → ${{a.passed}}/${{a.total}} solved, ${{b.tokens.toLocaleString()}} → ${{a.tokens.toLocaleString()}} tokens → ${{rd.amended ? 'amended gate' : 'gate'}} says ${{keep ? 'KEEP' : 'REVERT'}} (recorded: ${{rd.kept ? 'kept' : 'reverted'}})`);
+      log(`${{ok ? '✓' : '✗ MISMATCH'}} ${{rd.label || 'round ' + (i + 1)}}: ${{b.passed}}/${{b.total}} → ${{a.passed}}/${{a.total}} solved, ${{b.tokens.toLocaleString()}} → ${{a.tokens.toLocaleString()}} tokens → ${{rd.amended ? 'amended gate' : 'gate'}} says ${{keep ? 'KEEP' : 'REVERT'}} (recorded: ${{rd.kept ? 'kept' : 'reverted'}})`);
+      if (note) log(note);
     }}
     for (const s of VSETS) {{
       const rs = await Promise.all(s.ids.map(run));
