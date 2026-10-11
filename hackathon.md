@@ -434,3 +434,22 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
 | 5 | Entire checkpoint screenshot | ⬜ To post | — |
 | 6 | cfo.ai business plan screenshot | ⬜ To post | — |
 | 7 | Final video + submission quote post | ⬜ To post | — |
+
+### 2026-10-11 ~10:45-11:30 IST - PR #8 reviewed, round 8, gate audit log, neatlogs ingestion issue
+- Reviewed and merged Bhumika's PR #8 (`report.html?demo=1`). Follow-up fixes on top of it: show the
+  failing task's cause rather than a raw table; name the fix; read the diagnosis path from the
+  round record; escape `</` in the embedded JSON; add a test (`e530822`).
+- **Round 8**, the first under gate amendment 1, ran on the clean runner. Diagnosis was saved as
+  `-d2` (the fresh-name fix worked). Patch: a prompt rule about not reading tests. Result: 29/29,
+  tokens 302,153 → 368,440 (+21.9%), paired interval [1.099, 1.355], so **reverted**. Totals:
+  8 rounds, 5 kept, 3 reverted.
+- Scout pass 5: no rival has passed Mend on evidence. Closest on rigour: Roster (pre-registered,
+  McNemar) and PaperCI.
+- Built `mend/audit.py`: every gate verdict becomes a "mend-gate" neatlogs trace, with one span per
+  keep rule. Backfilled rounds 1-8 (trace IDs in `evidence/gate-audit.json`), and the supervisor now
+  logs each new round. The MCP `log_trace` tool was tried first.
+- **neatlogs issue:** no trace created today is readable over MCP. SDK traces return `not_found`
+  or 409; `log_trace` traces stay "processing" and then return 409. Yesterday's traces read fine.
+  The project is on the free tier. Repro and a Discord message draft are in
+  `evidence/neatlogs-ingestion-11oct.md`. So the gate traces are **sent but not yet verified**.
+  Rounds 7-8 were unaffected, because they diagnosed a run from 10 Oct.

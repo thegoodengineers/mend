@@ -333,6 +333,12 @@ def one_round(run_id: str) -> dict:
         except Exception as exc:  # a guard is a bonus; never lose the round over it
             record["guard"] = {"status": f"error: {exc}"[:300]}
     (RUNS / f"{after['run_id']}.round.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
+    try:  # the gate's verdict also goes into neatlogs as its own trace (mend/audit.py)
+        from mend import audit
+        n = next(i for i, r in audit.rounds() if r["after"] == after["run_id"])
+        audit.log_round(n, record)
+    except Exception as exc:  # the audit trace is a bonus; never lose the round over it
+        print(f"gate audit trace not logged: {exc}")
     print(f"round: {before['passed']} -> {after['passed']} of {after['total']}, tokens {tokens(before)} -> {tokens(after)}; "
           f"{'KEPT' if kept else 'REVERTED'} {commit}")
     return record

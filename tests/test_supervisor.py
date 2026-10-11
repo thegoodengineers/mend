@@ -83,3 +83,12 @@ def test_second_diagnosis_of_a_run_gets_a_fresh_name(tmp_path, monkeypatch):
     (tmp_path / "r1.diagnosis.md").write_text("round 7")
     (tmp_path / "r1-d2.diagnosis.md").write_text("round 8")
     assert sup.fresh_stem("r1") == "r1-d3"
+
+
+def test_audit_rules_agree_with_every_recorded_decision():
+    from mend.audit import checks, rounds
+    for n, r in rounds():
+        met = {rule: ok for rule, ok, _ in checks(r)}
+        base = met["more tasks pass"] or met["same tasks pass with >=15% fewer tokens"]
+        amended = all(ok for rule, ok in met.items() if rule.startswith("amendment"))
+        assert (base and amended) == r["kept"], n
