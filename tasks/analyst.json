@@ -1,0 +1,122 @@
+[
+ {
+  "id": "A01",
+  "question": "How many paid orders were placed in 2026?",
+  "sql": "SELECT COUNT(*) FROM orders WHERE status = 'paid' AND order_date >= '2026-01-01' AND order_date < '2027-01-01'",
+  "kind": "number"
+ },
+ {
+  "id": "A02",
+  "question": "What was the revenue in December 2025? Revenue is quantity times unit price, over paid orders only. Round to 2 decimals.",
+  "sql": "SELECT ROUND(SUM(i.qty * i.unit_price), 2) FROM orders o JOIN order_items i ON i.order_id = o.id WHERE o.status = 'paid' AND o.order_date >= '2025-12-01' AND o.order_date < '2026-01-01'",
+  "kind": "number"
+ },
+ {
+  "id": "A03",
+  "question": "Which product category brought in the most revenue from paid orders? Answer with the category name.",
+  "sql": "SELECT p.category FROM orders o JOIN order_items i ON i.order_id = o.id JOIN products p ON p.id = i.product_id WHERE o.status = 'paid' GROUP BY p.category ORDER BY SUM(i.qty * i.unit_price) DESC LIMIT 1",
+  "kind": "text"
+ },
+ {
+  "id": "A04",
+  "question": "How many different customers have placed at least one paid order?",
+  "sql": "SELECT COUNT(DISTINCT customer_id) FROM orders WHERE status = 'paid'",
+  "kind": "number"
+ },
+ {
+  "id": "A05",
+  "question": "What is the average value of a paid order (the total of its lines)? Round to 2 decimals.",
+  "sql": "SELECT ROUND(AVG(v), 2) FROM (SELECT SUM(i.qty * i.unit_price) AS v FROM orders o JOIN order_items i ON i.order_id = o.id WHERE o.status = 'paid' GROUP BY o.id)",
+  "kind": "number"
+ },
+ {
+  "id": "A06",
+  "question": "How many customers have no country recorded?",
+  "sql": "SELECT COUNT(*) FROM customers WHERE country IS NULL OR TRIM(country) = ''",
+  "kind": "number"
+ },
+ {
+  "id": "A07",
+  "question": "What percentage of all orders were cancelled or refunded? Round to 1 decimal.",
+  "sql": "SELECT ROUND(100.0 * SUM(status IN ('cancelled', 'refunded')) / COUNT(*), 1) FROM orders",
+  "kind": "number"
+ },
+ {
+  "id": "A08",
+  "question": "How much revenue from paid orders came from products that are no longer active? Round to 2 decimals.",
+  "sql": "SELECT ROUND(SUM(i.qty * i.unit_price), 2) FROM orders o JOIN order_items i ON i.order_id = o.id JOIN products p ON p.id = i.product_id WHERE o.status = 'paid' AND p.active = 0",
+  "kind": "number"
+ },
+ {
+  "id": "A09",
+  "question": "Which customer spent the most on paid orders? Answer with the customer's id (two customers share a name).",
+  "sql": "SELECT o.customer_id FROM orders o JOIN order_items i ON i.order_id = o.id WHERE o.status = 'paid' GROUP BY o.customer_id ORDER BY SUM(i.qty * i.unit_price) DESC LIMIT 1",
+  "kind": "number"
+ },
+ {
+  "id": "A10",
+  "question": "How many Mugs were sold in paid orders during 2025?",
+  "sql": "SELECT SUM(i.qty) FROM orders o JOIN order_items i ON i.order_id = o.id JOIN products p ON p.id = i.product_id WHERE o.status = 'paid' AND p.name = 'Mug' AND o.order_date < '2026-01-01'",
+  "kind": "number"
+ },
+ {
+  "id": "A11",
+  "question": "Which month had the highest revenue from paid orders (quantity times unit price)? Answer as YYYY-MM.",
+  "sql": "SELECT strftime('%Y-%m', o.order_date) m FROM orders o JOIN order_items i ON i.order_id=o.id WHERE o.status='paid' GROUP BY m ORDER BY SUM(i.qty*i.unit_price) DESC LIMIT 1",
+  "kind": "text"
+ },
+ {
+  "id": "A12",
+  "question": "By what percent did revenue from paid orders change from January 2026 to February 2026? Negative if it fell. Round to 1 decimal.",
+  "sql": "SELECT ROUND(100.0*(f-j)/j,1) FROM (SELECT SUM(CASE WHEN o.order_date>='2026-01-01' AND o.order_date<'2026-02-01' THEN i.qty*i.unit_price END) j, SUM(CASE WHEN o.order_date>='2026-02-01' AND o.order_date<'2026-03-01' THEN i.qty*i.unit_price END) f FROM orders o JOIN order_items i ON i.order_id=o.id WHERE o.status='paid')",
+  "kind": "number"
+ },
+ {
+  "id": "A13",
+  "question": "What is the median value of a paid order (the total of its lines)? Round to 2 decimals.",
+  "sql": "WITH v AS (SELECT SUM(i.qty*i.unit_price) x FROM orders o JOIN order_items i ON i.order_id=o.id WHERE o.status='paid' GROUP BY o.id), r AS (SELECT x, ROW_NUMBER() OVER (ORDER BY x) rn, COUNT(*) OVER () n FROM v) SELECT ROUND(AVG(x),2) FROM r WHERE rn IN ((n+1)/2, (n+2)/2)",
+  "kind": "number"
+ },
+ {
+  "id": "A14",
+  "question": "How many customers have placed two or more paid orders?",
+  "sql": "SELECT COUNT(*) FROM (SELECT customer_id FROM orders WHERE status='paid' GROUP BY customer_id HAVING COUNT(*)>=2)",
+  "kind": "number"
+ },
+ {
+  "id": "A15",
+  "question": "What percentage of all paid-order revenue came from the single customer who spent the most? Round to 1 decimal.",
+  "sql": "WITH s AS (SELECT o.customer_id c, SUM(i.qty*i.unit_price) v FROM orders o JOIN order_items i ON i.order_id=o.id WHERE o.status='paid' GROUP BY c) SELECT ROUND(100.0*MAX(v)/SUM(v),1) FROM s",
+  "kind": "number"
+ },
+ {
+  "id": "A16",
+  "question": "How many days passed, on average, between a customer's first and second paid order? Only count customers with at least two paid orders. Round to 1 decimal.",
+  "sql": "WITH r AS (SELECT customer_id c, order_date d, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date, id) rn FROM orders WHERE status='paid') SELECT ROUND(AVG(julianday(b.d)-julianday(a.d)),1) FROM r a JOIN r b ON a.c=b.c AND a.rn=1 AND b.rn=2",
+  "kind": "number"
+ },
+ {
+  "id": "A17",
+  "question": "Which product had the biggest drop in units sold in paid orders from December 2025 to January 2026? Answer with the product name.",
+  "sql": "SELECT p.name FROM products p LEFT JOIN (SELECT i.product_id pid, SUM(CASE WHEN o.order_date>='2025-12-01' AND o.order_date<'2026-01-01' THEN i.qty ELSE 0 END) dec, SUM(CASE WHEN o.order_date>='2026-01-01' AND o.order_date<'2026-02-01' THEN i.qty ELSE 0 END) jan FROM orders o JOIN order_items i ON i.order_id=o.id WHERE o.status='paid' GROUP BY i.product_id) u ON u.pid=p.id ORDER BY COALESCE(u.dec,0)-COALESCE(u.jan,0) DESC LIMIT 1",
+  "kind": "text"
+ },
+ {
+  "id": "A18",
+  "question": "How many paid orders contained at least one office-category product?",
+  "sql": "SELECT COUNT(DISTINCT o.id) FROM orders o JOIN order_items i ON i.order_id=o.id JOIN products p ON p.id=i.product_id WHERE o.status='paid' AND p.category='office'",
+  "kind": "number"
+ },
+ {
+  "id": "A19",
+  "question": "What is the total revenue lost to refunds, i.e. the value of refunded orders (quantity times unit price)? Round to 2 decimals.",
+  "sql": "SELECT ROUND(SUM(i.qty*i.unit_price),2) FROM orders o JOIN order_items i ON i.order_id=o.id WHERE o.status='refunded'",
+  "kind": "number"
+ },
+ {
+  "id": "A20",
+  "question": "Which country's customers brought in the most paid-order revenue? Ignore customers with no country recorded. Answer with the country.",
+  "sql": "SELECT c.country FROM orders o JOIN order_items i ON i.order_id=o.id JOIN customers c ON c.id=o.customer_id WHERE o.status='paid' AND c.country IS NOT NULL GROUP BY c.country ORDER BY SUM(i.qty*i.unit_price) DESC LIMIT 1",
+  "kind": "text"
+ }
+]
