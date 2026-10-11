@@ -495,3 +495,5 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
   - both results, with the planted bugs table
   - the main page has a short teaser linking to it
 - Post 2 published by the user: https://x.com/theintrodev/status/2109233575614927163
+- Removed the "Step through it" demo overlay from the main page at the user's request
+  (`mend/demo.py` deleted). The report page's separate `?demo=1` mode is unlinked and stays.

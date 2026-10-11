@@ -10,7 +10,6 @@ import re
 import sys
 
 from mend.chart import dumbbell
-from mend.demo import demo_block
 from mend.report import REPO, load_rounds, load_runs
 from mend.tasks import ROOT
 
@@ -205,7 +204,6 @@ def render() -> str:
         ("Held-out, original worker", "held_before"), ("Held-out, after self-repair", "held_after"),
         ("Real-world library, original worker", "real_before"), ("Real-world library, after self-repair", "real_after"),
         ("Hardware designs, original worker", "hw_before"), ("Hardware designs, after self-repair", "hw_after")] if f[key]])
-    demo = demo_block(f["first"], f["story"]["title"] if f["story"] else "")
     first, story = f["first"], f["story"]
     kept = [r for r in f["rounds"] if r["kept"]]
     if kept:
@@ -351,7 +349,7 @@ def render() -> str:
   <div class="hero-grid">
     <div><p class="intro">Mend reads its own neatlogs traces, works out why it failed, patches its own code, and keeps
     the fix only if a full re-run gets better. Otherwise it reverts.</p>
-    <div class="cta"><a class="pill" href="#watch" onclick="document.getElementById('watch').showModal();document.getElementById('watchv').play();return false;">&#9654; Watch it fix itself</a><a class="pill ghost" href="?demo=1">Step through it</a><a class="pill ghost" href="#evidence">See the evidence</a><a class="pill ghost" href="report.html">Full report</a></div></div>
+    <div class="cta"><a class="pill" href="#watch" onclick="document.getElementById('watch').showModal();document.getElementById('watchv').play();return false;">&#9654; Watch it fix itself</a><a class="pill ghost" href="#evidence">See the evidence</a><a class="pill ghost" href="report.html">Full report</a></div></div>
     {hero_stat}
   </div>
 </div></header>
@@ -465,7 +463,6 @@ document.getElementById('vbtn').onclick = async () => {{
 <form method="dialog" style="position:absolute;top:10px;right:12px;margin:0"><button aria-label="Close" style="border:0;border-radius:999px;background:#f4f4ee;padding:6px 12px;font:600 14px Inter;cursor:pointer" onclick="document.getElementById('watchv').pause()">Close</button></form>
 <p style="margin:0;padding:10px 16px;color:#cbcbbf;font:13px Inter">Live recording at real speed: the original worker vs the self-repaired worker on the same task. Both runs traced in neatlogs. Narration is synthetic voice.</p>
 </dialog>
-{demo}
 </body></html>"""
 
 

@@ -69,7 +69,7 @@ footer{padding:48px 0;color:var(--mute);font-size:14px}
   <div class="hero-grid">
     <div><p class="intro">Mend reads its own neatlogs traces, works out why it failed, patches its own code, and keeps
     the fix only if a full re-run gets better. Otherwise it reverts.</p>
-    <div class="cta"><a class="pill" href="#watch" onclick="document.getElementById('watch').showModal();document.getElementById('watchv').play();return false;">&#9654; Watch it fix itself</a><a class="pill ghost" href="?demo=1">Step through it</a><a class="pill ghost" href="#evidence">See the evidence</a><a class="pill ghost" href="report.html">Full report</a></div></div>
+    <div class="cta"><a class="pill" href="#watch" onclick="document.getElementById('watch').showModal();document.getElementById('watchv').play();return false;">&#9654; Watch it fix itself</a><a class="pill ghost" href="#evidence">See the evidence</a><a class="pill ghost" href="report.html">Full report</a></div></div>
     <div class="stat"><span class="k">5 self-repair rounds kept · 4 reverted by the gate</span><span class="big">-24%<em> tokens</em></span><span class="sub">latest chain of 1 rounds: 29/29 → 29/29 tasks solved, 456,563 → 347,960 tokens (single runs)</span><a class="link" href="#rounds">see every round →</a></div>
   </div>
 </div></header>
@@ -251,48 +251,4 @@ document.getElementById('vbtn').onclick = async () => {
 <form method="dialog" style="position:absolute;top:10px;right:12px;margin:0"><button aria-label="Close" style="border:0;border-radius:999px;background:#f4f4ee;padding:6px 12px;font:600 14px Inter;cursor:pointer" onclick="document.getElementById('watchv').pause()">Close</button></form>
 <p style="margin:0;padding:10px 16px;color:#cbcbbf;font:13px Inter">Live recording at real speed: the original worker vs the self-repaired worker on the same task. Both runs traced in neatlogs. Narration is synthetic voice.</p>
 </dialog>
-<style>
-#demo{position:fixed;inset:0;background:rgba(230,230,221,.97);z-index:50;display:none;align-items:center;justify-content:center;padding:24px}
-#demo.on{display:flex} #demo .box{width:min(980px,100%);background:#f4f4ee;border-radius:24px;padding:32px;box-shadow:0 30px 80px rgba(15,15,13,.15)}
-#demo .lbl{font:600 13px Inter,sans-serif;color:#5d5d55;margin:0 0 10px} #demo h3{font:800 clamp(28px,4vw,44px)/1 'Inter Tight',sans-serif;letter-spacing:-.03em;margin:0 0 14px}
-#demo .it{font:italic 400 22px/1.35 'Instrument Serif',Georgia,serif;color:#3a3a35;margin:0}
-#demo ol{list-style:none;margin:16px 0 0;padding:0;font:13px/1.45 'JetBrains Mono',monospace;max-height:52vh;overflow:auto}
-#demo li{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:6px 10px;border-radius:8px;opacity:0;transform:translateY(6px);transition:all .35s}
-#demo li.in{opacity:1;transform:none} #demo li.bad{background:rgba(184,58,58,.10)} #demo li.ok{background:rgba(22,121,74,.10)}
-#demo li b{font-weight:600} #demo li span{color:#5d5d55;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#demo .row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:12px;flex-wrap:wrap}
-#demo .dots i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#cbcbbf;margin-right:6px} #demo .dots i.on{background:#0f0f0d}
-#demo .hint{font-size:13px;color:#5d5d55} #demo .num{font:800 64px/1 'Inter Tight',sans-serif;letter-spacing:-.04em}
-#demo .ok{color:#16794a} #demo .bad{color:#b83a3a}
-@media (prefers-reduced-motion:reduce){#demo li{transition:none}}
-</style><div id="demo" role="dialog" aria-label="Self-repair replay"><div class="box"><div class="scene"></div><div class="row"><div class="dots"></div><span class="hint">click or space: next · Esc: close</span></div></div></div><script>window.MEND_DEMO={"task": "23", "report": "A customer's payment was applied to their newest invoice instead of the oldest one.", "before": {"steps": [{"tool": "list_files", "detail": "", "out": "conftest.py", "flag": ""}, {"tool": "read_file", "detail": "invoicer/ledger.py", "out": "1: \"\"\"Customer ledger: invoices, payments, credit notes, allocation, a", "flag": ""}, {"tool": "read_file", "detail": "invoicer/invoice.py", "out": "1: from dataclasses import dataclass, field", "flag": ""}, {"tool": "read_file", "detail": "tests/test_ledger.py", "out": "1: from datetime import date", "flag": ""}, {"tool": "run_tests", "detail": "test_payments_settle_oldest_invoice_first", "out": "FAILED", "flag": "bad"}, {"tool": "read_file", "detail": "invoicer/ledger.py", "out": "140:     def open_items(self, customer: str) -> list[OpenItem]:", "flag": ""}, {"tool": "write_file", "detail": "invoicer/ledger.py \u00b7 <7526 characters: the whole file>", "out": "wrote invoicer/ledger.py (7526 chars)", "flag": "bad"}, {"tool": "read_file", "detail": "invoicer/ledger.py", "out": "200:             days = (today - item.due).days", "flag": ""}, {"tool": "read_file", "detail": "invoicer/ledger.py", "out": "200:             days = (today - item.due).days", "flag": ""}, {"tool": "list_files", "detail": "", "out": "conftest.py", "flag": ""}, {"tool": "read_file", "detail": "invoicer/ledger.py", "out": "195:         \"\"\"Simple interest on overdue unpaid amounts, on a 365-da", "flag": ""}, {"tool": "run_tests", "detail": "test_payments_settle_oldest_invoice_first", "out": "PASSED", "flag": "ok"}, {"tool": "run_tests", "detail": "full suite", "out": "FAILED", "flag": "bad"}, {"tool": "read_file", "detail": "invoicer/ledger.py", "out": "1: \"\"\"Customer ledger: invoices, payments, credit notes, allocation, a", "flag": ""}, {"tool": "run_tests", "detail": "test_late_interest", "out": "FAILED", "flag": "bad"}, {"tool": "read_file", "detail": "conftest.py", "out": "\"\"", "flag": ""}], "turns": 15, "trace": "1636ec5a"}, "after": {"steps": [{"tool": "list_files", "detail": "", "out": "conftest.py", "flag": ""}, {"tool": "read_file", "detail": "invoicer/invoice.py", "out": "1: from dataclasses import dataclass, field", "flag": ""}, {"tool": "read_file", "detail": "invoicer/ledger.py", "out": "1: \"\"\"Customer ledger: invoices, payments, credit notes, allocation, a", "flag": ""}, {"tool": "read_file", "detail": "tests/test_ledger.py", "out": "1: from datetime import date", "flag": ""}, {"tool": "run_tests", "detail": "test_payments_settle_oldest_invoice_first", "out": "FAILED", "flag": "bad"}, {"tool": "edit_file", "detail": "invoicer/ledger.py", "out": "edited invoicer/ledger.py: replaced 1 line(s) with 1 line(s)", "flag": "ok"}, {"tool": "run_tests", "detail": "test_payments_settle_oldest_invoice_first", "out": "PASSED", "flag": "ok"}, {"tool": "run_tests", "detail": "full suite", "out": "PASSED", "flag": "ok"}], "turns": 8, "trace": "78712d5b"}, "cause": "The worker read only the first 200 lines of a longer file, because read_file pages at 200 lines by default and gives no sign that more lines exist. It then used write_file, which replaces the whole file, to submit the full content with a one-word change. Everything after line 200 was dropped, so late_interest, statement and export_rows broke. It spent its remaining turns re-reading the now-truncated file looking for ", "fix": "Add a targeted edit_file (exact string replace) tool and steer edits away from whole-file rewrites", "commit": "e8a6baf", "score": [27, 28, 28], "tokens": [933181, 851463]};</script><script>
-(function(){
-  var D = window.MEND_DEMO; if (!D || new URLSearchParams(location.search).get('demo') !== '1') return;
-  var el = document.getElementById('demo'); el.classList.add('on');
-  var box = el.querySelector('.box'), dots = el.querySelector('.dots'), i = 0, timer = null;
-  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-  function list(steps){ return '<ol>' + steps.map(function(s){ return '<li class="'+s.flag+'"><b>'+esc(s.tool)+'</b><span>'+esc(s.detail)+(s.out?' → '+esc(s.out):'')+'</span></li>'; }).join('') + '</ol>'; }
-  var fmt = function(n){ return n.toLocaleString('en-US'); };
-  var scenes = [
-    {t: 6000, h: '<p class="lbl">Task '+D.task+' · original worker</p><h3>A user reports a bug.</h3><p class="it">“'+esc(D.report)+'”</p>'},
-    {t: 0, h: '<p class="lbl">neatlogs trace '+D.before.trace+' · '+D.before.turns+' turns, failed</p><h3>The worker tries, and breaks things.</h3>'+list(D.before.steps), steps: true},
-    {t: 9000, h: '<p class="lbl">Supervisor · diagnosis from the trace</p><h3>Found it.</h3><p class="it">'+esc(D.cause)+'</p>'},
-    {t: 7000, h: '<p class="lbl">Patch · written by Claude Code · commit '+esc(D.commit)+'</p><h3>Mend fixes itself.</h3><p class="it">'+esc(D.fix)+'</p>'},
-    {t: 0, h: '<p class="lbl">neatlogs trace '+D.after.trace+' · same task, new worker</p><h3>Re-run: one precise edit.</h3>'+list(D.after.steps), steps: true},
-    {t: 9000, h: '<p class="lbl">Kept, because the numbers improved</p><h3><span class="num bad">'+D.score[0]+'</span> → <span class="num ok">'+D.score[1]+'</span> <span class="it">of '+D.score[2]+' tasks</span></h3><p class="it">Tokens '+fmt(D.tokens[0])+' → '+fmt(D.tokens[1])+'. Every fix is gated like this: keep it only if a full re-run gets better.</p>'}
-  ];
-  function show(n){
-    clearTimeout(timer); i = n; if (i >= scenes.length) { el.classList.remove('on'); return; }
-    box.querySelector('.scene').innerHTML = scenes[i].h;
-    dots.innerHTML = scenes.map(function(_, k){ return '<i class="'+(k===i?'on':'')+'"></i>'; }).join('');
-    if (scenes[i].steps) {
-      var lis = box.querySelectorAll('li'), k = 0;
-      (function next(){ if (k < lis.length) { lis[k++].classList.add('in'); timer = setTimeout(next, 650); } else { timer = setTimeout(function(){ show(i+1); }, 2500); } })();
-    } else { timer = setTimeout(function(){ show(i+1); }, scenes[i].t); }
-  }
-  el.addEventListener('click', function(){ show(i+1); });
-  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { clearTimeout(timer); el.classList.remove('on'); } if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); show(i+1); } });
-  show(0);
-})();
-</script>
 </body></html>

@@ -5,7 +5,7 @@ Tag @neatlogs, and @entirehq or @arithecfo where the post is about Entire or cfo
 
 ## 1. The bug it found in itself (screenshot: the demo trace, or the live video at 0:30)
 our agent found its own bug. it read 200 of 233 lines of a file, then rewrote the whole file to change one word, silently deleting the rest. mend caught it in its @neatlogs traces and gave itself an edit tool. 27/28 -> 28/28 #neatHack
-https://thegoodengineers.github.io/mend/?demo=1
+https://thegoodengineers.github.io/mend/
 
 ## 2. Five rounds, no human
 5 self-repair rounds, no human in the loop. each one: read traces, diagnose, patch itself, re-run all 29 tasks, keep only if it got better. tokens per suite run: 1,005,203 -> 347,960 #neatHack
