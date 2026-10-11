@@ -21,6 +21,7 @@ import neatlogs
 import tempfile
 from pathlib import Path
 
+from mend import fixaudit
 from mend.tasks import (BOARD_FILE, HARDWARE_FILE, HELDOUT_FILE, REALWORLD_FILE, ROOT, SCHEMATICS_FILE, TASKS_FILE, load_tasks,
                         prepare)
 
@@ -78,6 +79,11 @@ def run_suite(task_ids: list[str] | None = None, label: str = "", heldout: bool 
         try:
             result = worker.solve(task, work)
             result["tool_calls"] = dict(counts)
+            if result.get("passed"):  # is the passing fix a real fix? (hidden checks; mend/fixaudit.py)
+                try:
+                    result["audit"] = fixaudit.audit(task, work)
+                except Exception as exc:  # an audit problem must not lose the task
+                    result["audit"] = {"verdict": "error", "error": repr(exc)[:300]}
         except Exception as exc:  # an API failure on one task must not lose the whole run
             result = {"task_id": task["id"], "passed": False, "stop": "exception", "error": repr(exc)[:500]}
         finally:
