@@ -620,3 +620,11 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
   - A new failure the training set could not show: once, the repaired analyst guessed a status value
     (`'no-show'`) that its three sample rows did not contain, and answered 0.0 without checking.
     Reported, not tuned away.
+
+### 2026-10-12 ~04:40-05:00 IST - demo video, day-3 cut
+- Rebuilt `video/demo/mend-demo.mp4` from `video/plan-day3.md`: 2:43 → 2:59 (178.7 s, under 3:00), 19 scenes.
+  - Cut or merged: the problem card (into the hook), provenance (into the Entire scene), judgment (into
+    the anti-gaming scene), and a shorter ablation line.
+  - New: hardware (`hardware.html`), explorer (`circuit.html`, BD08 lit), fix audit and impossible
+    probes (`#real`), anti-gaming round 11 with the person's decision, and the second agent.
+  - New visual type in `build.py`: a full screen of any page, scrolled to a section.

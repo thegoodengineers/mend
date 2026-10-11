@@ -22,11 +22,10 @@ VOICE, BG, PAD = "en-US-AndrewNeural", "e6e6dd", 0.7
 ZOOM, FADE = 0.04, 0.25  # still scenes push in by 4%; 0.25 s fade at each cut
 W, H = 1920, 1080
 
-# (id, narration, visual): visual is ("clip", start_s) | ("shot", css_selector) | ("card", label, title, body) | ("term", file)
+# (id, narration, visual): visual is ("clip", start_s) | ("shot", css_selector) | ("page", file, css_selector | None)
+# | ("card", label, title, body) | ("term", file)
 SCENES = [
     ("hook", "Our agent just broke working code to fix one line. Then it found out why, and fixed itself.", ("clip", 40.0)),
-    ("problem", "Agents fail quietly. Finding out why means hours in traces, and most fixes are never checked.",
-     ("card", "The problem", "Agents fail quietly.", "Hours in traces to find out why. Most fixes are never checked.")),
     ("title", "This is Mend: an agent that fixes itself, and proves it.", ("shot", "header")),
     ("arch", "A worker agent does the job. neatlogs traces every model call and tool call. A supervisor reads those traces back over "
              "the neatlogs MCP server, diagnoses the failure, and has Claude Code patch the worker.", ("shot", "#how")),
@@ -36,25 +35,33 @@ SCENES = [
                   "the whole file, deleting the rest.",
      ("card", "Diagnosis · from the neatlogs trace", "Read 200 of 233 lines. Rewrote all of them.",
       "The whole-file write silently deleted everything after line 200. Fix: a precise edit tool, and partial reads that say how much is left.")),
-    ("entire", "Claude Code writes the fix, and Entire links the commit to the session that wrote it. Before each new diagnosis, "
-               "Mend reads its past checkpoints back, so it never retries a fix that failed.", ("term", "entire-explain.txt")),
-    ("provenance", "Entire's blame shows that sixty-nine percent of the worker's instructions were written by Mend itself, "
-                   "each line traced to the session and the diagnosis behind it.", ("shot", "#provenance .card")),
+    ("entire", "Claude Code writes the fix, and Entire links the commit to the session that wrote it. Mend reads past checkpoints back, "
+               "so it never retries a fix that failed. And Entire's blame shows Mend wrote sixty-nine percent of the worker's instructions.",
+     ("term", "entire-explain.txt")),
     ("result", "Same task, same model, after the fix: four turns, and it passes.", ("clip", 88.5)),
     ("gate", "Every change must earn its place. Mend re-runs all twenty-nine tasks and keeps a fix only if the numbers improve. "
-             "Five fixes were kept. Six did not earn their place, and Mend reverted them on its own.", ("shot", "#rounds .card")),
-    ("ablation", "We tested the fixes too. Take one out and run again: without round five, sixty-one percent more tokens. "
-                 "Without round three, thirty-nine. Round two barely matters, and we say so.", ("shot", "#ablation")),
+             "Five fixes were kept. Six were reverted.", ("shot", "#rounds .card")),
+    ("ablation", "Take a kept fix out again, and costs rise by up to sixty-one percent.", ("shot", "#ablation")),
     ("heldout", "Is it overfitting? On ten bugs it never saw, it went from nine out of ten to ten out of ten.", ("shot", "#heldout")),
     ("realworld", "On bugs in a real open-source library, from two or three out of eight, to eight out of eight, with eighty-two percent fewer tokens.",
      ("shot", "#realworld")),
-    ("guards", "Every failure it diagnoses becomes a neatlogs detection, and every gate verdict is written back into neatlogs as a trace. And neatroots, "
-               "neatlogs' own checker, agrees: whole-file rewrites in every original run, none after the fix.",
-     ("card", "neatlogs regression guards · neatroots", "Failures become detections.",
-      "4 detections created from Mend's own failures. neatroots custom check: 4 of 4 original runs flagged, 0 of 4 repaired.")),
-    ("judgment", "Some fixes are choices, not corrections. Then Mend stops and asks a person, once, and every later diagnosis follows the answer.",
-     ("card", "Ask once, remember", "Corrections are automatic. Choices go to a person.",
-      "A fix that trades one valid behaviour for another pauses the round. The answer is stored as a precedent the supervisor must follow.")),
+    ("hardware", "Then, domains it was never built for. On chip designs and circuits: the same fixes, with about sixty percent fewer tokens. "
+                 "On a larger sensor circuit, the original refused some bugs. The repaired worker fixed all eight.",
+     ("page", "hardware.html", None)),
+    ("explorer", "Every step it took is read back from its neatlogs trace.", ("page", "circuit.html", None)),
+    ("honesty", "But a pass isn't proof. Mend audits every passing fix against the correct design, and impossible tasks catch cheating. "
+                "Self-repair had made the worker cheat more: six of twelve, up from four.", ("page", "index.html", "#real")),
+    ("antigaming", "So Mend repaired that too. Cheating fell from six to two, but tokens rose seventeen percent, and the gate said no. "
+                   "That is a judgment call, so a person made it, once, and it is on record.",
+     ("card", "Round 11 · anti-gaming", "Cheating 6 → 2 of 12.",
+      "Tokens +17%, over the gate's 15% limit, so the gate reverted it. A person accepted the trade-off, once. It is now a precedent every diagnosis follows.")),
+    ("second", "And it isn't tied to one agent. On a SQL analyst it had never seen: one round, the same answers, thirty-seven percent cheaper. "
+               "Forty-two, on a database it never saw.",
+     ("card", "A second agent · SQL data analyst", "Same answers. 37% cheaper.",
+      "One Mend round, the same supervisor, the same gate. On a database it never saw: 42% cheaper, and one new mistake, reported.")),
+    ("guards", "Every failure becomes a neatlogs detection, and every gate verdict is written back into neatlogs as a trace.",
+     ("card", "neatlogs regression guards · audit log", "Failures become detections.",
+      "4 detections from Mend's own failures. Every keep or revert is a mend-gate trace. neatroots: 4 of 4 original runs flagged, 0 of 4 repaired.")),
     ("business", "We planned the business in cfo.ai. Self-repair cut our cost per task from four cents to one and a half, "
                  "and a full repair round now costs about fifty-seven cents.",
      ("card", "cfo.ai business plan · measured costs", "$0.040 → $0.015 per task.",
@@ -99,10 +106,18 @@ def stills() -> dict[str, Path]:
         site.goto((ROOT / "index.html").as_uri())
         site.wait_for_timeout(1800)
         card = b.new_page(viewport={"width": W, "height": H})
+        view = b.new_page(viewport={"width": 1600, "height": 900}, reduced_motion="reduce", device_scale_factor=1.2)  # 1920x1080
         for sid, _, vis in SCENES:
             f = img / f"{sid}.png"
             if vis[0] == "shot":
                 site.locator(vis[1]).first.screenshot(path=str(f))
+            elif vis[0] == "page":  # one full screen of a page, scrolled to a section
+                view.goto((ROOT / vis[1]).as_uri())
+                view.wait_for_timeout(1800)
+                if vis[2]:
+                    view.evaluate("s => document.querySelector(s).scrollIntoView({block: 'start'})", vis[2])
+                    view.wait_for_timeout(500)
+                view.screenshot(path=str(f))
             elif vis[0] in ("card", "term"):
                 if vis[0] == "card":
                     body = f'<p class="l">{html.escape(vis[1])}</p><h1>{html.escape(vis[2])}</h1><p class="b">{html.escape(vis[3])}</p>'
