@@ -1,0 +1,4 @@
+Mend, by The Good Engineers (MIT, see LICENSE).
+
+Third-party code included unmodified:
+- realworld/inflection: the inflection library 0.5.1, MIT licence, its own LICENSE file in that folder.

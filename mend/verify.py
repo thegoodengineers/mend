@@ -104,6 +104,16 @@ def main() -> int:
             problems.append(f"{rid}: passed/total do not match its tasks")
         if r.get("input_tokens", 0) != sum(t.get("input_tokens", 0) for t in r["tasks"]):
             problems.append(f"{rid}: input_tokens do not match its tasks")
+    pin = ROOT / "evidence" / "scorer-pin.json"  # the tests and tasks that judge the worker may not drift quietly
+    if pin.exists():
+        import hashlib
+        recorded = json.loads(pin.read_text(encoding="utf-8"))
+        for f, h in recorded.items():
+            path = ROOT / f
+            now = hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest() if path.exists() else "missing"
+            if now != h:
+                problems.append(f"scorer pin: {f} changed since it was pinned (scripts/pin_scorer.py)")
+        print(f"scorer pin: {len(recorded)} task and test files checked")
     checks = expected_strings(rs)
     for s in checks:
         if s not in README:
