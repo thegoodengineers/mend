@@ -428,7 +428,7 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
 | # | Milestone | Status | Link |
 |---|---|---|---|
 | 1 | Project kickoff | ✅ Posted | https://x.com/theintrodev/status/2108851736765141188 |
-| 2 | Self-repair works (27→28, diagnosis screenshot) | ⬜ To post | — |
+| 2 | The bug it found in itself (whole-file rewrite, caught in neatlogs traces) | ✅ Posted 11 Oct | https://x.com/theintrodev/status/2109233575614927163 |
 | 3 | Held-out test passes (10/10, never seen by supervisor) | ⬜ To post | — |
 | 4 | Live recording (attach mend-live.mp4) | ⬜ To post | — |
 | 5 | Entire checkpoint screenshot | ⬜ To post | — |

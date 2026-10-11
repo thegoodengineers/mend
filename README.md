@@ -34,7 +34,7 @@ If a number has no file behind it, it is not here.
 | The improvement is real, not noise | [paired statistics per decision](#self-repair-rounds-five-kept-four-reverted) (rounds 3–5 solid; rounds 1–2 rest on one task flip, said plainly); [leave-one-out ablation](evidence/ablation.json) (removing round 5: +61% tokens); 4 fixes reverted by the gate; re-check every decision [in your browser](https://thegoodengineers.github.io/mend/#verify) |
 | It knows when not to fix itself | [ask once, remember](#is-self-healing-self-defeating): a fix that is a choice stops for a person, and the answer becomes a precedent (answers neatlogs' "Self-healing is self-defeating") |
 | The agent recovers from failures | [run_tests timed out, then fixed](evidence/t17-recovery-from-timeout.txt); in the live recording a tool call fails ("Permission denied") and the worker carries on |
-| You built in public | [first #neatHack post](https://x.com/theintrodev/status/2108851736765141188) |
+| You built in public | #neatHack posts on X: [kickoff](https://x.com/theintrodev/status/2108851736765141188), [the bug it found in itself](https://x.com/theintrodev/status/2109233575614927163); full list in [hackathon.md](hackathon.md#neathack-posts-on-x) |
 | Code written during the hackathon | [commit history](https://github.com/thegoodengineers/mend/commits/main) (first commit: plans only, as the rules allow) |
 
 Every number in this README is recomputed from the run files by [`mend/verify.py`](mend/verify.py) on
