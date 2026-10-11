@@ -215,6 +215,15 @@ def diagnose_failures(run_id: str) -> dict:
     return diagnosis
 
 
+def fresh_stem(run_id: str) -> str:
+    """A name for this round's diagnosis that never overwrites an earlier one (a run can be diagnosed twice)."""
+    stem, n = run_id, 1
+    while (RUNS / f"{stem}.diagnosis.md").exists():
+        n += 1
+        stem = f"{run_id}-d{n}"
+    return stem
+
+
 def write_diagnosis(run_id: str, diagnosis: dict) -> str:
     fix = diagnosis["fix"]
     rows = "\n".join(f"| {f['task_id']} | {f['failing_step']} | {f['cause']} | {f['general_weakness']} |"
@@ -231,7 +240,7 @@ def write_diagnosis(run_id: str, diagnosis: dict) -> str:
         g = fix["guard"]
         text += (f"\n## Proposed neatlogs regression guard\n\n`{g['display_name']}`: regex `{g['output_pattern']}` on the "
                  f"output of `{g['span_name']}` spans. {g['description']}\n")
-    path = RUNS / f"{run_id}.diagnosis.md"
+    path = RUNS / f"{fresh_stem(run_id)}.diagnosis.md"
     path.write_text(text, encoding="utf-8")
     return str(path.relative_to(ROOT))
 
@@ -280,14 +289,15 @@ def one_round(run_id: str) -> dict:
         print("nothing failed; nothing to fix")
         return {"before": run_id, "kept": False, "reason": "no failures"}
     diagnosis_file = write_diagnosis(run_id, diagnosis)
+    stem = diagnosis_file.replace("\\", "/").rsplit("/", 1)[-1].removesuffix(".diagnosis.md")
     print(f"diagnosis -> {diagnosis_file}: {diagnosis['fix']['title']}")
     judgment = diagnosis["fix"].get("judgment") or {}
     if judgment.get("is_choice"):  # automate what isn't a choice; ask a person when it is, once
         record = {"before": run_id, "kept": False, "needs_human": True, "question": judgment["question"],
                   "title": diagnosis["fix"]["title"], "diagnosis": diagnosis_file}
-        (RUNS / f"{run_id}.question.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
+        (RUNS / f"{stem}.question.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
         print(f"needs a person: {judgment['question']}\n"
-              f"answer with: python -m mend.supervisor --answer {run_id} \"<your decision>\"")
+              f"answer with: python -m mend.supervisor --answer {stem} \"<your decision>\"")
         return record
     ok, why = apply_patch(diagnosis["fix"], diagnosis_file)
     if not ok:
@@ -295,7 +305,7 @@ def one_round(run_id: str) -> dict:
         print(f"patch rejected: {why}")
         record = {"before": run_id, "kept": False, "rejected": True, "reason": why,
                   "title": diagnosis["fix"]["title"], "diagnosis": diagnosis_file}
-        (RUNS / f"{run_id}.rejected.round.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
+        (RUNS / f"{stem}.rejected.round.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
         return record
     subprocess.run(["git", "add", *ALLOWED_FILES, diagnosis_file], cwd=ROOT, check=True)
     subprocess.run(["git", "commit", "-q", "-m", f"fix(worker): {diagnosis['fix']['title']}",

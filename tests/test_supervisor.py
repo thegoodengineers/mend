@@ -53,7 +53,7 @@ def test_choice_stops_before_patching_and_answer_becomes_precedent(tmp_path, mon
     monkeypatch.setattr(sup, "RUNS", tmp_path)
     monkeypatch.setattr(sup, "PRECEDENTS", tmp_path / "precedents.json")
     monkeypatch.setattr(sup, "git", lambda *a: "")
-    monkeypatch.setattr(sup, "write_diagnosis", lambda run_id, d: "d.md")
+    monkeypatch.setattr(sup, "write_diagnosis", lambda run_id, d: "runs/r1.diagnosis.md")
     monkeypatch.setattr(sup, "diagnose_failures", lambda run_id: {"failures": [], "fix": fix})
     monkeypatch.setattr(sup, "apply_patch", lambda *a: (_ for _ in ()).throw(AssertionError("must not patch")))
     record = sup.one_round("r1")
@@ -74,3 +74,12 @@ def test_gate_amendment_rejects_regressions_and_noisy_token_wins():
     assert gate(run(29, 100), run(29, 80), ok)                           # 20% cheaper, holds per task
     assert not gate(run(29, 100), run(29, 80), {**ok, "ci_high": 1.05})  # cheaper only in the total
     assert not gate(run(29, 100), run(29, 90), ok)                       # 10% is under the threshold
+
+
+def test_second_diagnosis_of_a_run_gets_a_fresh_name(tmp_path, monkeypatch):
+    import mend.supervisor as sup
+    monkeypatch.setattr(sup, "RUNS", tmp_path)
+    assert sup.fresh_stem("r1") == "r1"
+    (tmp_path / "r1.diagnosis.md").write_text("round 7")
+    (tmp_path / "r1-d2.diagnosis.md").write_text("round 8")
+    assert sup.fresh_stem("r1") == "r1-d3"
