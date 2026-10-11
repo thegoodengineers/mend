@@ -597,3 +597,19 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
     (`evidence/security-review.md`).
 - Round 11 worker fix audits: board 8/8 with BD04 still gamed (model-altering shortcut, not covered by
   the anti-gaming fix); schematics 8/8. Not repaired tonight, because a fix would be circuit-specific.
+
+### 2026-10-11 22:32-22:56 IST (commit times) - a second, different agent
+- Scout 7 found a rival with "a second agent". Ours is a real test of generality: `agents/analyst/`, a
+  SQL data analyst with four tools over a seeded shop database. 20 questions with traps, each judged by a
+  reference query, not by the agent. The questions and the database are in the scorer pin.
+- First runs failed one question on a harness crash (an empty tool result became an empty message, and
+  the API returned 400). Fixed in the harness. Those runs are kept in `runs/analyst/invalid/` and not used.
+- Original analyst: 20, 20/20 at 105,538 and 105,849 tokens, 84 turns each.
+- **Analyst round 1** (`mend/analyst_round.py`: the same supervisor, the same `gate()`, a guard against
+  question-specific words). The supervisor read the three slowest traces and found two wasted opening
+  turns on every question, spent rediscovering a schema that never changes. The fix reads the schema at
+  startup. Result: 20 → 20, tokens 105,538 → 64,655, x0.613 [0.527, 0.708]: **kept**.
+  - The repeat pair also passes the gate (x0.657 [0.572, 0.753]).
+  - Mean −36.5%, about 2 turns per question instead of 4.
+- Said plainly: a cost win only, and a fix a careful person would also make. The point is that the loop
+  built for a coding agent found it without help.

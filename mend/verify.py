@@ -8,6 +8,7 @@ its tasks) and (2) the README's result tables contain exactly the numbers the ru
 
 import json
 import sys
+from pathlib import Path
 
 from mend.tasks import ROOT
 
@@ -15,9 +16,9 @@ RUNS = ROOT / "runs"
 README = (ROOT / "README.md").read_text(encoding="utf-8")
 
 
-def runs() -> dict[str, dict]:
+def runs(folder: Path = RUNS) -> dict[str, dict]:
     return {json.loads(p.read_text(encoding="utf-8"))["run_id"]: json.loads(p.read_text(encoding="utf-8"))
-            for p in sorted(RUNS.glob("*.json")) if p.name.count(".") == 1}
+            for p in sorted(folder.glob("*.json")) if p.name.count(".") == 1}
 
 
 def tokens(r: dict) -> int:
@@ -30,7 +31,7 @@ def pct(a: float, b: float) -> str:
 
 def expected_strings(rs: dict[str, dict]) -> list[str]:
     out = []
-    for p in sorted(RUNS.glob("*.round.json")):
+    for p in [*sorted(RUNS.glob("*.round.json")), *sorted((RUNS / "analyst").glob("*.round.json"))]:  # worker, then analyst
         r = json.loads(p.read_text(encoding="utf-8"))
         if r.get("rejected"):
             continue
@@ -60,6 +61,15 @@ def expected_strings(rs: dict[str, dict]) -> list[str]:
             mb, ma = (sum(map(tokens, g)) / len(g) for g in (hb, ha))
             out += [f"{', '.join(str(r['passed']) for r in hb)} of {hb[0]['total']}", f"{mb:,.0f}",
                     f"{', '.join(str(r['passed']) for r in ha)} of {ha[0]['total']}", f"{ma:,.0f} ({pct(mb, ma)})"]
+    an = runs(RUNS / "analyst")
+    for commit in dict.fromkeys(r["worker_commit"] for r in an.values()):  # the second agent, one row per version
+        g = sorted((r for r in an.values() if r["worker_commit"] == commit), key=lambda r: r["run_id"].endswith("-r2"))
+        out += [f"{', '.join(str(r['passed']) for r in g)} of {g[0]['total']}", " · ".join(f"{tokens(r):,}" for r in g),
+                " · ".join(str(sum(t.get("turns") or 0 for t in r["tasks"])) for r in g)]
+    groups = [[r for r in an.values() if r["worker_commit"] == c] for c in dict.fromkeys(r["worker_commit"] for r in an.values())]
+    if len(groups) > 1:
+        mb, ma = (sum(map(tokens, g)) / len(g) for g in (groups[0], groups[-1]))
+        out.append(f"{mb:,.0f} → {ma:,.0f} ({pct(mb, ma)})")
     from mend.stats import all_rounds
     for i, r in enumerate(all_rounds(), 1):
         out.append(f"| {i} | {r['fixed']} / {r['broke']} | {r['p_passes']} | {r['token_ratio']} | [{r['ci_low']}, {r['ci_high']}] |")
@@ -99,7 +109,7 @@ def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
     rs = runs()
     problems = []
-    for rid, r in rs.items():
+    for rid, r in {**rs, **runs(RUNS / "analyst")}.items():
         if r["passed"] != sum(t["passed"] for t in r["tasks"]) or r["total"] != len(r["tasks"]):
             problems.append(f"{rid}: passed/total do not match its tasks")
         if r.get("input_tokens", 0) != sum(t.get("input_tokens", 0) for t in r["tasks"]):

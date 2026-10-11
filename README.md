@@ -18,7 +18,7 @@ self-repair it passed in 4.*
 
 **At a glance:** 11 self-repair rounds, 5 kept and 6 reverted by a pre-registered gate (one of them later accepted by a person) · whole-file
 rewrites 31 → 0 · model calls 235 → 107 · cost per task $0.040 → $0.015 · bugs it never saw: 9/10 →
-10/10 · a real open-source library: 2–3/8 → 8/8 · hardware designs it never saw: same 9/9 at −58% tokens · circuit schematics: same 8/8 at −64% tokens · a larger sensor schematic: 6–7/8 → 8/8 · security vulnerabilities checked by exploits: same 8/8 at −60% tokens · every gate verdict written back into neatlogs.
+10/10 · a real open-source library: 2–3/8 → 8/8 · hardware designs it never saw: same 9/9 at −58% tokens · circuit schematics: same 8/8 at −64% tokens · a larger sensor schematic: 6–7/8 → 8/8 · security vulnerabilities checked by exploits: same 8/8 at −60% tokens · a second, different agent (a SQL analyst): one round, same 20/20 at −37% tokens · every gate verdict written back into neatlogs.
 
 Every number in this README comes from a file in [`runs/`](runs/) or [`evidence/`](evidence/).
 If a number has no file behind it, it is not here.
@@ -34,6 +34,7 @@ If a number has no file behind it, it is not here.
 | The improvement is real, not noise | [paired statistics per decision](#self-repair-rounds-five-kept-six-reverted) (rounds 3–5 solid; rounds 1–2 rest on one task flip, said plainly); [leave-one-out ablation](evidence/ablation.json) (removing round 5: +61% tokens); 4 fixes reverted by the gate; re-check every decision [in your browser](https://thegoodengineers.github.io/mend/#verify) |
 | The fixes are real, not test-gaming | [fix audit](#are-the-passing-fixes-real-fix-audit-and-impossible-task-probes) of every passing fix against the correct design (hidden checks, circuit simulation); 6 impossible-task probes catch cheating; the one gamed fix (BD04) is shown, not hidden; gate amendments 3-4 guard it |
 | It knows when not to fix itself | [ask once, remember](#is-self-healing-self-defeating): trade-offs the rules don't settle go to a person, and the answer becomes a precedent. First real case: round 11 (less test-gaming for more tokens), [decided by the team](docs/precedents.json). This answers neatlogs' "Self-healing is self-defeating" |
+| It is not tied to one agent | [a second, different agent](#a-second-agent-mend-repairs-a-data-analyst-it-was-not-built-for): a SQL data analyst; the same supervisor and gate cut its tokens by 36.5% (two runs each side) in one round, no answer lost |
 | The agent recovers from failures | [run_tests timed out, then fixed](evidence/t17-recovery-from-timeout.txt); in the live recording a tool call fails ("Permission denied") and the worker carries on |
 | You built in public | #neatHack posts on X: [kickoff](https://x.com/theintrodev/status/2108851736765141188), [the bug it found in itself](https://x.com/theintrodev/status/2109233575614927163), [hardware it never saw](https://x.com/theintrodev/status/2109300098023006412); full list in [hackathon.md](hackathon.md#neathack-posts-on-x) |
 | Code written during the hackathon | [commit history](https://github.com/thegoodengineers/mend/commits/main) (first commit: plans only, as the rules allow) |
@@ -341,6 +342,43 @@ the exploit fails and the feature still works. The "after" worker here is the cu
 Both workers close every vulnerability. The repaired one needs about 3-4 turns instead of 7-13. The fix
 audit marked several fixes "review" (they differ from the reference code), so a person read every one:
 **all are secure, and none touched a test** ([`evidence/security-review.md`](evidence/security-review.md)).
+
+### A second agent: Mend repairs a data analyst it was not built for
+
+Everything above repairs one agent, a coding worker. To test whether the loop is general, we built a
+different one: [`agents/analyst/`](agents/analyst/) answers questions about a shop's SQLite database
+with four tools (list tables, describe a table, run read-only SQL, finish). Like the worker's first
+version, it is plain on purpose. The 20 questions in [`tasks/analyst.json`](tasks/analyst.json) carry
+traps (refunds, inactive products, a customer with no country, two customers with one name). Each answer
+is judged by a reference query on the same database, never by the agent.
+
+Mend ran one round on it with the worker's code ([`mend/analyst_round.py`](mend/analyst_round.py)):
+- the same supervisor reads the traces back over the neatlogs MCP server;
+- headless Claude Code may patch only the analyst's two files;
+- a guard rejects any patch that names a product, category, country or date from the questions;
+- the worker's own `gate()` decides.
+
+| Analyst | Runs | Correct | Tokens per run | Turns per run |
+|---|---|---|---|---|
+| Original | [base](runs/analyst/2026-10-11T17-04-06-base.json), [base-r2](runs/analyst/2026-10-11T17-04-06-base-r2.json) | 20, 20 of 20 | 105,538 · 105,849 | 84 · 84 |
+| After one Mend round | [after](runs/analyst/2026-10-11T17-09-16-after.json), [after-r2](runs/analyst/2026-10-11T17-10-54-after-r2.json) | 20, 20 of 20 | 64,655 · 69,520 | 44 · 46 |
+
+Mean tokens per run: 105,694 → 67,088 (−36.5%).
+
+The round ([record](runs/analyst/2026-10-11T17-09-16-after.round.json)): 20 → 20 / 20, tokens
+105,538 → 64,655 (−38.7%), paired ratio 0.613 with 95% interval [0.527, 0.708], so the gate **kept** it.
+The repeat pair clears the same gate (0.657, [0.572, 0.753]).
+
+What the supervisor found ([diagnosis](runs/analyst/2026-10-11T17-04-06-base.diagnosis.md)): every
+question opened with two turns spent rediscovering a schema that never changes. Its fix
+([`9931774`](https://github.com/thegoodengineers/mend/commit/9931774)) reads the schema from the
+database at startup and puts it in the prompt, so it works on any SQLite database.
+
+Said plainly: the analyst was already right on all 20, so this is a cost win, not a correctness win, and
+it is a fix a careful person would also make. The point is that no person made it. The loop built for a
+coding agent found it in the traces of an agent it had never seen, and the same gate kept it. Two earlier
+runs hit a crash in our harness, not a wrong answer; they are kept in
+[`runs/analyst/invalid/`](runs/analyst/invalid/) and not used.
 
 ### Are the passing fixes real? Fix audit and impossible-task probes
 

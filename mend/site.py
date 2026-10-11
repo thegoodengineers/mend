@@ -68,11 +68,17 @@ def facts() -> dict:
     sc = [r for r in runs.values() if r.get("domain") == "schematics"]
     sc_before = [r for r in sc if r["worker_commit"] == "13defdb"]
     sc_after = [r for r in sc if r["worker_commit"] != "13defdb"]
+    an_dir = ROOT / "runs" / "analyst"  # the second agent: runs before its first kept round vs at that round's commit
+    an = [json.loads(q.read_text(encoding="utf-8")) for q in sorted(an_dir.glob("*.json")) if q.name.count(".") == 1]
+    an_round = next((json.loads(q.read_text(encoding="utf-8")) for q in sorted(an_dir.glob("*.round.json"))), None)
+    an_v0 = next((r["worker_commit"] for r in an if an_round and r["run_id"] == an_round["before"]), None)
+    an_before = [r for r in an if r["worker_commit"] == an_v0]
+    an_after = [r for r in an if an_round and an_round["kept"] and r["worker_commit"] == an_round["commit"]]
     held = [r for r in runs.values() if r.get("heldout") and not r.get("realworld") and not r.get("hardware") and not r.get("domain")]
     held_before = [r for r in held if r["worker_commit"] == "13defdb"]
     held_after = [r for r in held if r["worker_commit"] != "13defdb"]
     return {"rounds": round_list, "first": first, "story": story, "haiku": haiku, "opus": opus, "held_before": held_before, "held_after": held_after, "real_before": real_before, "real_after": real_after,
-            "hw_before": hw_before, "hw_after": hw_after, "sc_before": sc_before, "sc_after": sc_after, "bd_before": bd_before, "bd_after": bd_after, "se_before": se_before, "se_after": se_after,
+            "hw_before": hw_before, "hw_after": hw_after, "sc_before": sc_before, "sc_after": sc_after, "bd_before": bd_before, "bd_after": bd_after, "se_before": se_before, "se_after": se_after, "an_before": an_before, "an_after": an_after,
             "before_runs": before_runs, "after_runs": after_runs,
             "runs_total": len(full), "tasks_total": max((r["total"] for r in full), default=0)}
 
@@ -341,16 +347,17 @@ def render() -> str:
         runs_solved = lambda g: ", ".join(str(r["passed"]) for r in g)  # noqa: E731
         return (f"{runs_solved(before)} → {runs_solved(after)} of {before[0]['total']} solved" if pa > pb
                 else f"same {pa:g}/{before[0]['total']}, {(1 - ta / tb) * 100:.0f}% fewer tokens")
-    hw_line, sc_line, bd_line, se_line = (gain(f[k + "_before"], f[k + "_after"]) for k in ("hw", "sc", "bd", "se"))
+    hw_line, sc_line, bd_line, se_line, an_line = (gain(f[k + "_before"], f[k + "_after"]) for k in ("hw", "sc", "bd", "se", "an"))
     hw_html = f"""
 <section id="hardware"><div class="wrap">
-  <p class="eyebrow">Beyond software</p><h2>It carries over to hardware.</h2>
-  <p class="sub">Bugs in chip designs and circuit schematics the supervisor never saw, checked in simulation, up to schematic level.</p>
+  <p class="eyebrow">Beyond software</p><h2>It carries over.</h2>
+  <p class="sub">Bugs in chip designs and circuit schematics the supervisor never saw, checked in simulation; vulnerabilities checked by exploits; and a second, different agent.</p>
   <div class="tools">
     <div class="tool card"><h3>Chip designs</h3><p>9 bugs in 8 Amaranth HDL designs (ALU, FIFO, UART...): {esc(hw_line)}.</p></div>
     <div class="tool card"><h3>Circuit schematics</h3><p>8 bring-up bugs in 7 circuit netlists: {esc(sc_line)}.</p></div>
     <div class="tool card"><h3>A sensor circuit</h3><p>8 bring-up bugs in one larger schematic: {esc(bd_line)}.</p></div>
     <div class="tool card"><h3>Security</h3><p>8 vulnerabilities, each checked by an exploit test: {esc(se_line) or "runs in progress"}.</p></div>
+    <div class="tool card"><h3>A different agent</h3><p>A SQL data analyst, not a coder. One Mend round, same supervisor and gate: {esc(an_line) or "runs in progress"}.</p></div>
   </div>
   <p><a class="pill" href="hardware.html">See the waveforms, schematics and bugs →</a></p>
 </div></section>""" if hw_line or sc_line else ""

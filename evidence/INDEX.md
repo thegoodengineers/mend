@@ -12,6 +12,7 @@ Every claim in README.md has a file here or a link to a run file in `runs/`.
 | neatroots second-opinion check | [neatroots-check.md](neatroots-check.md) |
 | Entire checkpoints (rounds 4 and 5) | [entire-checkpoint.md](entire-checkpoint.md) |
 | All run files (tasks, tokens, trace IDs) | [`runs/`](../runs/) |
+| Mend on a second agent (SQL analyst): runs, round record, diagnosis | [`runs/analyst/`](../runs/analyst/), [`mend/analyst_round.py`](../mend/analyst_round.py) |
 | Business plan (cfo.ai export) | [`docs/business-plan.md`](../docs/business-plan.md), [`docs/business-plan-cfo-ai.xlsx`](../docs/business-plan-cfo-ai.xlsx) |
 | Build log (timestamped) | [`hackathon.md`](../hackathon.md) |
 | Commit history (all during the event) | https://github.com/thegoodengineers/mend/commits/main |
