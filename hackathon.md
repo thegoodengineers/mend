@@ -453,3 +453,17 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
   The project is on the free tier. Repro and a Discord message draft are in
   `evidence/neatlogs-ingestion-11oct.md`. So the gate traces are **sent but not yet verified**.
   Rounds 7-8 were unaffected, because they diagnosed a run from 10 Oct.
+
+### 2026-10-11 ~12:00-12:50 IST - neatlogs write-back verified, Entire search memory, video motion
+- neatlogs ingestion was delayed by about an hour, not capped. All 8 gate-verdict traces are now
+  readable, with the right verdict on each (`evidence/gate-audit-readback.md`). New detection
+  "Mend: gate reverted a self-repair" created; its preview matched 2 spans.
+- Video: slow 4% push-in on still scenes, and a 0.25 s dip to the page colour at each cut
+  (`ef9d15e`). Length 2:43; the file grew to 28.6 MB.
+- **Entire search as repair memory** (`e92d690`, gate amendment 2). The proposed fix title is
+  searched in Entire, and a hit scoring >= 80 on a reverted commit rejects the round before any
+  re-run. Calibration: re-proposing round 6 scored 94.6; never-tried fixes scored <= 42.7. In the
+  live check, round 6 was caught (score 106). Limit: rounds 7-8 are not indexed, because their
+  checkpoints stayed local.
+- Round 9 started from the same input run as rounds 7-8. It is the first round with every new
+  step: judgment, Entire guard, amended gate, audit trace.
