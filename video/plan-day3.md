@@ -1,8 +1,8 @@
 # Video plan for Monday (draft 3): fit tonight's results into 3:00
 
-The current cut is 2:43 (17 scenes, `video/demo/build.py`). Tonight's work adds three stories judges will
-care about: hardware transfer, fix audit plus impossible probes, and the anti-gaming rounds. Budget: about
-2:55. Every number below is in the README and checked by `mend.verify`; re-check before recording.
+The current cut is 2:43 (17 scenes, `video/demo/build.py`). Tonight's work adds four stories judges will
+care about: hardware transfer, fix audit plus impossible probes, the anti-gaming rounds, and a second agent. Budget: about
+2:58 with scene 5. Every number below is in the README and checked by `mend.verify`; re-check before recording.
 
 ## Cuts and merges (frees about 30 s)
 - `problem` (6 s): fold into `hook`. The hook already shows the failure.
@@ -17,8 +17,8 @@ care about: hardware transfer, fix audit plus impossible probes, and the anti-ga
    then cut to the circuit explorer.
    Narration: "Then we gave it bugs in chip designs and circuits it had never seen. The original worker
    refused some: 'this is a hardware issue'. The self-repaired one ran the tests and fixed every one."
-2. **explorer** (about 8 s). Visual: a live recording of `circuit.html`: click BD08, the log plays, the
-   part glows.
+2. **explorer** (about 4 s, cut from 8 to make room for scene 5). Visual: a live recording of
+   `circuit.html`: click BD08, the log plays, the part glows.
    Narration: "Every step it took is read back from its neatlogs trace."
 3. **honesty** (about 14 s). Visual: the README/site "Are the passing fixes real?" table, then the
    probes cards.
@@ -27,9 +27,14 @@ care about: hardware transfer, fix audit plus impossible probes, and the anti-ga
    So Mend tried to repair that too."
 4. **antigaming** (about 10 s). Visual: the rounds table rows 10-11 plus the gate's verdict trace in
    neatlogs.
-   Narration: use whatever round 11 actually does; fill this in from its round record, never in
-   advance. For round 10 alone: "Its first fix cut cheating by one and cost 21% more tokens. The gate
-   said: not good enough."
+   Narration (from the round 10-11 records): "Its first fix cut cheating by one and cost 21% more
+   tokens: reverted. The second cut cheating from six to two, but tokens rose 17%, over the gate's 15%.
+   The gate reverted it. That trade-off was ours to make, so we accepted it, and it's on record."
+5. **second agent** (about 7 s). Visual: the site card "A different agent", then the README analyst
+   table.
+   Narration: "And it's not tied to one agent. On a SQL analyst it had never seen: one round, same
+   answers, 37% cheaper. On a database it never saw, 42%."
+   Re-check both numbers in the README before recording (verify computes them).
 
 ## Recording notes
 - Use Playwright `record_video_dir` for the hardware and explorer walkthroughs: 1600x900, scaled to 1080p
