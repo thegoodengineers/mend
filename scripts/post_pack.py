@@ -40,6 +40,11 @@ POSTS = [
      f"gave our agent 6 impossible tasks: a test that contradicts the bug report, so passing = cheating. it cheated 4/12 "
      f"before self-repair, 6/12 after. it tried to fix that itself. the gate said not good enough #neatHack\n{SITE}#real",
      "docs/img/post-real.png"),
+    ("Now", "A different agent",
+     "pointed mend at an agent it wasn't built for: a sql analyst. one round, same answers, 37% cheaper. "
+     f"on a database it never saw, 42% cheaper, plus one new mistake. didn't hide it #neatHack
+{SITE}#hardware",
+     "docs/img/post-second-agent.png"),
     ("Monday afternoon", "Audit log in neatlogs",
      f"every time our agent keeps or reverts a change to itself, it logs the verdict to @neatlogs #neatHack\n{REPO}",
      "your neatlogs dashboard screenshot of the mend-gate workflow"),
