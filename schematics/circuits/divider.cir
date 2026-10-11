@@ -1,0 +1,4 @@
+* Voltage divider: 5 V supply down to a 3.3 V logic reference
+V1 in 0 DC 5
+R1 in out 10k
+R2 out 0 20k

@@ -1,0 +1,4 @@
+* Status LED on a 5 V rail. Red LED, forward voltage 2.0 V, run at 10 mA (rated 20 mA max)
+V1 vcc 0 DC 5
+R1 vcc a 300
+D1 a 0 VF=2.0

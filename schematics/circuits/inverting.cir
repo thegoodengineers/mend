@@ -1,0 +1,5 @@
+* Inverting op-amp amplifier, gain -RF/RIN = -4.7
+V1 in 0 DC 0.2
+RIN in inv 10k
+RF inv out 47k
+E1 out 0 0 inv 1meg

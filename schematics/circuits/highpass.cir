@@ -1,0 +1,4 @@
+* RC high-pass filter, cutoff 1 kHz (blocks DC and hum, passes audio above 1 kHz)
+V1 in 0 AC 1
+C1 in out 159n
+R1 out 0 1k

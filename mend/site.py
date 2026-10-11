@@ -60,7 +60,7 @@ def facts() -> dict:
     hw = [r for r in runs.values() if r.get("hardware")]
     hw_before = [r for r in hw if r["worker_commit"] == "13defdb"]
     hw_after = [r for r in hw if r["worker_commit"] != "13defdb"]
-    held = [r for r in runs.values() if r.get("heldout") and not r.get("realworld") and not r.get("hardware")]
+    held = [r for r in runs.values() if r.get("heldout") and not r.get("realworld") and not r.get("hardware") and not r.get("domain")]
     held_before = [r for r in held if r["worker_commit"] == "13defdb"]
     held_after = [r for r in held if r["worker_commit"] != "13defdb"]
     return {"rounds": round_list, "first": first, "story": story, "haiku": haiku, "opus": opus, "held_before": held_before, "held_after": held_after, "real_before": real_before, "real_after": real_after,

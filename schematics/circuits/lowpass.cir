@@ -1,0 +1,4 @@
+* RC low-pass filter, cutoff 1 kHz (anti-aliasing in front of an ADC)
+V1 in 0 AC 1
+R1 in out 1.59k
+C1 out 0 100n

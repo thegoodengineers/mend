@@ -1,0 +1,51 @@
+[
+ {
+  "id": "SC01", "difficulty": "easy", "title": "divider gives 0.83 V",
+  "report": "The 3.3 V reference from the voltage divider measures about 0.83 V.",
+  "sandbox": "schematics", "library": "circuits",
+  "edits": [{"file": "circuits/divider.cir", "find": "R2 out 0 20k", "replace": "R2 out 0 2k"}]
+ },
+ {
+  "id": "SC02", "difficulty": "easy", "title": "LED overcurrent",
+  "report": "The status LED draws about 100 mA, five times its 20 mA rating, and runs hot.",
+  "sandbox": "schematics", "library": "circuits",
+  "edits": [{"file": "circuits/led.cir", "find": "R1 vcc a 300", "replace": "R1 vcc a 30"}]
+ },
+ {
+  "id": "SC03", "difficulty": "medium", "title": "LED never lights",
+  "report": "The status LED never lights: no current flows through it, although the rail is at 5 V.",
+  "sandbox": "schematics", "library": "circuits",
+  "edits": [{"file": "circuits/led.cir", "find": "D1 a 0 VF=2.0", "replace": "D1 0 a VF=2.0"}]
+ },
+ {
+  "id": "SC04", "difficulty": "medium", "title": "anti-aliasing filter cutoff too high",
+  "report": "The 1 kHz anti-aliasing filter barely attenuates anything at 5 kHz; its cutoff is far too high.",
+  "sandbox": "schematics", "library": "circuits",
+  "edits": [{"file": "circuits/lowpass.cir", "find": "C1 out 0 100n", "replace": "C1 out 0 10n"}]
+ },
+ {
+  "id": "SC05", "difficulty": "medium", "title": "amplifier has gain 1",
+  "report": "The gain-of-11 sensor amplifier outputs 0.1 V for its 0.1 V input, i.e. a gain of 1.",
+  "sandbox": "schematics", "library": "circuits",
+  "edits": [{"file": "circuits/noninv.cir", "find": "RG inv 0 10k", "replace": "RG inv out 10k"}]
+ },
+ {
+  "id": "SC06", "difficulty": "easy", "title": "button input stuck low",
+  "report": "The push-button input reads low (0 V) even when the button is released.",
+  "sandbox": "schematics", "library": "circuits",
+  "edits": [{"file": "circuits/pullup.cir", "find": "RPU pin vdd 10k", "replace": "RPU pin 0 10k"}]
+ },
+ {
+  "id": "SC07", "difficulty": "hard", "title": "high-pass filter acts as low-pass",
+  "report": "The high-pass filter does the opposite of its job: it passes 100 Hz and blocks 10 kHz.",
+  "sandbox": "schematics", "library": "circuits",
+  "edits": [{"file": "circuits/highpass.cir", "find": "C1 in out 159n", "replace": "R1 in out 1k"},
+            {"file": "circuits/highpass.cir", "find": "R1 out 0 1k", "replace": "C1 out 0 159n"}]
+ },
+ {
+  "id": "SC08", "difficulty": "hard", "title": "inverting amplifier output stuck at 0 V",
+  "report": "The inverting amplifier's output stays at about 0 V whatever the input.",
+  "sandbox": "schematics", "library": "circuits",
+  "edits": [{"file": "circuits/inverting.cir", "find": "RIN in inv 10k", "replace": "RIN in out 10k"}]
+ }
+]

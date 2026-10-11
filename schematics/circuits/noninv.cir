@@ -1,0 +1,5 @@
+* Non-inverting op-amp amplifier, gain 1 + RF/RG = 11 (sensor signal 0.1 V -> 1.1 V)
+V1 in 0 DC 0.1
+E1 out 0 in inv 1meg
+RF out inv 100k
+RG inv 0 10k

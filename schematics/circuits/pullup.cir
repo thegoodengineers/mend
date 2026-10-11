@@ -1,0 +1,5 @@
+* Push button on a 3.3 V microcontroller input with a pull-up resistor.
+* RSW is the button: 1g when released (open), 1m when pressed (closed). The pin reads high when released.
+V1 vdd 0 DC 3.3
+RPU pin vdd 10k
+RSW pin 0 1g
