@@ -79,12 +79,13 @@ def netlist_findings(ref_text: str, got_text: str) -> list[str]:
 
 
 def same_behaviour(ref_text: str, got_text: str, tol: float = 0.01) -> bool:
-    """Do two netlists behave the same? Every shared node's DC voltage, and its AC response at 100 Hz, 1 kHz and
-    10 kHz, within 1% (or 1 mV / 1e-3 absolute near zero)."""
+    """Do two netlists behave the same? Every shared node's DC voltage and every source/diode current, and each node's
+    AC response at 100 Hz, 1 kHz and 10 kHz, within 1% (or 1e-3 absolute near zero)."""
     spice = _spice()
     try:
         ref, got = spice.Circuit(ref_text), spice.Circuit(got_text)
-        checks = [(ref.dc().volts, got.dc().volts)]
+        rd, gd = ref.dc(), got.dc()
+        checks = [(rd.volts, gd.volts), (rd.currents, gd.currents)]  # voltages alone miss e.g. an LED's current
         if any(p[0][0].upper() == "V" and p[3].upper() == "AC" for p in ref.parts):
             checks += [(ref.ac(f).volts, got.ac(f).volts) for f in (100, 1e3, 1e4)]
     except Exception:  # an unsimulatable netlist is not equivalent
@@ -92,7 +93,7 @@ def same_behaviour(ref_text: str, got_text: str, tol: float = 0.01) -> bool:
     for a, b in checks:
         for node in a.keys() & b.keys():
             x, y = abs(a[node]), abs(b[node])
-            if abs(x - y) > max(tol * max(x, y), 1e-3):
+            if abs(x - y) > max(tol * max(x, y), 1e-3 if a is not checks[1][0] else 1e-6):
                 return False
     return True
 
@@ -144,4 +145,6 @@ if __name__ == "__main__":  # self-check on the BD04 case seen in the board run
     rc = "V1 in 0 AC 1\nR1 in out 1.59k\nC1 out 0 100n\n"
     assert same_behaviour(rc, rc.replace("1.59k", "15.9k").replace("100n", "10n"))  # same RC product, same filter
     assert not same_behaviour(rc, rc.replace("100n", "10n"))
+    led = "V1 g 0 DC 3.3\nR1 g s 220\nD1 s 0 VF=2.0\n"
+    assert not same_behaviour(led, led.replace("220", "200"))  # same node voltages, different LED current
     print("fixaudit self-check ok")
