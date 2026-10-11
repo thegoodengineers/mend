@@ -1,0 +1,38 @@
+* Sensor board: USB 5 V in, LM317-style adjustable regulator to 3.3 V, NTC temperature sensor with an
+* op-amp buffer and an RC anti-aliasing filter into the microcontroller's ADC pin, reset circuit,
+* power and status LEDs, I2C bus pull-ups. The microcontroller (MCU) itself is represented by its pins.
+
+* --- Power: USB 5 V and the 3.3 V regulator ---
+VUSB usb 0 DC 5
+CIN usb 0 10u               * input bulk capacitor
+VREF ref adj DC 1.25        * regulator reference: REF sits 1.25 V above ADJ (no current flows in ADJ)
+EREG v33 0 ref v33 1meg     * regulator output stage drives OUT (v33) to REF, as an LM317 does
+RSET v33 adj 240            * output = 1.25 V * (1 + RADJ / RSET) = 3.3 V
+RADJ adj 0 392
+COUT v33 0 10u              * output capacitor
+
+* --- Power-on LED (green, Vf 2.1 V) ---
+RPWR v33 pled 1k
+DPWR pled 0 VF=2.1
+
+* --- Temperature sensor: NTC thermistor (10k at 25 C) over a 10k fixed resistor ---
+RNTC v33 sense 10k
+RFIX sense 0 10k
+VTP1 ain sense AC 1         * TP1 test point: 0 V at DC, injects 1 V AC for the filter check
+EBUF buf 0 ain buf 1meg     * op-amp voltage follower, so the ADC does not load the divider
+RAA buf adc 1.59k           * RC anti-aliasing filter, cutoff 1 kHz, into the MCU ADC pin
+CAA adc 0 100n
+
+* --- Reset: pull-up keeps the MCU running, the button pulls RESET low, the cap debounces ---
+RRST v33 rst 10k
+CRST rst 0 100n
+RBTN rst 0 1g               * reset button: 1g released, 1m pressed
+
+* --- Status LED (red, Vf 2.0 V) on an MCU GPIO pin, 3.3 V when on ---
+VGPIO gpio 0 DC 3.3
+RLED gpio sled 220
+DLED sled 0 VF=2.0
+
+* --- I2C bus pull-ups to the 3.3 V rail ---
+RSDA v33 sda 4.7k
+RSCL v33 scl 4.7k

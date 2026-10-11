@@ -59,6 +59,9 @@ def facts() -> dict:
     hw = [r for r in runs.values() if r.get("hardware")]
     hw_before = [r for r in hw if r["worker_commit"] == "13defdb"]
     hw_after = [r for r in hw if r["worker_commit"] != "13defdb"]
+    bd = [r for r in runs.values() if r.get("domain") == "board"]
+    bd_before = [r for r in bd if r["worker_commit"] == "13defdb"]
+    bd_after = [r for r in bd if r["worker_commit"] != "13defdb"]
     sc = [r for r in runs.values() if r.get("domain") == "schematics"]
     sc_before = [r for r in sc if r["worker_commit"] == "13defdb"]
     sc_after = [r for r in sc if r["worker_commit"] != "13defdb"]
@@ -66,7 +69,7 @@ def facts() -> dict:
     held_before = [r for r in held if r["worker_commit"] == "13defdb"]
     held_after = [r for r in held if r["worker_commit"] != "13defdb"]
     return {"rounds": round_list, "first": first, "story": story, "haiku": haiku, "opus": opus, "held_before": held_before, "held_after": held_after, "real_before": real_before, "real_after": real_after,
-            "hw_before": hw_before, "hw_after": hw_after, "sc_before": sc_before, "sc_after": sc_after,
+            "hw_before": hw_before, "hw_after": hw_after, "sc_before": sc_before, "sc_after": sc_after, "bd_before": bd_before, "bd_after": bd_after,
             "before_runs": before_runs, "after_runs": after_runs,
             "runs_total": len(full), "tasks_total": max((r["total"] for r in full), default=0)}
 

@@ -129,9 +129,9 @@ class Result:
         return 20 * math.log10(abs(self.volts[out]) / abs(self.volts[inp]))
 
     def i(self, name: str) -> float:
-        """Current through a source or a conducting diode, flowing into its + / anode terminal (0 if off)."""
+        """Current delivered by a source (out of its + terminal), or through a conducting diode anode to cathode (0 if off)."""
         c = self.currents.get(name, 0j)
-        return -c.real if name[0].upper() == "V" else c.real
+        return -c.real if name[0].upper() in "VE" else c.real  # sources: current delivered out of +
 
 
 def _gauss(a, b):

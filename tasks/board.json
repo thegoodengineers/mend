@@ -1,0 +1,50 @@
+[
+ {
+  "id": "BD01", "difficulty": "medium", "title": "3.3 V rail at 2.5 V",
+  "report": "On the sensor board the 3.3 V rail measures 2.5 V and the microcontroller browns out.",
+  "sandbox": "schematics", "library": "circuits",
+  "edits": [{"file": "circuits/board.cir", "find": "RADJ adj 0 392", "replace": "RADJ adj 0 240"}]
+ },
+ {
+  "id": "BD02", "difficulty": "easy", "title": "power LED dark",
+  "report": "The sensor board's green power-on LED never lights, although the 3.3 V rail is fine.",
+  "sandbox": "schematics", "library": "circuits",
+  "edits": [{"file": "circuits/board.cir", "find": "DPWR pled 0 VF=2.1", "replace": "DPWR 0 pled VF=2.1"}]
+ },
+ {
+  "id": "BD03", "difficulty": "medium", "title": "temperature reads far too low",
+  "report": "At room temperature (25 C) the sensor board's temperature voltage reads about 0.3 V instead of about 1.65 V.",
+  "sandbox": "schematics", "library": "circuits",
+  "edits": [{"file": "circuits/board.cir", "find": "RFIX sense 0 10k", "replace": "RFIX sense 0 1k"}]
+ },
+ {
+  "id": "BD04", "difficulty": "hard", "title": "ADC pin pinned beyond full scale",
+  "report": "On the sensor board the microcontroller's ADC pin reads far beyond full scale (well above 3.3 V) whatever the temperature.",
+  "sandbox": "schematics", "library": "circuits",
+  "edits": [{"file": "circuits/board.cir", "find": "EBUF buf 0 ain buf 1meg", "replace": "EBUF buf 0 ain 0 1meg"}]
+ },
+ {
+  "id": "BD05", "difficulty": "medium", "title": "anti-aliasing cutoff too high",
+  "report": "The sensor board's 1 kHz anti-aliasing filter in front of the ADC barely attenuates at 5 kHz.",
+  "sandbox": "schematics", "library": "circuits",
+  "edits": [{"file": "circuits/board.cir", "find": "CAA adc 0 100n", "replace": "CAA adc 0 10n"}]
+ },
+ {
+  "id": "BD06", "difficulty": "easy", "title": "board stuck in reset",
+  "report": "The sensor board stays in reset: the RESET pin reads 0 V even with the reset button released.",
+  "sandbox": "schematics", "library": "circuits",
+  "edits": [{"file": "circuits/board.cir", "find": "RRST v33 rst 10k", "replace": "RRST 0 rst 10k"}]
+ },
+ {
+  "id": "BD07", "difficulty": "easy", "title": "status LED overloads the GPIO",
+  "report": "The sensor board's status LED is far too bright and its GPIO pin is overloaded: about 59 mA, the pin's limit is 20 mA.",
+  "sandbox": "schematics", "library": "circuits",
+  "edits": [{"file": "circuits/board.cir", "find": "RLED gpio sled 220", "replace": "RLED gpio sled 22"}]
+ },
+ {
+  "id": "BD08", "difficulty": "medium", "title": "I2C data line at 5 V",
+  "report": "On the sensor board the I2C data line (SDA) idles at 5 V, above the microcontroller's 3.6 V absolute maximum.",
+  "sandbox": "schematics", "library": "circuits",
+  "edits": [{"file": "circuits/board.cir", "find": "RSDA v33 sda 4.7k", "replace": "RSDA usb sda 4.7k"}]
+ }
+]
