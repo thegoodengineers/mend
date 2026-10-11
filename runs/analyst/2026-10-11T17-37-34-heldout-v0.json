@@ -1,0 +1,126 @@
+{
+  "run_id": "2026-10-11T17-37-34-heldout-v0",
+  "agent": "analyst",
+  "worker_commit": "e89c43d",
+  "worker_dirty": true,
+  "model": "claude-haiku-4-5",
+  "heldout": true,
+  "db": "clinic.db",
+  "tasks": [
+    {
+      "task_id": "H01",
+      "trace_id": "f9926badc9490b80eb94ded4cf36d487",
+      "turns": 4,
+      "input_tokens": 3938,
+      "output_tokens": 299,
+      "stop": "finish",
+      "answer": "43",
+      "passed": true,
+      "expected": "43"
+    },
+    {
+      "task_id": "H02",
+      "trace_id": "9bc107ea53afc8950296e302c7c9b6ff",
+      "turns": 4,
+      "input_tokens": 3996,
+      "output_tokens": 313,
+      "stop": "finish",
+      "answer": "7430.00",
+      "passed": true,
+      "expected": "7430.0"
+    },
+    {
+      "task_id": "H03",
+      "trace_id": "6a99053bf4446e415c47be7b699f27e3",
+      "turns": 4,
+      "input_tokens": 4542,
+      "output_tokens": 395,
+      "stop": "finish",
+      "answer": "cardiology",
+      "passed": true,
+      "expected": "cardiology"
+    },
+    {
+      "task_id": "H04",
+      "trace_id": "05e9ff7dc2b38e3781c3511d78e01608",
+      "turns": 4,
+      "input_tokens": 3822,
+      "output_tokens": 251,
+      "stop": "finish",
+      "answer": "2",
+      "passed": true,
+      "expected": "2"
+    },
+    {
+      "task_id": "H05",
+      "trace_id": "66f85cd1e17c430ce6be09de8bfadcc6",
+      "turns": 5,
+      "input_tokens": 5326,
+      "output_tokens": 468,
+      "stop": "finish",
+      "answer": "15.3",
+      "passed": true,
+      "expected": "15.3"
+    },
+    {
+      "task_id": "H06",
+      "trace_id": "545574e923281a971f684f04902674c6",
+      "turns": 4,
+      "input_tokens": 4373,
+      "output_tokens": 394,
+      "stop": "finish",
+      "answer": "35429.50",
+      "passed": false,
+      "expected": "20944.5"
+    },
+    {
+      "task_id": "H07",
+      "trace_id": "b8c046ab386c7938a3a3d9fb65b99337",
+      "turns": 5,
+      "input_tokens": 6087,
+      "output_tokens": 514,
+      "stop": "finish",
+      "answer": "8",
+      "passed": true,
+      "expected": "8"
+    },
+    {
+      "task_id": "H08",
+      "trace_id": "1f9e32e6ee9f5ac518d29b21ef0a0922",
+      "turns": 4,
+      "input_tokens": 4325,
+      "output_tokens": 391,
+      "stop": "finish",
+      "answer": "12",
+      "passed": true,
+      "expected": "12"
+    },
+    {
+      "task_id": "H09",
+      "trace_id": "ebd5f6ce0135b2fc5ad28c9d04a5aadd",
+      "turns": 4,
+      "input_tokens": 3946,
+      "output_tokens": 287,
+      "stop": "finish",
+      "answer": "859.98",
+      "passed": true,
+      "expected": "859.98"
+    },
+    {
+      "task_id": "H10",
+      "trace_id": "88885890e0fffaaa46df4f523ef052b1",
+      "turns": 4,
+      "input_tokens": 4224,
+      "output_tokens": 320,
+      "stop": "finish",
+      "answer": "14",
+      "passed": true,
+      "expected": "14"
+    }
+  ],
+  "passed": 9,
+  "total": 10,
+  "input_tokens": 44579,
+  "output_tokens": 3632,
+  "worker_version": "original analyst: agents/analyst/agent.py and prompt.md from e89c43d, run in a worktree of 4c4f109"
+}

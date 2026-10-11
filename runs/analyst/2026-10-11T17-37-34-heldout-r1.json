@@ -1,0 +1,125 @@
+{
+  "run_id": "2026-10-11T17-37-34-heldout-r1",
+  "agent": "analyst",
+  "worker_commit": "4c4f109",
+  "worker_dirty": false,
+  "model": "claude-haiku-4-5",
+  "heldout": true,
+  "db": "clinic.db",
+  "tasks": [
+    {
+      "task_id": "H01",
+      "trace_id": "80eefbc50f0be1a21b1ae4e6a2bf040f",
+      "turns": 2,
+      "input_tokens": 2530,
+      "output_tokens": 150,
+      "stop": "finish",
+      "answer": "43",
+      "passed": true,
+      "expected": "43"
+    },
+    {
+      "task_id": "H02",
+      "trace_id": "b05595c07b3e2827b45dd400ccb5008e",
+      "turns": 2,
+      "input_tokens": 2576,
+      "output_tokens": 209,
+      "stop": "finish",
+      "answer": "7430.00",
+      "passed": true,
+      "expected": "7430.0"
+    },
+    {
+      "task_id": "H03",
+      "trace_id": "855ac6db810fc0f630018eac20c99864",
+      "turns": 2,
+      "input_tokens": 2586,
+      "output_tokens": 216,
+      "stop": "finish",
+      "answer": "cardiology",
+      "passed": true,
+      "expected": "cardiology"
+    },
+    {
+      "task_id": "H04",
+      "trace_id": "46889f575786a28c9efc39d4083acc21",
+      "turns": 2,
+      "input_tokens": 2510,
+      "output_tokens": 154,
+      "stop": "finish",
+      "answer": "2",
+      "passed": true,
+      "expected": "2"
+    },
+    {
+      "task_id": "H05",
+      "trace_id": "c930b391b3db95769d399c4056d0ce09",
+      "turns": 2,
+      "input_tokens": 2578,
+      "output_tokens": 200,
+      "stop": "finish",
+      "answer": "0.0",
+      "passed": false,
+      "expected": "15.3"
+    },
+    {
+      "task_id": "H06",
+      "trace_id": "87b8a44e55f403f050dacd6a60a88db0",
+      "turns": 2,
+      "input_tokens": 2691,
+      "output_tokens": 300,
+      "stop": "finish",
+      "answer": "20944.50",
+      "passed": true,
+      "expected": "20944.5"
+    },
+    {
+      "task_id": "H07",
+      "trace_id": "e863bacedd801b47072f3dc6b9d66dc9",
+      "turns": 2,
+      "input_tokens": 2640,
+      "output_tokens": 244,
+      "stop": "finish",
+      "answer": "8",
+      "passed": true,
+      "expected": "8"
+    },
+    {
+      "task_id": "H08",
+      "trace_id": "7a4e9508b4156c4a3f64aacbc60b514e",
+      "turns": 2,
+      "input_tokens": 2563,
+      "output_tokens": 200,
+      "stop": "finish",
+      "answer": "12",
+      "passed": true,
+      "expected": "12"
+    },
+    {
+      "task_id": "H09",
+      "trace_id": "02a1e1a6d43064ed30f22da8dee96719",
+      "turns": 2,
+      "input_tokens": 2541,
+      "output_tokens": 159,
+      "stop": "finish",
+      "answer": "859.98",
+      "passed": true,
+      "expected": "859.98"
+    },
+    {
+      "task_id": "H10",
+      "trace_id": "864ef36cd7daa7debe3eef81adf78f79",
+      "turns": 2,
+      "input_tokens": 2543,
+      "output_tokens": 181,
+      "stop": "finish",
+      "answer": "14",
+      "passed": true,
+      "expected": "14"
+    }
+  ],
+  "passed": 9,
+  "total": 10,
+  "input_tokens": 25758,
+  "output_tokens": 2013
+}
