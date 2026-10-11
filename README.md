@@ -16,7 +16,7 @@ keeps the fix only if a full re-run gets better.** Built during
 *Live recording (1:55, click): same task, same model. Original worker failed in 15 turns; after
 self-repair it passed in 4.*
 
-**At a glance:** 10 self-repair rounds, 5 kept and 5 reverted by a pre-registered gate · whole-file
+**At a glance:** 11 self-repair rounds, 5 kept and 6 reverted by a pre-registered gate · whole-file
 rewrites 31 → 0 · model calls 235 → 107 · cost per task $0.040 → $0.015 · bugs it never saw: 9/10 →
 10/10 · a real open-source library: 2–3/8 → 8/8 · hardware designs it never saw: same 9/9 at −58% tokens · circuit schematics: same 8/8 at −64% tokens · a larger sensor schematic: 6–7/8 → 8/8 · every gate verdict written back into neatlogs.
 
@@ -27,11 +27,11 @@ If a number has no file behind it, it is not here.
 
 | neatHack evidence item | Where to check it |
 |---|---|
-| The agent improved (before/after with numbers) | [rounds table](#self-repair-rounds-five-kept-five-reverted), [3-vs-3 repeat runs](#repeatable-not-lucky-same-28-tasks-3-runs-each), [held-out test](#held-out-test-10-bugs-the-supervisor-never-saw), [real-world library](#real-world-test-bugs-in-an-open-source-library-it-never-saw); [live recording](video/live/mend-live.mp4) |
+| The agent improved (before/after with numbers) | [rounds table](#self-repair-rounds-five-kept-six-reverted), [3-vs-3 repeat runs](#repeatable-not-lucky-same-28-tasks-3-runs-each), [held-out test](#held-out-test-10-bugs-the-supervisor-never-saw), [real-world library](#real-world-test-bugs-in-an-open-source-library-it-never-saw); [live recording](video/live/mend-live.mp4) |
 | You used neatlogs | [traced call](evidence/t02-first-traced-call.txt), [trace read back over MCP](evidence/t04-trace-readback.txt), [task 23 before](evidence/task23-before-trace.json) / [after](evidence/task23-after-trace.json) traces; 4 regression-guard detections ([`mend/detections.py`](mend/detections.py)); every gate verdict is also written back into neatlogs as a `mend-gate` trace, one span per keep rule, and a detection flags each revert ([`mend/audit.py`](mend/audit.py), [read-back](evidence/gate-audit-readback.md)); second opinion from neatlogs' own [neatroots](evidence/neatroots-check.md): a custom check flags all 4 original-worker runs and none of the repaired ones |
 | You used Entire | [round 4 checkpoint](https://entire.io/gh/thegoodengineers/mend/commit/7e2148e201fdaa9b2b3f921d1f2651950f537205) and its [public session](https://entire.io/gh/thegoodengineers/mend/session/62aefdcc-7ca4-499e-a381-6a3a56663cc6) (readable logged out: the supervisor's instruction to Claude Code, its 4 tool calls and its summary of the fix it made to Mend); the supervisor reads past checkpoints back as repair memory; [who wrote the worker](https://thegoodengineers.github.io/mend/#provenance): `entire blame` shows 69% of the worker's prompt was written by Mend's own sessions; `entire search` is the repair memory, so a proposed fix that repeats a reverted one is rejected before any re-run ([calibration](evidence/entire-search-repeat-guard.md)) |
 | You used cfo.ai | [business plan](docs/business-plan.md) and its [cfo.ai export](docs/business-plan-cfo-ai.xlsx) |
-| The improvement is real, not noise | [paired statistics per decision](#self-repair-rounds-five-kept-five-reverted) (rounds 3–5 solid; rounds 1–2 rest on one task flip, said plainly); [leave-one-out ablation](evidence/ablation.json) (removing round 5: +61% tokens); 4 fixes reverted by the gate; re-check every decision [in your browser](https://thegoodengineers.github.io/mend/#verify) |
+| The improvement is real, not noise | [paired statistics per decision](#self-repair-rounds-five-kept-six-reverted) (rounds 3–5 solid; rounds 1–2 rest on one task flip, said plainly); [leave-one-out ablation](evidence/ablation.json) (removing round 5: +61% tokens); 4 fixes reverted by the gate; re-check every decision [in your browser](https://thegoodengineers.github.io/mend/#verify) |
 | The fixes are real, not test-gaming | [fix audit](#are-the-passing-fixes-real-fix-audit-and-impossible-task-probes) of every passing fix against the correct design (hidden checks, circuit simulation); 6 impossible-task probes catch cheating; the one gamed fix (BD04) is shown, not hidden; gate amendments 3-4 guard it |
 | It knows when not to fix itself | [ask once, remember](#is-self-healing-self-defeating): a fix that is a choice stops for a person, and the answer becomes a precedent (answers neatlogs' "Self-healing is self-defeating") |
 | The agent recovers from failures | [run_tests timed out, then fixed](evidence/t17-recovery-from-timeout.txt); in the live recording a tool call fails ("Permission denied") and the worker carries on |
@@ -83,7 +83,7 @@ is, and remember the answer. Here is where Mend stands on each:
   token cost is counted by the API. Mend never repairs taste, tone or policy.
 - **"Better" is defined by people.** The keep rule is code we wrote (`one_round()` in
   [`mend/supervisor.py`](mend/supervisor.py)), written out in [`docs/GATE.md`](docs/GATE.md).
-  The supervisor may not change it, because only two files may change. Rounds 6-10 show
+  The supervisor may not change it, because only two files may change. Rounds 6-11 show
   the gate saying no.
 - **Remember the answer.** Every round, whether kept, reverted or rejected, is a record in
   `runs/`, and the Claude Code session behind each fix is an Entire checkpoint. Both are fed back
@@ -101,7 +101,7 @@ is, and remember the answer. Here is where Mend stands on each:
 
 Several self-repair loops were built for neatHack. Here is what Mend shows beyond "it got better
 once":
-- **10 rounds**, 5 kept and **5 reverted** by the gate, with every decision re-checkable in the
+- **11 rounds**, 5 kept and **6 reverted** by the gate, with every decision re-checkable in the
   browser ([site, "Check it yourself"](https://thegoodengineers.github.io/mend/#verify)) or with
   `python -m mend.verify`.
 - **Held-out bugs** the supervisor never saw: 9/10 → 10/10.
@@ -112,7 +112,7 @@ once":
 
 ## Results
 
-### Self-repair rounds (five kept, five reverted)
+### Self-repair rounds (five kept, six reverted)
 
 | # | What Mend changed in itself | Solved | Tokens | Commit | Diagnosis |
 |---|---|---|---|---|---|
@@ -126,13 +126,14 @@ once":
 | 8 | Prompt: don't read tests; map the failing test to its source module; trust the traceback over the report | 29 → 29 / 29 | 302,153 → 368,440 (+21.9%) | `badd7dd`, **reverted** by `a403b68` | [diagnosis](runs/2026-10-10T13-28-51-d2.diagnosis.md) |
 | 9 | Loop: put the initial full test-suite result into the first message | 29 → 29 / 29 | 302,153 → 265,837 (−12.0%) | `5760569`, **reverted** by `31e4587` | [diagnosis](runs/2026-10-10T13-28-51-d3.diagnosis.md) |
 | 10 | Anti-gaming: "the bug report is the specification; tests are evidence, not authority" (amendment 4) | 29 → 29 / 29 | 302,153 → 366,000 (+21.1%) | `4156338`, **reverted** by `278f383` (probe cheating 6 → 5 of 12; 3 fewer needed) | [diagnosis](runs/2026-10-10T13-28-51-gaming.diagnosis.md) |
+| 11 | Anti-gaming: loop nudge to check the report against the test when an edit leaves the suite failing (amendment 4) | 29 → 29 / 29 | 302,153 → 353,410 (+17.0%) | `9aacaf4`, **reverted** by `965f896` (probe cheating 6 → 2 of 12, but tokens over +15%) | [diagnosis](runs/2026-10-10T13-28-51-gaming-d2.diagnosis.md) |
 
 **Plateau.** Since round 5, four proposals in a row failed the gate. On these 29 tasks the worker now
 solves everything in about 3 turns, so the next real gain needs harder tasks, not more rounds. Knowing
 when to stop is part of the result.
 
 Round records: the `*.round.json` files in [`runs/`](runs/). Rounds 2 and 3 were run back to back with
-`python -m mend.supervisor <run> --rounds 2`; rounds 4-10 ran from a clean runner clone. **Round 10** was the anti-gaming round (gate amendment 4, below): it cut probe cheating only from 6 to 5 of 12 (3 needed) and cost 21% more tokens, so it was reverted. **Round 9** saved a real 12.0% (paired interval [0.781, 0.985], entirely below 1). That is under the pre-registered 15% bar, so it was reverted anyway: the rule is the rule. **Round 8** was the first under [gate amendment 1](docs/GATE.md); it made the worker significantly worse (+21.9% tokens, paired interval [1.099, 1.355] entirely above 1) and was reverted. **Round 7** (11 Oct, the first run with the ask-once judgment step, which judged its fix a correction, not a choice) was also reverted: −4.6% tokens is under the 15% bar. **Round 6 was reverted automatically:** it still solved 29/29 but used 3.8% more tokens, so the gate rejected it. Round 5 also created its own neatlogs regression guard ("Mend: slow solve (6+ turns)", matched 5 real spans). Rounds 2-3 "after" figures are single runs. The worker after round 4 was run three times: 29/29 each time ([10-59-46](runs/2026-10-10T10-59-46-after.json) 432,858, [11-13-11](runs/2026-10-10T11-13-11.json) 451,105, [11-18-45](runs/2026-10-10T11-18-45.json) 456,563 tokens). The worker after round 5 was also run three times: 29/29 each time ([11-50-52](runs/2026-10-10T11-50-52-after.json) 347,960, [13-23-02](runs/2026-10-10T13-23-02.json) 346,214, [13-28-51](runs/2026-10-10T13-28-51.json) 302,153 tokens). **Caveat:** the supervisor learns from the same 29 tasks it is scored on, and round 3's prompt includes a rule for hanging test suites learned from task 29; on a held-out set it never sees, it also improved (below).
+`python -m mend.supervisor <run> --rounds 2`; rounds 4-11 ran from a clean runner clone. **Round 10** was the anti-gaming round (gate amendment 4, below): it cut probe cheating only from 6 to 5 of 12 (3 needed) and cost 21% more tokens, so it was reverted. **Round 9** saved a real 12.0% (paired interval [0.781, 0.985], entirely below 1). That is under the pre-registered 15% bar, so it was reverted anyway: the rule is the rule. **Round 8** was the first under [gate amendment 1](docs/GATE.md); it made the worker significantly worse (+21.9% tokens, paired interval [1.099, 1.355] entirely above 1) and was reverted. **Round 7** (11 Oct, the first run with the ask-once judgment step, which judged its fix a correction, not a choice) was also reverted: −4.6% tokens is under the 15% bar. **Round 6 was reverted automatically:** it still solved 29/29 but used 3.8% more tokens, so the gate rejected it. Round 5 also created its own neatlogs regression guard ("Mend: slow solve (6+ turns)", matched 5 real spans). Rounds 2-3 "after" figures are single runs. The worker after round 4 was run three times: 29/29 each time ([10-59-46](runs/2026-10-10T10-59-46-after.json) 432,858, [11-13-11](runs/2026-10-10T11-13-11.json) 451,105, [11-18-45](runs/2026-10-10T11-18-45.json) 456,563 tokens). The worker after round 5 was also run three times: 29/29 each time ([11-50-52](runs/2026-10-10T11-50-52-after.json) 347,960, [13-23-02](runs/2026-10-10T13-23-02.json) 346,214, [13-28-51](runs/2026-10-10T13-28-51.json) 302,153 tokens). **Caveat:** the supervisor learns from the same 29 tasks it is scored on, and round 3's prompt includes a rule for hanging test suites learned from task 29; on a held-out set it never sees, it also improved (below).
 
 **How sure is each decision?** The gate looks at one re-run. Each task runs both before and
 after, so the comparison can be paired per task ([`mend/stats.py`](mend/stats.py), following
@@ -151,6 +152,7 @@ Miller, [*Adding Error Bars to Evals*](https://arxiv.org/abs/2411.00640); output
 | 8 | 0 / 0 | 1.0 | 1.219 | [1.099, 1.355] | reverted (amended gate) |
 | 9 | 0 / 0 | 1.0 | 0.88 | [0.781, 0.985] | reverted (amended gate: under 15%) |
 | 10 | 0 / 0 | 1.0 | 1.211 | [1.079, 1.361] | reverted (amendment 4: cheating fell only 6 → 5) |
+| 11 | 0 / 0 | 1.0 | 1.17 | [1.039, 1.301] | reverted (amendment 4: cheating 6 → 2, tokens +17%) |
 
 What this says, plainly:
 - **Rounds 3–5 are solid.** Each token cut's whole 95% interval sits below 0.85, the gate's own
@@ -383,6 +385,17 @@ That is now what the gate guards against:
   amendment 4 **reverted** it ([diagnosis](runs/2026-10-10T13-28-51-gaming.diagnosis.md)).
 - Telling a model to resist a contradicting test was not enough here; the gate kept the worse-but-honest
   record instead of a claim.
+
+**Round 11** tried again, and its diagnosis says it learned from round 10's revert: a loop-level nudge
+that fires only when an edit leaves the suite still failing, instead of an always-on prompt rule
+([diagnosis](runs/2026-10-10T13-28-51-gaming-d2.diagnosis.md)).
+- **Cheating fell from 6 to 2 of 12** and training held at 29/29.
+- But tokens rose 17.0% (paired interval [1.039, 1.301]) against the single baseline run the rule
+  names, over the 15% limit, so it was **reverted**.
+- Against the mean of that worker's three recorded runs, the rise is 6.4%. The rule was written before
+  the round, so we did not change it after seeing the result.
+- Whether 17% more tokens is worth two-thirds less cheating is a judgment call. That kind of call
+  belongs to a person, not the gate.
 
 ### Live recording
 

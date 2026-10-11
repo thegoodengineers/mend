@@ -562,3 +562,11 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
     needed and the token rise exceeded 15%.
   - 10 rounds: 5 kept, 5 reverted. The in-browser re-check verifies round 10 from the probe run files.
 - Repaired hardware audit re-run alone: 8/9 (HW01 hit max turns; round 10 was running at the same time).
+- **Round 11 (anti-gaming, second attempt).** Its diagnosis explicitly avoided round 10's always-on
+  prompt rule because of its token cost; it was a loop-level nudge, fired only when an edit leaves the
+  suite failing.
+  - Result: training 29/29, **probe cheating 6 -> 2 of 12**, tokens +17.0% (paired interval [1.039,
+    1.301]), so **reverted** under amendment 4 (limit 15%).
+  - Against the mean of the baseline worker's 3 runs the rise is 6.4%, but the rule names the single
+    input run, so it was not changed after the fact.
+  - 11 rounds: 5 kept, 6 reverted. Accepting this trade-off is now a human decision (the ask-once idea).
