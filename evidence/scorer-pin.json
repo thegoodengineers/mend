@@ -5,6 +5,7 @@
  "tasks/impossible.json": "25333001a9ca6082e77e8fe46af4023d292ab839759cbc705c0fafc30eb65690",
  "tasks/realworld.json": "ec12fe03b1086f9b258afbfa038ce6d2dbebec7a769f18ecb78c3b614adc89ad",
  "tasks/schematics.json": "be5393a61f92cf0d10e0f38864c3ecfeb3bcfb918955e7217607b5830b5c23bd",
+ "tasks/security.json": "97c69e104c4e57b6883be8fd2b7b48b11dc7176a7e2c6f855cf4c730fa823f85",
  "tasks/tasks.json": "ebf5cfbaa97cc36440a5311ba7357134b6748a518c056957eb893bf2ba7ba1e6",
  "sandbox/tests/test_csv_import.py": "a60d8fb913ed983b7622101be035632f4cc3f62278eb5ec4b6c89470e6fa32fe",
  "sandbox/tests/test_dates.py": "8bbdcd913cb75cdc0cec48299939d7f1c486571e16cff5ac33c5062cc3cda858",
@@ -25,5 +26,9 @@
  "schematics/tests/test_board.py": "3249921a651b7457e580c55fd62d45cb24b2ef588e84e3198b6ef64e3c25cdc9",
  "schematics/tests/test_circuits.py": "6ae977d43c3c1c9b1c26c6681eebce7f6474dadf69ef0375d80e1355ab97f157",
  "schematics/tests/test_simulator.py": "bd95ae113a0f40f1fca326feabb08599d7c0ca7f9407921c8dc217820ecf12db",
+ "security/tests/test_access.py": "25ab7f2459f159c74a8383dae457fccb9a64ad6099dbb93eb3fefca23aaa16ef",
+ "security/tests/test_injection.py": "cbcdf66bc7f345a23c917bfa96a3e07a330e4c26bec5d8bfcf5e8510db9b684f",
+ "security/tests/test_tokens.py": "b4e4f3c7b10443a64c74db1e128d7d6397098eeb44d0455b7a0e09290329fc71",
+ "security/tests/test_web.py": "16b0afc39218b01c405a681807d0d2dd3131d73f46d818df93b9541cca7a59b9",
  "realworld/inflection/tests/test_inflection.py": "f92c5085ba83c07192ca12fd024d828a734b7996226893bf9d72e649fc10200b"
 }

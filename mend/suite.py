@@ -8,6 +8,7 @@
     python -m mend.suite --schematics # bugs in circuit netlists, checked by circuit simulation (also never seen)
     python -m mend.suite --board      # bring-up bugs on a whole sensor board netlist (also never seen)
     python -m mend.suite --impossible # impossible-task probes: any pass means the worker cheated
+    python -m mend.suite --security   # vulnerabilities checked by exploit tests (never seen)
 """
 
 import hashlib
@@ -24,8 +25,8 @@ import tempfile
 from pathlib import Path
 
 from mend import fixaudit
-from mend.tasks import (BOARD_FILE, HARDWARE_FILE, HELDOUT_FILE, IMPOSSIBLE_FILE, REALWORLD_FILE, ROOT, SCHEMATICS_FILE, TASKS_FILE,
-                        load_tasks, prepare)
+from mend.tasks import (BOARD_FILE, HARDWARE_FILE, HELDOUT_FILE, IMPOSSIBLE_FILE, REALWORLD_FILE, ROOT, SCHEMATICS_FILE, SECURITY_FILE,
+                        TASKS_FILE, load_tasks, prepare)
 
 RUNS = Path(os.environ.get("MEND_RUNS_DIR", ROOT / "runs"))  # override for side experiments
 
@@ -53,10 +54,11 @@ def count_tool_calls(worker, counter: dict) -> None:
 
 
 def run_suite(task_ids: list[str] | None = None, label: str = "", heldout: bool = False, realworld: bool = False,
-              hardware: bool = False, schematics: bool = False, board: bool = False, impossible: bool = False) -> dict:
+              hardware: bool = False, schematics: bool = False, board: bool = False, impossible: bool = False,
+              security: bool = False) -> dict:
     from mend import worker  # imported after neatlogs.init (see worker docstring)
 
-    source = IMPOSSIBLE_FILE if impossible else BOARD_FILE if board else SCHEMATICS_FILE if schematics else HARDWARE_FILE if hardware else REALWORLD_FILE if realworld else HELDOUT_FILE if heldout else TASKS_FILE
+    source = SECURITY_FILE if security else IMPOSSIBLE_FILE if impossible else BOARD_FILE if board else SCHEMATICS_FILE if schematics else HARDWARE_FILE if hardware else REALWORLD_FILE if realworld else HELDOUT_FILE if heldout else TASKS_FILE
     tasks = [t for t in load_tasks(source) if not task_ids or t["id"] in task_ids]
     if tasks and tasks[0].get("library"):
         use_library_name(worker, tasks[0]["library"])
@@ -67,10 +69,10 @@ def run_suite(task_ids: list[str] | None = None, label: str = "", heldout: bool 
         "worker_commit": git("rev-parse", "--short", "HEAD"),
         "worker_dirty": bool(git("status", "--porcelain", "mend/worker.py", "mend/prompts")),
         "model": worker.MODEL,
-        "heldout": heldout or realworld or hardware or schematics or board or impossible,
+        "heldout": heldout or realworld or hardware or schematics or board or impossible or security,
         "realworld": realworld,
         "hardware": hardware,
-        "domain": "impossible" if impossible else "board" if board else "schematics" if schematics else "hardware" if hardware else None,
+        "domain": "security" if security else "impossible" if impossible else "board" if board else "schematics" if schematics else "hardware" if hardware else None,
         "tasks_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),  # proves the task set did not change between runs
         "tasks": [],
     }
@@ -108,9 +110,10 @@ if __name__ == "__main__":
     neatlogs.init(api_key=os.environ["NEATLOGS_API_KEY"], workflow_name=os.environ.get("MEND_WORKFLOW", "mend-worker"))
     try:
         args = [a for a in sys.argv[1:] if not a.startswith("--")]
-        held, real, hw, sc, bd, imp = (f"--{x}" in sys.argv for x in ("heldout", "realworld", "hardware", "schematics", "board", "impossible"))
-        label = "impossible" if imp else "board" if bd else "schematics" if sc else "hardware" if hw else "realworld" if real else "heldout" if held else ""
-        run_suite(args or None, label=label, heldout=held, realworld=real, hardware=hw, schematics=sc, board=bd, impossible=imp)
+        held, real, hw, sc, bd, imp, sec = (f"--{x}" in sys.argv for x in
+                                            ("heldout", "realworld", "hardware", "schematics", "board", "impossible", "security"))
+        label = "security" if sec else "impossible" if imp else "board" if bd else "schematics" if sc else "hardware" if hw else "realworld" if real else "heldout" if held else ""
+        run_suite(args or None, label=label, heldout=held, realworld=real, hardware=hw, schematics=sc, board=bd, impossible=imp, security=sec)
     finally:
         neatlogs.flush()
         neatlogs.shutdown()

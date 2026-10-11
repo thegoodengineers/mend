@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PATTERNS = ["tasks/*.json", "sandbox/tests/*.py", "hardware/tests/*.py", "schematics/tests/*.py",
+PATTERNS = ["tasks/*.json", "sandbox/tests/*.py", "hardware/tests/*.py", "schematics/tests/*.py", "security/tests/*.py",
             "realworld/inflection/tests/*.py"]
 
 

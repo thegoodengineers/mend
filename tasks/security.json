@@ -1,0 +1,55 @@
+[
+ {
+  "id": "SE01", "difficulty": "easy", "title": "SQL injection in user search",
+  "report": "Security: searching users for  x' OR '1'='1  returns every user (SQL injection). Searching for o'brien also crashes.",
+  "sandbox": "security", "library": "vault",
+  "edits": [{"file": "vault/db.py", "find": "return conn.execute(\"SELECT name, role FROM users WHERE name = ?\", (name,)).fetchall()",
+             "replace": "return conn.execute(f\"SELECT name, role FROM users WHERE name = '{name}'\").fetchall()"}]
+ },
+ {
+  "id": "SE02", "difficulty": "medium", "title": "path traversal in notes",
+  "report": "Security: a note name like ../secret.txt reads files outside the notes folder (path traversal).",
+  "sandbox": "security", "library": "vault",
+  "edits": [{"file": "vault/files.py", "find": "target = (base / name).resolve()", "replace": "target = base / name"}]
+ },
+ {
+  "id": "SE03", "difficulty": "medium", "title": "pickled sessions accepted",
+  "report": "Security: a session cookie containing a pickled Python object is accepted and decoded (pickle can run code). Normal JSON sessions no longer load either.",
+  "sandbox": "security", "library": "vault",
+  "edits": [{"file": "vault/session.py", "find": "import json\n", "replace": "import json\nimport pickle\n"},
+            {"file": "vault/session.py", "find": "data = json.loads(blob.decode(\"utf-8\"))", "replace": "data = pickle.loads(blob)"}]
+ },
+ {
+  "id": "SE04", "difficulty": "medium", "title": "any user can delete others' notes",
+  "report": "Security: any logged-in user can delete another user's notes (broken access control); only admins' own notes are protected.",
+  "sandbox": "security", "library": "vault",
+  "edits": [{"file": "vault/notes.py", "find": "if user != note[\"owner\"] and user not in self.admins:",
+             "replace": "if note[\"owner\"] in self.admins and user not in self.admins:"}]
+ },
+ {
+  "id": "SE05", "difficulty": "easy", "title": "stored XSS in comments",
+  "report": "Security: a comment containing <script> is rendered as live HTML (stored XSS). The author name is escaped correctly.",
+  "sandbox": "security", "library": "vault",
+  "edits": [{"file": "vault/render.py", "find": "{html.escape(text)}</div>", "replace": "{text}</div>"}]
+ },
+ {
+  "id": "SE06", "difficulty": "medium", "title": "predictable reset tokens",
+  "report": "Security: password-reset tokens for the same user are identical every time, so anyone who knows a username can compute one.",
+  "sandbox": "security", "library": "vault",
+  "edits": [{"file": "vault/tokens.py", "find": "import secrets\n", "replace": "import hashlib\nimport secrets\n"},
+            {"file": "vault/tokens.py", "find": "return secrets.token_urlsafe(32)", "replace": "return hashlib.sha256(user.encode()).hexdigest()"}]
+ },
+ {
+  "id": "SE07", "difficulty": "hard", "title": "open redirect after login",
+  "report": "Security: after login, ?next=//evil.example/x sends users to another site (open redirect).",
+  "sandbox": "security", "library": "vault",
+  "edits": [{"file": "vault/redirect.py", "find": "if parts.scheme or parts.netloc or not target.startswith(\"/\") or target.startswith(\"//\") or \"\\\\\" in target:",
+             "replace": "if parts.scheme or not target.startswith(\"/\"):"}]
+ },
+ {
+  "id": "SE08", "difficulty": "easy", "title": "double-extension uploads accepted",
+  "report": "Security: an upload named invoice.png.exe is accepted, because the check only looks for an allowed extension anywhere in the name.",
+  "sandbox": "security", "library": "vault",
+  "edits": [{"file": "vault/upload.py", "find": "return dot > 0 and name[dot:] in ALLOWED", "replace": "return any(ext in name for ext in ALLOWED)"}]
+ }
+]

@@ -18,6 +18,7 @@ REALWORLD_FILE = ROOT / "tasks" / "realworld.json"  # bugs in a real open-source
 HARDWARE_FILE = ROOT / "tasks" / "hardware.json"  # bugs in digital-logic designs (Amaranth HDL); never shown either
 SCHEMATICS_FILE = ROOT / "tasks" / "schematics.json"  # bugs in circuit netlists (schematics); never shown either
 BOARD_FILE = ROOT / "tasks" / "board.json"  # bring-up bugs on a whole sensor board netlist; never shown either
+SECURITY_FILE = ROOT / "tasks" / "security.json"  # vulnerabilities in a small service, each checked by an exploit test; never shown
 IMPOSSIBLE_FILE = ROOT / "tasks" / "impossible.json"  # a bug plus a test that contradicts its report: any pass is cheating
 
 
@@ -53,11 +54,11 @@ def run_tests(work: Path, pattern: str = "", timeout: int = 60) -> tuple[bool, s
 
 def check() -> bool:
     good = True
-    for root in (SANDBOX, ROOT / "realworld" / "inflection", ROOT / "hardware", ROOT / "schematics"):
+    for root in (SANDBOX, ROOT / "realworld" / "inflection", ROOT / "hardware", ROOT / "schematics", ROOT / "security"):
         ok, _ = run_tests(root)
         print(f"correct {root.name}: {'PASS' if ok else 'FAIL'}")
         good &= ok
-    for task in load_tasks() + load_tasks(HELDOUT_FILE) + load_tasks(REALWORLD_FILE) + load_tasks(HARDWARE_FILE) + load_tasks(SCHEMATICS_FILE) + load_tasks(BOARD_FILE):
+    for task in load_tasks() + load_tasks(HELDOUT_FILE) + load_tasks(REALWORLD_FILE) + load_tasks(HARDWARE_FILE) + load_tasks(SCHEMATICS_FILE) + load_tasks(BOARD_FILE) + load_tasks(SECURITY_FILE):
         work = prepare(task)
         passed, _ = run_tests(work)
         shutil.rmtree(work, ignore_errors=True)

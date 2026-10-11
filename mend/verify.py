@@ -46,9 +46,9 @@ def expected_strings(rs: dict[str, dict]) -> list[str]:
         mb, ma = (sum(map(tokens, g)) / len(g) for g in (v0, r1))
         out += [", ".join(str(r["passed"]) for r in v0), f"{mb:,.0f}", ", ".join(str(r["passed"]) for r in r1),
                 f"{ma:,.0f} ({pct(mb, ma)})"]
-    for kind in ("heldout", "realworld", "hardware", "schematics", "board"):
+    for kind in ("heldout", "realworld", "hardware", "schematics", "board", "security"):
         def pick(r, kind=kind):
-            if kind in ("schematics", "board"):
+            if kind in ("schematics", "board", "security"):
                 return r.get("domain") == kind
             if kind == "hardware":
                 return bool(r.get("hardware"))
