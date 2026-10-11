@@ -5,6 +5,7 @@
 
 import html
 import json
+import re
 
 from mend.tasks import ROOT, load_tasks
 
@@ -76,11 +77,17 @@ def _demo_data(rounds: list[dict], runs: list[dict], tasks: list[dict]) -> str:
                 failing_task_id = t["id"]
                 failing_task_report = t.get("report", "")
                 break
-    diag_text = ""
-    diag_path = RUNS / (r["before"] + ".diagnosis.md")
+    diag_text, title = "", r.get("title", "")
+    diag_rel = r["diagnosis"].replace("\\", "/")  # the round record names its diagnosis file
+    diag_path = ROOT / diag_rel
     if diag_path.exists():
-        lines = diag_path.read_text(encoding="utf-8").splitlines()
-        diag_text = "\n".join(lines[:12])
+        text = diag_path.read_text(encoding="utf-8")
+        row = re.search(rf"^\| {re.escape(str(failing_task_id))} \| ([^|]+)\| ([^|]+)\|", text, re.M)
+        if row:
+            diag_text = f"Failing step: {row.group(1).strip()}\n\nCause: {row.group(2).strip()}"
+        if not title:
+            m = re.search(r"## Chosen fix: (.+)", text)
+            title = m.group(1) if m else ""
     sha = r["commit"]
     checkpoint_url = f"https://entire.io/gh/thegoodengineers/mend/commit/{sha}" if sha[:7] in CHECKPOINTED else ""
     return json.dumps({
@@ -93,7 +100,9 @@ def _demo_data(rounds: list[dict], runs: list[dict], tasks: list[dict]) -> str:
         "failing_task": failing_task_id,
         "failing_task_report": failing_task_report,
         "diagnosis": diag_text,
-    }, ensure_ascii=False)
+        "diagnosis_url": f"{REPO}/blob/main/{diag_rel}",
+        "title": title,
+    }, ensure_ascii=False).replace("</", "<\\/")  # never close the <script> it is embedded in
 
 
 DEMO_SCRIPT = r"""
@@ -115,13 +124,14 @@ DEMO_SCRIPT = r"""
     },
     function(){
       d.innerHTML='<div class="ds"><p class="dl">Step 2 of 4 — Diagnosis</p>'
-        +'<h2 class="dt">Supervisor identifies the cause</h2>'
-        +'<pre class="dpre">'+escHtml(DATA.diagnosis)+'</pre></div>';
+        +'<h2 class="dt">Supervisor reads the trace</h2>'
+        +'<pre class="dpre">'+escHtml(DATA.diagnosis)+'</pre>'
+        +'<p class="dd"><a href="'+DATA.diagnosis_url+'" target="_blank">full diagnosis ↗</a></p></div>';
     },
     function(){
       var cp=DATA.checkpoint_url?'<a href="'+DATA.checkpoint_url+'" target="_blank">Entire checkpoint ↗</a> · ':'';
       d.innerHTML='<div class="ds"><p class="dl">Step 3 of 4 — Patch applied</p>'
-        +'<h2 class="dt">Fix committed</h2>'
+        +'<h2 class="dt" style="font-size:clamp(26px,4vw,44px)">'+escHtml(DATA.title||'Fix committed')+'</h2>'
         +'<p class="dd">'+cp+'<a href="'+DATA.commit_url+'" target="_blank">commit '+escHtml(DATA.commit.slice(0,7))+'</a></p></div>';
     },
     function(){
