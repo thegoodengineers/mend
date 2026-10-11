@@ -199,7 +199,9 @@ def repair_history() -> str:
             lines.append(f"- REJECTED before running: {title} (reason: {r.get('reason')})")
             continue
         files = _entire_files(r["commit"]) if r.get("commit") else ""
-        lines.append(f"- {'KEPT' if r.get('kept') else 'REVERTED'}: {title} "
+        verdict = ("REVERTED BY THE GATE, THEN ACCEPTED BY A PERSON (see precedents)"
+                   if r.get("human_decision", {}).get("accepted") else "KEPT" if r.get("kept") else "REVERTED")
+        lines.append(f"- {verdict}: {title} "
                      f"(solved {r.get('before_passed')} -> {r.get('after_passed')}/{r.get('total')}, "
                      f"tokens {r.get('before_tokens', 0):,} -> {r.get('after_tokens', 0):,}"
                      + (f"; its Entire checkpoint shows it changed {files}" if files else "") + ")")

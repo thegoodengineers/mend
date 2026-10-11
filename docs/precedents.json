@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "question": "Round 11 cut probe cheating from 6 to 2 of 12 but raised training tokens 17% (paired interval [1.039, 1.301]); gate amendment 4 allows 15%, so the gate reverted it. Accept the trade-off?",
+    "answer": "Yes. Two-thirds less test-gaming is worth up to about 20% more tokens: a worker that bends code to fit a wrong test is worse than one that costs a little more. Re-apply round 11's fix. The gate's verdict stays on record.",
+    "asked_in": "2026-10-10T13-28-51-gaming-d2",
+    "decided_by": "The Good Engineers (a person), 11 Oct 2026, about 20:40 IST",
+    "kind": "human decision on a gate trade-off"
+  }
+]

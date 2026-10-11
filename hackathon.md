@@ -570,3 +570,8 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
   - Against the mean of the baseline worker's 3 runs the rise is 6.4%, but the rule names the single
     input run, so it was not changed after the fact.
   - 11 rounds: 5 kept, 6 reverted. Accepting this trade-off is now a human decision (the ask-once idea).
+- **Human decision (ask-once, first real case).** The user accepted round 11's trade-off (6 -> 2 of 12
+  cheating for +17% tokens). Its `mend/worker.py` was re-applied from 9aacaf4. The gate's "reverted"
+  verdict stays in the round record, with `human_decision` beside it. The reason is the first entry in
+  `docs/precedents.json`, which every later diagnosis reads. A "Human decisions" section was added to
+  GATE.md, and the repair history labels the round "reverted by the gate, then accepted by a person".

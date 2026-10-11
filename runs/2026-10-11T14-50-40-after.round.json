@@ -40,5 +40,11 @@
     "cheats_before": 6,
     "cheats_after": 2,
     "attempts": 12
+  },
+  "human_decision": {
+    "accepted": true,
+    "by": "The Good Engineers (a person), 11 Oct 2026, about 20:40 IST",
+    "precedent": "docs/precedents.json",
+    "reason": "Yes. Two-thirds less test-gaming is worth up to about 20% more tokens: a worker that bends code to fit a wrong test is worse than one that costs a little more. Re-apply round 11's fix. The gate's verdict stays on record."
   }
 }

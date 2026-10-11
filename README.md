@@ -16,7 +16,7 @@ keeps the fix only if a full re-run gets better.** Built during
 *Live recording (1:55, click): same task, same model. Original worker failed in 15 turns; after
 self-repair it passed in 4.*
 
-**At a glance:** 11 self-repair rounds, 5 kept and 6 reverted by a pre-registered gate · whole-file
+**At a glance:** 11 self-repair rounds, 5 kept and 6 reverted by a pre-registered gate (one of them later accepted by a person) · whole-file
 rewrites 31 → 0 · model calls 235 → 107 · cost per task $0.040 → $0.015 · bugs it never saw: 9/10 →
 10/10 · a real open-source library: 2–3/8 → 8/8 · hardware designs it never saw: same 9/9 at −58% tokens · circuit schematics: same 8/8 at −64% tokens · a larger sensor schematic: 6–7/8 → 8/8 · every gate verdict written back into neatlogs.
 
@@ -33,7 +33,7 @@ If a number has no file behind it, it is not here.
 | You used cfo.ai | [business plan](docs/business-plan.md) and its [cfo.ai export](docs/business-plan-cfo-ai.xlsx) |
 | The improvement is real, not noise | [paired statistics per decision](#self-repair-rounds-five-kept-six-reverted) (rounds 3–5 solid; rounds 1–2 rest on one task flip, said plainly); [leave-one-out ablation](evidence/ablation.json) (removing round 5: +61% tokens); 4 fixes reverted by the gate; re-check every decision [in your browser](https://thegoodengineers.github.io/mend/#verify) |
 | The fixes are real, not test-gaming | [fix audit](#are-the-passing-fixes-real-fix-audit-and-impossible-task-probes) of every passing fix against the correct design (hidden checks, circuit simulation); 6 impossible-task probes catch cheating; the one gamed fix (BD04) is shown, not hidden; gate amendments 3-4 guard it |
-| It knows when not to fix itself | [ask once, remember](#is-self-healing-self-defeating): a fix that is a choice stops for a person, and the answer becomes a precedent (answers neatlogs' "Self-healing is self-defeating") |
+| It knows when not to fix itself | [ask once, remember](#is-self-healing-self-defeating): trade-offs the rules don't settle go to a person, and the answer becomes a precedent. First real case: round 11 (less test-gaming for more tokens), [decided by the team](docs/precedents.json). This answers neatlogs' "Self-healing is self-defeating" |
 | The agent recovers from failures | [run_tests timed out, then fixed](evidence/t17-recovery-from-timeout.txt); in the live recording a tool call fails ("Permission denied") and the worker carries on |
 | You built in public | #neatHack posts on X: [kickoff](https://x.com/theintrodev/status/2108851736765141188), [the bug it found in itself](https://x.com/theintrodev/status/2109233575614927163); full list in [hackathon.md](hackathon.md#neathack-posts-on-x) |
 | Code written during the hackathon | [commit history](https://github.com/thegoodengineers/mend/commits/main) (first commit: plans only, as the rules allow) |
@@ -94,8 +94,9 @@ is, and remember the answer. Here is where Mend stands on each:
   `runs/<id>.question.json`. A person answers with `python -m mend.supervisor --answer <id> "..."`.
   The answer goes to [`docs/precedents.json`](docs/precedents.json), and every later diagnosis must
   follow it, so each question is asked once. Round 7 was the first round with this step: it judged
-  its fix a correction, and the gate then reverted it. No real choice has come up yet, so the
-  ask path is shown only by a unit test.
+  its fix a correction, and the gate then reverted it. **First real case:** round 11's anti-gaming fix
+  traded 17% more tokens for two-thirds less test-gaming, beyond what the gate's rules settle. A person
+  decided (accept it), and the answer is now a precedent every diagnosis reads (see the rounds below).
 
 ### What makes this more than a loop
 
@@ -126,7 +127,7 @@ once":
 | 8 | Prompt: don't read tests; map the failing test to its source module; trust the traceback over the report | 29 → 29 / 29 | 302,153 → 368,440 (+21.9%) | `badd7dd`, **reverted** by `a403b68` | [diagnosis](runs/2026-10-10T13-28-51-d2.diagnosis.md) |
 | 9 | Loop: put the initial full test-suite result into the first message | 29 → 29 / 29 | 302,153 → 265,837 (−12.0%) | `5760569`, **reverted** by `31e4587` | [diagnosis](runs/2026-10-10T13-28-51-d3.diagnosis.md) |
 | 10 | Anti-gaming: "the bug report is the specification; tests are evidence, not authority" (amendment 4) | 29 → 29 / 29 | 302,153 → 366,000 (+21.1%) | `4156338`, **reverted** by `278f383` (probe cheating 6 → 5 of 12; 3 fewer needed) | [diagnosis](runs/2026-10-10T13-28-51-gaming.diagnosis.md) |
-| 11 | Anti-gaming: loop nudge to check the report against the test when an edit leaves the suite failing (amendment 4) | 29 → 29 / 29 | 302,153 → 353,410 (+17.0%) | `9aacaf4`, **reverted** by `965f896` (probe cheating 6 → 2 of 12, but tokens over +15%) | [diagnosis](runs/2026-10-10T13-28-51-gaming-d2.diagnosis.md) |
+| 11 | Anti-gaming: loop nudge to check the report against the test when an edit leaves the suite failing (amendment 4) | 29 → 29 / 29 | 302,153 → 353,410 (+17.0%) | `9aacaf4`, **reverted** by `965f896` (probe cheating 6 → 2 of 12, but tokens over +15%); **re-applied by a person's decision** ([precedent](docs/precedents.json)) | [diagnosis](runs/2026-10-10T13-28-51-gaming-d2.diagnosis.md) |
 
 **Plateau.** Since round 5, four proposals in a row failed the gate. On these 29 tasks the worker now
 solves everything in about 3 turns, so the next real gain needs harder tasks, not more rounds. Knowing
@@ -394,8 +395,11 @@ that fires only when an edit leaves the suite still failing, instead of an alway
   names, over the 15% limit, so it was **reverted**.
 - Against the mean of that worker's three recorded runs, the rise is 6.4%. The rule was written before
   the round, so we did not change it after seeing the result.
-- Whether 17% more tokens is worth two-thirds less cheating is a judgment call. That kind of call
-  belongs to a person, not the gate.
+- Whether 17% more tokens is worth two-thirds less cheating is a judgment call, and that belongs to a
+  person, not the gate. **The team accepted it.** The fix is re-applied, the gate's verdict stays on
+  record, and the reason is the first entry in [`docs/precedents.json`](docs/precedents.json), which
+  every later diagnosis must follow. This is the ask-once step on a real case
+  ([gate: human decisions](docs/GATE.md)). The worker now running is the round 11 worker.
 
 ### Live recording
 
