@@ -42,8 +42,7 @@ POSTS = [
      "docs/img/post-real.png"),
     ("Now", "A different agent",
      "pointed mend at an agent it wasn't built for: a sql analyst. one round, same answers, 37% cheaper. "
-     f"on a database it never saw, 42% cheaper, plus one new mistake. didn't hide it #neatHack
-{SITE}#hardware",
+     f"on a database it never saw, 42% cheaper, plus one new mistake. didn't hide it #neatHack\n{SITE}#hardware",
      "docs/img/post-second-agent.png"),
     ("Monday afternoon", "Audit log in neatlogs",
      f"every time our agent keeps or reverts a change to itself, it logs the verdict to @neatlogs #neatHack\n{REPO}",
