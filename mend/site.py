@@ -254,7 +254,12 @@ def render() -> str:
         ha = sum(tokens(r) for r in f["hw_after"]) / len(f["hw_after"])
         pb = sum(r["passed"] for r in f["hw_before"]) / len(f["hw_before"])
         pa = sum(r["passed"] for r in f["hw_after"]) / len(f["hw_after"])
-        verdict = "The repairs carried over." if pa > pb or (pa == pb and ha < hb * 0.85) else "No clear gain carried over."
+        if pa > pb:
+            verdict = f"{pb:g} → {pa:g} of {f['hw_before'][0]['total']} solved."
+        elif pa == pb and ha < hb * 0.85:
+            verdict = f"Same {pa:g}/{f['hw_before'][0]['total']}, at {(1 - ha / hb) * 100:.0f}% fewer tokens."
+        else:
+            verdict = "No clear gain carried over."
         hw_html = f"""
 <section id="hardware"><div class="wrap">
   <p class="eyebrow">Hardware transfer test: a domain it never saw</p><h2>{verdict}</h2>

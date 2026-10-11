@@ -18,7 +18,7 @@ self-repair it passed in 4.*
 
 **At a glance:** 9 self-repair rounds, 5 kept and 4 reverted by a pre-registered gate · whole-file
 rewrites 31 → 0 · model calls 235 → 107 · cost per task $0.040 → $0.015 · bugs it never saw: 9/10 →
-10/10 · a real open-source library: 2–3/8 → 8/8 · every gate verdict written back into neatlogs.
+10/10 · a real open-source library: 2–3/8 → 8/8 · hardware designs it never saw: same 9/9 at −58% tokens · every gate verdict written back into neatlogs.
 
 Every number in this README comes from a file in [`runs/`](runs/) or [`evidence/`](evidence/).
 If a number has no file behind it, it is not here.
@@ -245,6 +245,24 @@ both workers.
 
 The original worker's failures repeat the flaw Mend found in itself: on the 426-line module it
 rewrote the whole file, broke unrelated tests and ran out of turns.
+
+### Hardware transfer test: bugs in digital-logic designs, a domain it never saw
+
+[`hardware/`](hardware/) holds eight small chip designs written in Amaranth HDL (an open-source
+hardware description language that emits Verilog): a counter, Gray-code converters, an 8-bit ALU, a
+FIFO, a UART transmitter, a PWM generator, a debouncer and a CRC-8 unit. 26 simulation testbenches
+check each design cycle by cycle against a plain-Python reference model.
+[`tasks/hardware.json`](tasks/hardware.json) plants 9 bugs, all caught by the testbenches
+(`python scripts/hw_demo.py bugs`). The supervisor never sees these runs.
+
+| Worker | Runs | Solved | Mean tokens per run |
+|---|---|---|---|
+| Original (`13defdb`) | [v0](runs/2026-10-11T11-12-23-hardware-v0.json), [v0-r2](runs/2026-10-11T11-12-23-hardware-v0-r2.json) | 9, 9 of 9 | 188,336 |
+| After 5 self-repair rounds | [r1](runs/2026-10-11T11-12-23-hardware.json), [r2](runs/2026-10-11T11-12-23-hardware-r2.json) | 9, 9 of 9 | 79,656 (−57.7%) |
+
+**Honest reading:** both workers fix all 9, so there is no gain in solve rate; these bugs are within
+reach of either. The repairs carried over as **efficiency**: the repaired worker used less than half
+the tokens and about 3 turns per bug instead of 7–8, on hardware it was never trained on.
 
 ### Live recording
 
