@@ -52,5 +52,11 @@
     "kept": false,
     "trace_id": "ddb5667d7e47dd4838c4ea9975e50086",
     "verdict": "GATE REVERTED 5760569"
+  },
+  "10": {
+    "after": "2026-10-11T14-08-38-after",
+    "kept": false,
+    "trace_id": "a95a0f69ce3494683fd4bb17d783b0a4",
+    "verdict": "GATE REVERTED 4156338"
   }
 }
