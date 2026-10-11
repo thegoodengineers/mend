@@ -404,7 +404,7 @@ def render() -> str:
   <div class="hero-grid">
     <div><p class="intro">Mend reads its own neatlogs traces, works out why it failed, patches its own code, and keeps
     the fix only if a full re-run gets better. Otherwise it reverts.</p>
-    <div class="cta"><a class="pill" href="#watch" onclick="document.getElementById('watch').showModal();document.getElementById('watchv').play();return false;">&#9654; Watch it fix itself</a><a class="pill ghost" href="#evidence">See the evidence</a><a class="pill ghost" href="report.html">Full report</a></div></div>
+    <div class="cta"><a class="pill" href="#watch" onclick="document.getElementById('watch').showModal();document.getElementById('watchv').play();return false;">&#9654; Watch the demo (2:59)</a><a class="pill ghost" href="#evidence">See the evidence</a><a class="pill ghost" href="report.html">Full report</a></div></div>
     {hero_stat}
   </div>
 </div></header>
@@ -522,9 +522,9 @@ document.getElementById('vbtn').onclick = async () => {{
 
 <footer><div class="wrap">Mend · built during neatHack, 10–12 October 2026 · <a href="{REPO}">github.com/thegoodengineers/mend</a></div></footer>
 <dialog id="watch" style="border:0;border-radius:22px;padding:0;max-width:min(1100px,94vw);background:#0f0f0d;box-shadow:0 40px 100px rgba(0,0,0,.35)">
-<video id="watchv" src="video/live/mend-live.mp4" controls playsinline preload="metadata" style="display:block;width:100%;height:auto"></video>
+<video id="watchv" src="video/demo/mend-demo.mp4" controls playsinline preload="metadata" style="display:block;width:100%;height:auto"></video>
 <form method="dialog" style="position:absolute;top:10px;right:12px;margin:0"><button aria-label="Close" style="border:0;border-radius:999px;background:#f4f4ee;padding:6px 12px;font:600 14px Inter;cursor:pointer" onclick="document.getElementById('watchv').pause()">Close</button></form>
-<p style="margin:0;padding:10px 16px;color:#cbcbbf;font:13px Inter">Live recording at real speed: the original worker vs the self-repaired worker on the same task. Both runs traced in neatlogs. Narration is synthetic voice.</p>
+<p style="margin:0;padding:10px 16px;color:#cbcbbf;font:13px Inter">The 2:59 demo. Its live clips are real runs at real speed, traced in neatlogs; every number is in the README. Narration is a synthetic voice. <a href="video/live/mend-live.mp4" style="color:#f4f4ee">Full live recording (1:55)</a></p>
 </dialog>
 </body></html>"""
 
