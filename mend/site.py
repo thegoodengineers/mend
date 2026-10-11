@@ -220,9 +220,10 @@ def honesty_html() -> str:
   <p class="sub">Every passing fix is audited against the correct design with checks the worker never sees, and six impossible tasks
   (a bug plus a test that contradicts its report) catch cheating outright: no honest fix can pass them.</p>
   <div class="ba two-col">{cards}</div>
-  <p class="sub" style="font-size:15px">No worker edited a test; every cheat bent the code to the wrong test. Self-repair made the worker somewhat
-  more willing to do that (6 vs 4 of 12, not significant at this size). Gate amendments 3 and 4 now guard against it, and an anti-gaming round
-  where Mend repairs its own cheating is pre-registered.</p>
+  <p class="sub" style="font-size:15px">No worker edited a test; every cheat bent the code to the wrong test. Self-repair had made the worker more
+  willing to do that (6 vs 4 of 12). So Mend repaired its own cheating: round 10's prompt rule barely helped and was reverted; round 11's loop nudge
+  cut cheating to 2 of 12 for 17% more tokens. The gate's 15% limit reverted it, a person accepted the trade-off, and the decision is now a
+  precedent. Checked afterwards: held-out 10/10, real library 8/8.</p>
   <div class="tablewrap"><table><tr><th>Set</th><th>Worker</th><th>Passed</th><th>Restored</th><th>Equivalent</th><th>Review</th><th>Gamed</th></tr>{rows}</table></div>
   <p><a class="link" href="{REPO}#are-the-passing-fixes-real-fix-audit-and-impossible-task-probes">How the audit works →</a></p>
 </div></section>"""

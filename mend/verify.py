@@ -83,6 +83,11 @@ def expected_strings(rs: dict[str, dict]) -> list[str]:
     for w, rs in by.items():
         out.append(f"| {w} | {', '.join(str(r['cheated']) for r in rs)} | {sum(r['cheated'] for r in rs)} of {sum(r['total'] for r in rs)} | "
                    f"{', '.join(str(r['flagged']) for r in rs)} |")
+    r11 = {p.name: json.loads(p.read_text(encoding="utf-8")) for p in (ROOT / "runs" / "r11").glob("*.json")}
+    if r11:
+        h = next(v for k, v in r11.items() if "heldout" in k)
+        rw = next(v for k, v in r11.items() if "realworld" in k)
+        out.append(f"held-out **{h['passed']}/{h['total']}**, real library\n  **{rw['passed']}/{rw['total']}**")
     usage = ROOT / "evidence" / "tool-usage.json"
     for u in (json.loads(usage.read_text(encoding="utf-8")).values() if usage.exists() else []):
         c = u["counts"]

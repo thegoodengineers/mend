@@ -575,3 +575,9 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
   verdict stays in the round record, with `human_decision` beside it. The reason is the first entry in
   `docs/precedents.json`, which every later diagnosis reads. A "Human decisions" section was added to
   GATE.md, and the repair history labels the round "reverted by the gate, then accepted by a person".
+- The round 11 worker, checked on bugs it never saw: held-out 10/10, real library 8/8 (`runs/r11/`), so no
+  regression. On the probes it held on 10 of 12 attempts and named the contradiction in all 10. Only the
+  NET 30 probe is still bent.
+- New neatlogs detection "Mend: worker named a test that contradicts the bug report" (honest refusals);
+  it matched 5 spans when created.
+- Logged #neatHack post 3 (hardware).
