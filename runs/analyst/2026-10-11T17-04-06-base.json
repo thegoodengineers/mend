@@ -1,0 +1,233 @@
+{
+  "run_id": "2026-10-11T17-04-06-base",
+  "agent": "analyst",
+  "worker_commit": "e89c43d",
+  "worker_dirty": false,
+  "model": "claude-haiku-4-5",
+  "tasks": [
+    {
+      "task_id": "A01",
+      "trace_id": "b9bd869557f08e92866bd98043b00299",
+      "turns": 4,
+      "input_tokens": 3859,
+      "output_tokens": 281,
+      "stop": "finish",
+      "answer": "52",
+      "passed": true,
+      "expected": "52"
+    },
+    {
+      "task_id": "A02",
+      "trace_id": "3f7594a58b00df99eacbb538f4322c44",
+      "turns": 4,
+      "input_tokens": 4584,
+      "output_tokens": 461,
+      "stop": "finish",
+      "answer": "5468.6",
+      "passed": true,
+      "expected": "5468.6"
+    },
+    {
+      "task_id": "A03",
+      "trace_id": "a9b493fa567feefb872038a4775b21de",
+      "turns": 4,
+      "input_tokens": 4559,
+      "output_tokens": 486,
+      "stop": "finish",
+      "answer": "office",
+      "passed": true,
+      "expected": "office"
+    },
+    {
+      "task_id": "A04",
+      "trace_id": "7704afb5e9c07275d29d3a4665da354b",
+      "turns": 4,
+      "input_tokens": 3862,
+      "output_tokens": 276,
+      "stop": "finish",
+      "answer": "12",
+      "passed": true,
+      "expected": "12"
+    },
+    {
+      "task_id": "A05",
+      "trace_id": "0e83c2ee2c3101cfea11378f44173b3a",
+      "turns": 4,
+      "input_tokens": 4326,
+      "output_tokens": 431,
+      "stop": "finish",
+      "answer": "313.61",
+      "passed": true,
+      "expected": "313.61"
+    },
+    {
+      "task_id": "A06",
+      "trace_id": "e2aeec6e5543b39ce976cb19f5800547",
+      "turns": 4,
+      "input_tokens": 3831,
+      "output_tokens": 269,
+      "stop": "finish",
+      "answer": "1",
+      "passed": true,
+      "expected": "1"
+    },
+    {
+      "task_id": "A07",
+      "trace_id": "d48ad7b62e14783af53b57bfe7c2654c",
+      "turns": 4,
+      "input_tokens": 3915,
+      "output_tokens": 310,
+      "stop": "finish",
+      "answer": "13.3",
+      "passed": true,
+      "expected": "13.3"
+    },
+    {
+      "task_id": "A08",
+      "trace_id": "7f887907c8b1751c73ea3479d9ac4977",
+      "turns": 4,
+      "input_tokens": 4546,
+      "output_tokens": 453,
+      "stop": "finish",
+      "answer": "5194.4",
+      "passed": true,
+      "expected": "5194.4"
+    },
+    {
+      "task_id": "A09",
+      "trace_id": "98a2584edb575a2af39bc14704180bb8",
+      "turns": 4,
+      "input_tokens": 4536,
+      "output_tokens": 446,
+      "stop": "finish",
+      "answer": "11",
+      "passed": true,
+      "expected": "11"
+    },
+    {
+      "task_id": "A10",
+      "trace_id": "e93c7f74a2fbc5e8ba6fbc17b6121146",
+      "turns": 5,
+      "input_tokens": 6097,
+      "output_tokens": 495,
+      "stop": "finish",
+      "answer": "32",
+      "passed": true,
+      "expected": "32"
+    },
+    {
+      "task_id": "A11",
+      "trace_id": "dbd45ef57533bfc494880f52c6b03e9e",
+      "turns": 4,
+      "input_tokens": 4549,
+      "output_tokens": 449,
+      "stop": "finish",
+      "answer": "2025-10",
+      "passed": true,
+      "expected": "2025-10"
+    },
+    {
+      "task_id": "A12",
+      "trace_id": "130574c7e4b52a48c9c8432df865d50c",
+      "turns": 4,
+      "input_tokens": 4375,
+      "output_tokens": 580,
+      "stop": "finish",
+      "answer": "-50.0",
+      "passed": true,
+      "expected": "-50.0"
+    },
+    {
+      "task_id": "A13",
+      "trace_id": "3340365713c670733522cec117c268ed",
+      "turns": 5,
+      "input_tokens": 6828,
+      "output_tokens": 759,
+      "stop": "finish",
+      "answer": "269.5",
+      "passed": true,
+      "expected": "269.5"
+    },
+    {
+      "task_id": "A14",
+      "trace_id": "bc4e377d4ce1ebf58c268b285ae0b78a",
+      "turns": 4,
+      "input_tokens": 3905,
+      "output_tokens": 330,
+      "stop": "finish",
+      "answer": "12",
+      "passed": true,
+      "expected": "12"
+    },
+    {
+      "task_id": "A15",
+      "trace_id": "11411bbfcf4a148cf1a14130bb8bd7a6",
+      "turns": 4,
+      "input_tokens": 4674,
+      "output_tokens": 543,
+      "stop": "finish",
+      "answer": "16.2",
+      "passed": true,
+      "expected": "16.2"
+    },
+    {
+      "task_id": "A16",
+      "trace_id": "5f8cf67341f5769831c8c09e77100e6e",
+      "turns": 4,
+      "input_tokens": 4163,
+      "output_tokens": 484,
+      "stop": "finish",
+      "answer": "18.5",
+      "passed": true,
+      "expected": "18.5"
+    },
+    {
+      "task_id": "A17",
+      "trace_id": "d1ba202f05a0fdedde8c04190c15d49a",
+      "turns": 6,
+      "input_tokens": 9587,
+      "output_tokens": 1353,
+      "stop": "finish",
+      "answer": "Toaster",
+      "passed": true,
+      "expected": "Toaster"
+    },
+    {
+      "task_id": "A18",
+      "trace_id": "80ee4183abd3058ef175c40ca2de4556",
+      "turns": 4,
+      "input_tokens": 4459,
+      "output_tokens": 396,
+      "stop": "finish",
+      "answer": "76",
+      "passed": true,
+      "expected": "76"
+    },
+    {
+      "task_id": "A19",
+      "trace_id": "5152f3625a0990683b014e27f9b502fc",
+      "turns": 4,
+      "input_tokens": 4540,
+      "output_tokens": 400,
+      "stop": "finish",
+      "answer": "1526.40",
+      "passed": true,
+      "expected": "1526.4"
+    },
+    {
+      "task_id": "A20",
+      "trace_id": "9e11cf75ea79d57195e6b03bf1c52581",
+      "turns": 4,
+      "input_tokens": 4642,
+      "output_tokens": 499,
+      "stop": "finish",
+      "answer": "USA",
+      "passed": true,
+      "expected": "USA"
+    }
+  ],
+  "passed": 20,
+  "total": 20,
+  "input_tokens": 95837,
+  "output_tokens": 9701
+}
