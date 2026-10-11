@@ -26,7 +26,7 @@ Demo: <YouTube or X video link> · site: https://thegoodengineers.github.io/mend
 | Evidence: Entire checkpoints or entire-graph output | done | checkpoints for 7e2148e, c07f702 (and round 6); entire-graph enabled in the runner |
 | Evidence: cfo.ai business plan (pricing, costs, revenue, runway) | done, refresh pending | `docs/business-plan.md`, `docs/business-plan-cfo-ai.xlsx` |
 | Evidence: a failed action and what the agent did next | done | `evidence/t17-recovery-from-timeout.txt`; live recording ("Permission denied", then continues) |
-| Evidence: #neatHack posts | 2 so far | [kickoff](https://x.com/theintrodev/status/2108851736765141188), [bug it found in itself](https://x.com/theintrodev/status/2109233575614927163); next ones in `docs/post-pack.html` |
+| Evidence: #neatHack posts | 3 so far | [kickoff](https://x.com/theintrodev/status/2108851736765141188), [bug it found in itself](https://x.com/theintrodev/status/2109233575614927163), [hardware](https://x.com/theintrodev/status/2109300098023006412); next ones in `docs/post-pack.html` |
 
 ## Pre-flight (Monday, before 7 PM)
 - [ ] Video uploaded (YouTube unlisted or X), under 3:00, link pasted above
