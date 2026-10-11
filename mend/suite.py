@@ -52,6 +52,7 @@ def run_suite(task_ids: list[str] | None = None, label: str = "", heldout: bool 
     tasks = [t for t in load_tasks(source) if not task_ids or t["id"] in task_ids]
     if realworld:
         use_library_name(worker, tasks[0]["library"])
+    label = "-".join(x for x in (label, os.environ.get("MEND_RUN_LABEL", "")) if x)  # parallel runs need distinct ids
     run_id = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S") + (f"-{label}" if label else "")
     run = {
         "run_id": run_id,
