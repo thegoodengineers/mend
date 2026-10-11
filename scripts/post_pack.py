@@ -36,6 +36,10 @@ POSTS = [
     ("Tonight", "Error bars",
      f"pulled each fix out one at a time to see which ones actually mattered. two did. one didn't #neatHack\n{SITE}#ablation",
      "docs/img/post-12-ablation.png"),
+    ("Tonight", "We tried to make it cheat",
+     f"gave our agent 6 impossible tasks: a test that contradicts the bug report, so passing = cheating. it cheated 4/12 "
+     f"before self-repair, 6/12 after. it tried to fix that itself. the gate said not good enough #neatHack\n{SITE}#real",
+     "docs/img/post-real.png"),
     ("Monday afternoon", "Audit log in neatlogs",
      f"every time our agent keeps or reverts a change to itself, it logs the verdict to @neatlogs #neatHack\n{REPO}",
      "your neatlogs dashboard screenshot of the mend-gate workflow"),
