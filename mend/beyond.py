@@ -9,7 +9,6 @@ the Verilog sample from hardware/verilog (scripts/hw_demo.py). Building the page
 
 import json
 
-from mend.board_iso import CSS as ISO_CSS, board_block
 from mend.report import REPO
 from mend.site import CSS, esc, facts, repeat_card, tokens
 from mend.tasks import BOARD_FILE, HARDWARE_FILE, ROOT, SCHEMATICS_FILE, load_tasks
@@ -105,11 +104,10 @@ def render() -> str:
 .sch figure{{margin:0}} .sch img{{width:100%;height:190px;object-fit:contain;background:#fff;border-radius:14px}}
 pre.code{{font:12.5px/1.55 'JetBrains Mono',monospace;background:#fff;border-radius:16px;padding:18px;overflow:auto;max-height:420px;margin:0}}
 .verdict{{font:800 clamp(26px,3.4vw,40px)/1.05 'Inter Tight',sans-serif;letter-spacing:-.03em;margin:28px 0 0}}
-{ISO_CSS}
 td.rep{{color:var(--mute)}} .hero2{{font:800 clamp(56px,10vw,128px)/.88 'Inter Tight',sans-serif;letter-spacing:-.05em;margin:0}}
 </style></head><body>
 <nav><div class="wrap"><a class="logo" href="index.html"><b>Mend</b><span>neatHack 2026</span></a>
-<div class="links"><a class="hide" href="#chips">Chip designs</a><a class="hide" href="#schematics">Schematics</a><a class="hide" href="#board">Sensor board</a>
+<div class="links"><a class="hide" href="#chips">Chip designs</a><a class="hide" href="#schematics">Schematics</a><a class="hide" href="#board">Sensor circuit</a>
 <a class="hide" href="index.html">Main page</a><a class="pill" href="{REPO}">View the code</a></div></div></nav>
 
 <header><div class="wrap">
@@ -151,13 +149,13 @@ td.rep{{color:var(--mute)}} .hero2{{font:800 clamp(56px,10vw,128px)/.88 'Inter T
 </div></section>
 
 <section id="board"><div class="wrap">
-  <p class="eyebrow">A whole board · one netlist, shared power rails</p><h2>A sensor board, brought up in simulation.</h2>
+  <p class="eyebrow">A larger schematic · one netlist, shared power rails</p><h2>A sensor circuit, brought up in simulation.</h2>
   <p class="sub">USB 5 V in, an LM317-style regulator set to 3.3 V, an NTC temperature sensor with an op-amp buffer and a 1 kHz anti-aliasing
   filter into the microcontroller's ADC, a reset circuit, power and status LEDs, and I²C pull-ups. {len(checks)} bring-up checks, the ones an
   engineer runs on a new board: is the rail 3.3 V, are the LEDs safe, does the sensor read right, is anything over the MCU's 3.6 V limit.</p>
-  {board_block()}
-  <p class="sub" style="font-size:13px">The drawing is illustrative; the circuit is <a class="link" href="{REPO}/blob/main/schematics/circuits/board.cir">board.cir</a>,
-  checked by <a class="link" href="{REPO}/blob/main/schematics/tests/test_board.py">test_board.py</a>.</p>
+  <p><a class="pill" href="circuit.html">Open the circuit explorer: every bug, the agent's steps, the netlist graph →</a></p>
+  <p class="sub" style="font-size:13px">The circuit: <a class="link" href="{REPO}/blob/main/schematics/circuits/board.cir">board.cir</a>,
+  checked by <a class="link" href="{REPO}/blob/main/schematics/tests/test_board.py">test_board.py</a>. Schematic level only: no PCB layout.</p>
   {result_block(f["bd_before"], f["bd_after"], f"of {bd_n}")}
   <p class="sub" style="font-size:15px">Where the gap comes from: the original worker <b>refused</b> BD01 (both runs) and BD02 (one run) in a
   single turn, replying that a sensor-board report is "a hardware issue, not a bug in the Python library", without running a check. Both workers

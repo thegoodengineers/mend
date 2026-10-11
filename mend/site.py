@@ -313,11 +313,11 @@ def render() -> str:
     hw_html = f"""
 <section id="hardware"><div class="wrap">
   <p class="eyebrow">Beyond software</p><h2>It carries over to hardware.</h2>
-  <p class="sub">Bugs in chip designs and circuit schematics the supervisor never saw, checked in simulation.</p>
+  <p class="sub">Bugs in chip designs and circuit schematics the supervisor never saw, checked in simulation, up to schematic level.</p>
   <div class="tools">
     <div class="tool card"><h3>Chip designs</h3><p>9 bugs in 8 Amaranth HDL designs (ALU, FIFO, UART...): {esc(hw_line)}.</p></div>
     <div class="tool card"><h3>Circuit schematics</h3><p>8 bring-up bugs in 7 circuit netlists: {esc(sc_line)}.</p></div>
-    <div class="tool card"><h3>A whole sensor board</h3><p>8 bring-up bugs on one board netlist: {esc(bd_line)}.</p></div>
+    <div class="tool card"><h3>A sensor circuit</h3><p>8 bring-up bugs in one larger schematic: {esc(bd_line)}.</p></div>
   </div>
   <p><a class="pill" href="hardware.html">See the waveforms, schematics and bugs →</a></p>
 </div></section>""" if hw_line or sc_line else ""
@@ -478,3 +478,6 @@ if __name__ == "__main__":
     from mend import beyond
     (ROOT / "hardware.html").write_text(beyond.render(), encoding="utf-8")
     print("wrote hardware.html")
+    from mend import explorer
+    (ROOT / "circuit.html").write_text(explorer.render(), encoding="utf-8")
+    print("wrote circuit.html")

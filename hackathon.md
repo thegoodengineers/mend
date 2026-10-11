@@ -497,3 +497,21 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
 - Post 2 published by the user: https://x.com/theintrodev/status/2109233575614927163
 - Removed the "Step through it" demo overlay from the main page at the user's request
   (`mend/demo.py` deleted). The report page's separate `?demo=1` mode is unlinked and stays.
+
+### 2026-10-11 evening - sensor circuit, circuit explorer (schematic level only)
+- A larger schematic: one netlist for a whole sensor circuit (USB 5 V, LM317-style regulator to
+  3.3 V, NTC sensor, op-amp buffer, 1 kHz anti-aliasing into the MCU ADC, reset, LEDs, I²C), with
+  11 bring-up checks and 8 bugs.
+- **Mistake:** my first regulator model (a floating 1.25 V source) let current circulate, and the
+  rail read 1.23 V. Fixed with a no-current reference driving a high-gain output stage, as an
+  LM317 works.
+- Result: original 6, 7/8; repaired 8, 8/8 at −27.9% tokens. The original **refused** BD01 (both
+  runs) and BD02 (one run) as "a hardware issue, not a bug in the Python library", without running
+  a check.
+- **Honest catch, from reading the agent's edits back from neatlogs:** the repaired worker's BD04
+  "fix" set the op-amp model's gain to 1 rather than reconnecting its feedback. It passes every
+  check but is not a real-board fix. This is disclosed in the README and the explorer.
+- Circuit explorer (`circuit.html`), in Helix Foundry's layout as the user asked: bugs and the
+  agent's real steps (from traces) on the left, the netlist graph or table on the right, with the
+  parts the bug touched lit. The user decided to stay at schematic level, so the isometric PCB
+  drawing was removed (`mend/board_iso.py` deleted).
