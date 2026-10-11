@@ -523,7 +523,5 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
   Netlist graph and table remain as tabs.
 - **Mistake:** the first illustration had hand-placed wires that missed the pins. They are now
   generated from pin coordinates.
-- At the user's request the illustration now shows **at least a basic board**: a green PCB on
-  standoffs over the display plate, copper traces generated from the netlist nets, silver pads,
-  ground vias, white silkscreen designators, and mounting holes. Captioned "illustrative, not a
-  manufactured PCB layout"; the checks still run on the netlist.
+- The user preferred the earlier white-plate illustration, so the "basic board" (green PCB) version
+  was reverted; the explorer is back to the Anatomy-style white plate (`3ead5c5` content).

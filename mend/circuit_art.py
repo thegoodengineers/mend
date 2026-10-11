@@ -1,8 +1,7 @@
 """An isometric technical illustration of the sensor circuit (schematics/circuits/board.cir), for circuit.html.
 
-A basic green board on standoffs over a ruled display plate; parts are laid out in schematic order (power,
-sensor chain, microcontroller, outputs) and joined by copper traces generated from the netlist's nets.
-Illustrative, not a manufactured PCB layout. The rails
+Light line art with four-tone shading on a ruled base plate; parts are laid out in schematic order (power,
+sensor chain, microcontroller, outputs) and wired as the netlist connects them. Not a PCB layout. The rails
 and the sensor signal glow and flow; LEDs light. Plain SVG and CSS, written here (no third-party code).
 """
 
@@ -192,78 +191,46 @@ def parts_svg(z):
     return "".join(out)
 
 
-PLATE_AT = (-2.0, -1.6)                 # display plate corner; the board sits on it on four standoffs
-BOARD_AT, BOARD_SIZE = (0.6, 1.4), (38.6, 22.0)
-STANDOFF, PCB_T = 0.7, 0.22             # standoff height, board thickness
-
-
 def art_svg() -> str:
     w, d, h = PLATE
-    w, d = w + 3.5, d + 4.0
-    x0, y0 = PLATE_AT
     defs = ('<defs><radialGradient id="glowGreen"><stop offset="0" stop-color="#5fe07a" stop-opacity=".75"/><stop offset="1" stop-color="#5fe07a" stop-opacity="0"/></radialGradient>'
             '<radialGradient id="glowRed"><stop offset="0" stop-color="#ff5a4e" stop-opacity=".75"/><stop offset="1" stop-color="#ff5a4e" stop-opacity="0"/></radialGradient>'
             '<filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.2"/></filter></defs>')
-    plate = box(x0, y0, 0, w, d, h, "#f7f7f3", "#e7e7e0", "#d8d8d0", sw=0.8)
-    ticks = "".join(f'<line x1="{iso(t, y0 + d, h * 0.55)[0]:.1f}" y1="{iso(t, y0 + d, h * 0.55)[1]:.1f}" '
-                    f'x2="{iso(t, y0 + d, h * (0.25 if round(t) % 5 else 0.05))[0]:.1f}" '
-                    f'y2="{iso(t, y0 + d, h * (0.25 if round(t) % 5 else 0.05))[1]:.1f}" stroke="{INK}" stroke-width=".6"/>'
-                    for t in range(int(x0) + 1, int(x0 + w)))
-    tag = box(x0 + 0.8, y0 + d - 2.4, h, 7.0, 1.8, 0.05, "#ffffff", "#ececec", "#e0e0e0", sw=0.5)
-    tx, ty = iso(x0 + 4.3, y0 + d - 1.5, h + 0.05)
+    plate = box(0, 0, 0, w, d, h, "#f7f7f3", "#e7e7e0", "#d8d8d0", sw=0.8)
+    ticks = "".join(f'<line x1="{iso(t, d, h * 0.55)[0]:.1f}" y1="{iso(t, d, h * 0.55)[1]:.1f}" x2="{iso(t, d, h * (0.25 if t % 5 else 0.05))[0]:.1f}" '
+                    f'y2="{iso(t, d, h * (0.25 if t % 5 else 0.05))[1]:.1f}" stroke="{INK}" stroke-width=".6"/>' for t in range(1, int(w)))
+    tag = box(1.0, 21.6, h, 6.5, 2.0, 0.05, "#ffffff", "#ececec", "#e0e0e0", sw=0.5)
+    tx, ty = iso(4.2, 22.6, h + 0.05)
     tag += f'<text x="{tx:.1f}" y="{ty + 3:.1f}" text-anchor="middle" class="figtag">Fig. 1 · sensor circuit</text>'
-    # the board: four white standoffs, then the green PCB with mounting holes
-    bx, by = BOARD_AT
-    bw, bd = BOARD_SIZE
-    corners = [(bx + 0.8, by + 0.8), (bx + bw - 0.8, by + 0.8), (bx + 0.8, by + bd - 0.8), (bx + bw - 0.8, by + bd - 0.8)]
-    board = "".join(cyl(cx, cy, h, 0.35, STANDOFF) for cx, cy in corners[:2])
-    board += box(bx, by, h + STANDOFF, bw, bd, PCB_T, "#3d8a55", "#2c6a40", "#245a35", stroke="#1d4a2b", sw=0.8)
-    board += "".join(cyl(cx, cy, h, 0.35, STANDOFF) for cx, cy in corners[2:])
-    top = h + STANDOFF + PCB_T
-    for cx, cy in corners:
-        hx, hy = iso(cx, cy, top)
-        board += (f'<ellipse cx="{hx:.1f}" cy="{hy:.1f}" rx="7" ry="4.2" fill="#d9c27a" stroke="#1d4a2b" stroke-width=".6"/>'
-                  f'<ellipse cx="{hx:.1f}" cy="{hy:.1f}" rx="3.6" ry="2.2" fill="#1b2a20"/>')
-    sx, sy = iso(bx + bw - 12.5, by + bd - 0.9, top)
-    board += f'<text x="{sx:.1f}" y="{sy:.1f}" class="silk">MEND SENSOR v1</text>'
     wires = []
-    for net, line in routes():  # copper traces, with the rails and the signal glowing over them
-        p = pts(iso(x, y, top + 0.02) for x, y in line)
+    for net, line in routes():
+        p = pts(iso(x, y, h + 0.02) for x, y in line)
         wires.append(f'<polyline class="wire {net}" points="{p}" fill="none"/>')
         if net in ("usb", "v33", "sig"):
             wires.append(f'<polyline class="glow {net}" points="{p}" fill="none" filter="url(#soft)"/>'
                          f'<polyline class="flow {net}" points="{p}" fill="none"/>')
-    for pin in NETS["0"]:  # ground: a via to the ground plane
-        gx, gy = iso(*PINS[pin], top + 0.02)
-        wires.append(f'<ellipse cx="{gx:.1f}" cy="{gy:.1f}" rx="4" ry="2.4" fill="#d9c27a" stroke="#1d4a2b" stroke-width=".6"/>'
-                     f'<ellipse cx="{gx:.1f}" cy="{gy:.1f}" rx="1.7" ry="1" fill="#1b2a20"/>')
-    for x, y in {PINS[p] for net, pins in NETS.items() if net != "0" for p in pins}:  # solder pads
-        px, py = iso(x, y, top + 0.02)
-        wires.append(f'<ellipse cx="{px:.1f}" cy="{py:.1f}" rx="2.6" ry="1.6" fill="#e4e5e7" stroke="#8d8f93" stroke-width=".4"/>')
-    silk = []  # reference designators in white silkscreen, beside each part
-    for pid in INFO:
-        own = [xy for name, xy in PINS.items() if name.split(".")[0] == pid]
-        if own:
-            mx, my = sum(x for x, _ in own) / len(own), max(y for _, y in own)
-            lx, ly = iso(mx, my + 0.9, top)
-            silk.append(f'<text x="{lx:.1f}" y="{ly:.1f}" text-anchor="middle" class="silk">{html.escape(pid)}</text>')
+    for pin in NETS["0"]:  # ground marks: a small via with a ring
+        gx, gy = iso(*PINS[pin], h + 0.02)
+        wires.append(f'<ellipse cx="{gx:.1f}" cy="{gy:.1f}" rx="4" ry="2.4" fill="none" stroke="{INK}" stroke-width=".8"/>'
+                     f'<ellipse cx="{gx:.1f}" cy="{gy:.1f}" rx="1.8" ry="1.1" fill="{INK}"/>')
+    for x, y in {PINS[p] for net, pins in NETS.items() if net != "0" for p in pins}:  # solder points
+        px, py = iso(x, y, h + 0.02)
+        wires.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="1.6" fill="{INK}"/>')
     notes = []  # Anatomy-style annotations: a short leader line up from the part, then a label
     for (x, y, zz), text in (((2.0, 4.6, 1.8), "USB 5 V"), ((9.0, 2.4, 3.1), "LM317 → 3.3 V"), ((5.0, 12.0, 0.8), "NTC sensor"),
                              ((13.7, 12.0, 1.0), "op-amp buffer"), ((20.1, 12.0, 0.7), "1 kHz filter"), ((11.0, 18.6, 1.3), "reset"),
                              ((25.3, 3.35, 1.1), "power LED"), ((20.6, 19.55, 1.1), "status LED"), ((36.4, 22.0, 2.3), "I²C")):
-        ax, ay = iso(x, y, top + zz)
-        notes.append(f'<line x1="{ax:.1f}" y1="{ay:.1f}" x2="{ax:.1f}" y2="{ay - 22:.1f}" stroke="{INK}" stroke-width=".6"/>'
-                     f'<text x="{ax + 3:.1f}" y="{ay - 25:.1f}" class="note">{html.escape(text)}</text>')
-    xs = [iso(x0, y0 + d)[0], iso(x0 + w, y0)[0]]
-    ys = [iso(x0, y0, h)[1] - 40, iso(x0 + w, y0 + d)[1]]
-    vb = f"{xs[0] - 20:.0f} {ys[0]:.0f} {xs[1] - xs[0] + 40:.0f} {ys[1] - ys[0] + 30:.0f}"
-    return (f'<svg class="art" viewBox="{vb}" role="img" aria-label="Illustration of the sensor circuit on a basic board">'
-            f'{defs}{plate}{ticks}{tag}{board}{"".join(wires)}{"".join(silk)}{parts_svg(top)}{"".join(notes)}</svg>')
+        x0, y0 = iso(x, y, h + zz)
+        notes.append(f'<line x1="{x0:.1f}" y1="{y0:.1f}" x2="{x0:.1f}" y2="{y0 - 22:.1f}" stroke="{INK}" stroke-width=".6"/>'
+                     f'<text x="{x0 + 3:.1f}" y="{y0 - 25:.1f}" class="note">{html.escape(text)}</text>')
+    width, height = iso(w, 0)[0] + 30, iso(w, d)[1] + 30
+    return (f'<svg class="art" viewBox="0 0 {width:.0f} {height:.0f}" role="img" aria-label="Illustration of the sensor circuit">'
+            f'{defs}{plate}{ticks}{tag}{"".join(wires)}{parts_svg(h)}{"".join(notes)}</svg>')
 
 
 CSS = """.art{width:100%;height:auto} .art .apart{cursor:pointer;outline:none;transition:opacity .2s}
 .art .apart:hover polygon,.art .apart:hover path,.art .apart:hover ellipse{filter:brightness(1.06)}
-.art .wire{stroke:#d4a64a;stroke-width:1.7;stroke-linejoin:round} .art .silk{font:600 7.5px Inter,sans-serif;fill:#f4f4ee;letter-spacing:.03em} .art .glow{stroke-width:5;opacity:.35} .art .flow{stroke-width:1.6;stroke-dasharray:3 9;animation:flow 1.6s linear infinite}
+.art .wire{stroke:#9a9a90;stroke-width:1.1} .art .glow{stroke-width:5;opacity:.35} .art .flow{stroke-width:1.6;stroke-dasharray:3 9;animation:flow 1.6s linear infinite}
 .art .usb.glow,.art .usb.flow{stroke:#8f6bff} .art .v33.glow,.art .v33.flow{stroke:#3d8bff} .art .sig.glow,.art .sig.flow{stroke:#ff8a2a}
 @keyframes flow{to{stroke-dashoffset:-24}} .art .chiptext{font:600 11px Inter,sans-serif;fill:#d8d8d2}
 .art .note{font:600 10px Inter,sans-serif;fill:#45453f;paint-order:stroke;stroke:#f7f7f3;stroke-width:3px} .art .figtag{font:600 8.5px Inter,sans-serif;fill:#5f5f58;letter-spacing:.04em}

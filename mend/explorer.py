@@ -157,18 +157,18 @@ main h1{{font:400 44px/1 'Instrument Serif',serif;margin:0}} main .lead{{color:v
 </style></head><body><div class="app">
 <aside>
   <a class="brand" href="index.html">Mend<span>circuit explorer</span></a>
-  <div class="boardsel"><i></i><div><b>Sensor circuit</b><br><span class="sub">basic board · board.cir · {len(parts)} parts · {len(bugs)} bugs</span></div></div>
+  <div class="boardsel"><i></i><div><b>Sensor circuit</b><br><span class="sub">schematic level · board.cir · {len(parts)} parts · {len(bugs)} bugs</span></div></div>
   <p class="side-h">Bring-up bugs</p><div>{buglist}</div>
   <p class="side-h">Agent log · repaired worker</p><div class="log" id="log"><div class="msg"><span class="who">Mend</span>Pick a bug above to see how the repaired worker fixed it, step by step, read back from its neatlogs trace.</div></div>
   <p class="sub" style="font-size:12px">Back to <a class="link" href="hardware.html">Beyond software</a> · <a class="link" href="{REPO}">code</a></p>
 </aside>
 <main>
-  <div class="top"><div><h1>Explorer</h1><p class="lead">The sensor circuit on a basic board, and how it connects. The parts a bug touched light up.</p></div>
+  <div class="top"><div><h1>Explorer</h1><p class="lead">The sensor circuit and how it connects, at schematic level. The parts a bug touched light up.</p></div>
   <div class="toggle" role="tablist"><button class="on" data-view="art">Circuit</button><button data-view="graph">Netlist</button><button data-view="table">Table</button></div></div>
   <div class="chips" id="chips" style="display:none">{chips}</div>
   <div class="canvas">
-    <div class="view on" id="v-art">{art_svg()}<p class="sub" style="font-size:12px">A basic board: parts in schematic order, joined by copper traces generated from the
-    netlist's nets. Blue is the 3.3 V rail, violet 5 V, orange the sensor signal. Illustrative, not a manufactured PCB layout. Hover a part.</p></div>
+    <div class="view on" id="v-art">{art_svg()}<p class="sub" style="font-size:12px">Parts laid out in schematic order and wired as the netlist connects
+    them: blue is the 3.3 V rail, violet 5 V, orange the sensor signal. Not a PCB layout. Hover a part.</p></div>
     <div class="view" id="v-graph">{graph_svg(parts, blocks)}<p class="sub" style="font-size:12px">Coloured dots are parts, small dots are nets (wires). This is what a schematic is: parts joined by nets.</p></div>
     <div class="view" id="v-table"><div class="tablewrap"><table><tr><th>Part</th><th>Block</th><th>Nets</th><th>Value</th><th>Note</th></tr>{rows}</table></div></div>
   </div>
