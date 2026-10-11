@@ -65,4 +65,6 @@ At the **updated measured cost** of $0.57/round (vs $1.50 assumed), margin impro
 | 200 | $2,280 | $7,520 | 77% |
 | 1,000 | $11,400 | $37,600 | 77% |
 
-Break-even at updated costs: ~14 teams cover the $200 infrastructure; ~120 teams cover $8,200 payroll + infra.
+Break-even at updated costs: each team adds $49 − 20 × $0.57 = $37.60 of gross profit per month, so about
+6 teams cover the $200 infrastructure and about 218 teams cover the $8,200 of payroll and infrastructure
+(our arithmetic from the model's inputs, not yet in cfo.ai).
