@@ -1,0 +1,18 @@
+{
+  "before": "2026-10-10T13-28-51",
+  "before_passed": 29,
+  "after": "2026-10-11T04-40-58-after",
+  "after_passed": 29,
+  "total": 29,
+  "before_tokens": 302153,
+  "after_tokens": 288229,
+  "commit": "723015f",
+  "kept": false,
+  "diagnosis": "runs\\2026-10-10T13-28-51.diagnosis.md",
+  "title": "read_file: return the whole file by default instead of a 200-line page",
+  "diagnosis_usage": {
+    "model": "claude-opus-5-5",
+    "input_tokens": 20014,
+    "output_tokens": 2444
+  }
+}
