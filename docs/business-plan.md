@@ -48,3 +48,21 @@ So the cost of re-running a suite in a repair round fell by about 61% ($1.12 -> 
 supervisor's diagnosis call was measured in round 6 ([round record](../runs/2026-10-10T13-08-47-after.round.json)):
 Claude Opus 5.5, 20,954 input / 2,394 output tokens = about $0.13 at $4 / $20 per million. A whole
 repair round therefore costs about $0.57 today, against the $1.50 the cfo.ai model assumed. Next step: rebuild the cfo.ai model with these measured costs.
+
+## Customer scenarios (from cfo.ai model inputs)
+
+| Customers | Monthly revenue | Monthly model cost | Gross profit | Covers payroll? |
+|---|---|---|---|---|
+| 50 (base) | $2,450 | $1,690 | $760 (31%) | No — need ~550 teams |
+| 200 | $9,800 | $6,760 | $3,040 (31%) | No — need ~550 teams |
+| 1,000 | $49,000 | $33,800 | $15,200 (31%) | Yes — covers payroll + infra |
+
+At the **updated measured cost** of $0.57/round (vs $1.50 assumed), margin improves:
+
+| Customers | Monthly model cost (updated) | Gross profit (updated) | Gross margin (updated) |
+|---|---|---|---|
+| 50 | $570 | $1,880 | 77% |
+| 200 | $2,280 | $7,520 | 77% |
+| 1,000 | $11,400 | $37,600 | 77% |
+
+Break-even at updated costs: ~14 teams cover the $200 infrastructure; ~120 teams cover $8,200 payroll + infra.

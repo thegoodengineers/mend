@@ -363,3 +363,17 @@ Pending:
 - The official submission post on X and the Submit on X button (appear in the submission window)
 - Credit redemption details ("published with the resources")
 - Web check-in for the team (builder to do)
+
+## #neatHack posts on X
+
+Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as each goes up.
+
+| # | Milestone | Status | Link |
+|---|---|---|---|
+| 1 | Project kickoff | ✅ Posted | https://x.com/theintrodev/status/2108851736765141188 |
+| 2 | Self-repair works (27→28, diagnosis screenshot) | ⬜ To post | — |
+| 3 | Held-out test passes (10/10, never seen by supervisor) | ⬜ To post | — |
+| 4 | Live recording (attach mend-live.mp4) | ⬜ To post | — |
+| 5 | Entire checkpoint screenshot | ⬜ To post | — |
+| 6 | cfo.ai business plan screenshot | ⬜ To post | — |
+| 7 | Final video + submission quote post | ⬜ To post | — |
