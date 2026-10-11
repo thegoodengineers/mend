@@ -37,9 +37,11 @@ SCENES = [
       "The whole-file write silently deleted everything after line 200. Fix: a precise edit tool, and partial reads that say how much is left.")),
     ("entire", "Claude Code writes the fix, and Entire links the commit to the session that wrote it. Before each new diagnosis, "
                "Mend reads its past checkpoints back, so it never retries a fix that failed.", ("term", "entire-explain.txt")),
+    ("provenance", "Entire's blame shows that sixty-nine percent of the worker's instructions were written by Mend itself, "
+                   "each line traced to the session and the diagnosis behind it.", ("shot", "#provenance .card")),
     ("result", "Same task, same model, after the fix: four turns, and it passes.", ("clip", 88.5)),
     ("gate", "Every change must earn its place. Mend re-runs all twenty-nine tasks and keeps a fix only if the numbers improve. "
-             "Five fixes were kept. One made things worse, and Mend reverted it on its own.", ("shot", "#rounds .card")),
+             "Five fixes were kept. Two did not earn their place, and Mend reverted them on its own.", ("shot", "#rounds .card")),
     ("heldout", "Is it overfitting? On ten bugs it never saw, it went from nine out of ten to ten out of ten.", ("shot", "#heldout")),
     ("realworld", "On bugs in a real open-source library, from two or three out of eight, to eight out of eight, with eighty-two percent fewer tokens.",
      ("shot", "#realworld")),
@@ -47,6 +49,9 @@ SCENES = [
                "neatlogs' own checker, agrees: whole-file rewrites in every original run, none after the fix.",
      ("card", "neatlogs regression guards · neatroots", "Failures become detections.",
       "4 detections created from Mend's own failures. neatroots custom check: 4 of 4 original runs flagged, 0 of 4 repaired.")),
+    ("judgment", "Some fixes are choices, not corrections. Then Mend stops and asks a person, once, and every later diagnosis follows the answer.",
+     ("card", "Ask once, remember", "Corrections are automatic. Choices go to a person.",
+      "A fix that trades one valid behaviour for another pauses the round. The answer is stored as a precedent the supervisor must follow.")),
     ("business", "We planned the business in cfo.ai. Self-repair cut our cost per task from four cents to one and a half, "
                  "and a full repair round now costs about fifty-seven cents.",
      ("card", "cfo.ai business plan · measured costs", "$0.040 → $0.015 per task.",

@@ -81,10 +81,14 @@ is, and remember the answer. Here is where Mend stands on each:
 - **Remember the answer.** Every round, whether kept, reverted or rejected, is a record in
   `runs/`, and the Claude Code session behind each fix is an Entire checkpoint. Both are fed back
   into the next diagnosis, so a failed fix is not proposed again.
-- **Not done yet: asking a person.** When a fix would trade one valid behaviour for another, Mend
-  has no step that stops and asks. Today that can't happen, because every task has a test that
-  decides. It is the first thing we would add before pointing Mend at an agent whose "correct"
-  contains choices.
+- **Ask someone when it is a choice** (added 11 Oct, `6a3b2c2`). Every diagnosis now states whether its
+  fix is a *correction* or a *choice*. A choice trades one valid behaviour for another that no test
+  or token count decides. A choice stops the round before any patch and writes the question to
+  `runs/<id>.question.json`. A person answers with `python -m mend.supervisor --answer <id> "..."`.
+  The answer goes to [`docs/precedents.json`](docs/precedents.json), and every later diagnosis must
+  follow it, so each question is asked once. Round 7 was the first round with this step: it judged
+  its fix a correction, and the gate then reverted it. No real choice has come up yet, so the
+  ask path is shown only by a unit test.
 
 ### What makes this more than a loop
 

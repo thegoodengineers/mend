@@ -326,7 +326,7 @@ footer{{padding:48px 0;color:var(--mute);font-size:14px}}
   <div class="tools">
     <div class="tool card"><h3>Not a choice</h3><p>Every task is judged by the library's own tests, run by the runner, not the agent. Token cost comes from the API. Mend never tunes tone or policy.</p></div>
     <div class="tool card"><h3>Remembered</h3><p>Every round, kept or reverted, is a run record and an Entire checkpoint, and both feed the next diagnosis. A failed fix is not proposed twice.</p></div>
-    <div class="tool card"><h3>Not built yet: asking</h3><p>If a fix ever traded one valid behaviour for another, Mend has no step that stops and asks a person. That comes first before pointing it at an agent whose "correct" contains choices.</p></div>
+    <div class="tool card"><h3>Asked once</h3><p>Each diagnosis says whether its fix is a correction or a choice. A choice stops the round and asks a person; the answer becomes a precedent every later diagnosis must follow. No real choice has come up yet: round 7 judged its fix a correction.</p></div>
   </div>
 </div></section>
 
