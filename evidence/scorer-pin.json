@@ -1,5 +1,6 @@
 {
  "tasks/analyst.json": "37ebd3afeab4c4fc7e90226d6d4092f13e851059ea93a469aed0f2a9f71ff8dd",
+ "tasks/analyst_heldout.json": "aca34d1b082c288e2f9f25bd23cf9886ccd5bc90f53ce35798ef0934237be7e6",
  "tasks/board.json": "ee59e39a4ad0aac6e24c3cbba2d6f368c115bd1774a3d2e3d107ac9e1c443900",
  "tasks/hardware.json": "2821f35d8c63e803bc4651c92a6542c87198224a4c08a9db5c88be0173d020f9",
  "tasks/heldout.json": "11e803de47f057fea0cb473bd1d44f72060280bc350a945c4c3ac0381c85b3ae",
@@ -32,5 +33,6 @@
  "security/tests/test_tokens.py": "b4e4f3c7b10443a64c74db1e128d7d6397098eeb44d0455b7a0e09290329fc71",
  "security/tests/test_web.py": "16b0afc39218b01c405a681807d0d2dd3131d73f46d818df93b9541cca7a59b9",
  "realworld/inflection/tests/test_inflection.py": "f92c5085ba83c07192ca12fd024d828a734b7996226893bf9d72e649fc10200b",
+ "agents/analyst/clinic.db": "e095ed04cff3e1faee81dea7282d8e9d3b746bbc1947467d48fbadda490ed892",
  "agents/analyst/shop.db": "dca831f1b85d6cb6f79955e64cc249cb4c4117be39c5ebca379b30bb1dd0ebbc"
 }

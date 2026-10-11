@@ -1,0 +1,62 @@
+[
+ {
+  "id": "H01",
+  "question": "How many completed appointments took place in 2026?",
+  "sql": "SELECT COUNT(*) FROM appointments WHERE status = 'completed' AND appt_date >= '2026-01-01' AND appt_date < '2027-01-01'",
+  "kind": "number"
+ },
+ {
+  "id": "H02",
+  "question": "What was the total fee of completed appointments in March 2026? Round to 2 decimals.",
+  "sql": "SELECT ROUND(SUM(fee), 2) FROM appointments WHERE status = 'completed' AND appt_date >= '2026-03-01' AND appt_date < '2026-04-01'",
+  "kind": "number"
+ },
+ {
+  "id": "H03",
+  "question": "Which specialty earned the most in fees from completed appointments? Answer with the specialty.",
+  "sql": "SELECT d.specialty FROM appointments a JOIN doctors d ON d.id = a.doctor_id WHERE a.status = 'completed' GROUP BY d.specialty ORDER BY SUM(a.fee) DESC LIMIT 1",
+  "kind": "text"
+ },
+ {
+  "id": "H04",
+  "question": "How many patients have no city recorded?",
+  "sql": "SELECT COUNT(*) FROM patients WHERE city IS NULL OR TRIM(city) = ''",
+  "kind": "number"
+ },
+ {
+  "id": "H05",
+  "question": "What percentage of all appointments were no-shows? Round to 1 decimal.",
+  "sql": "SELECT ROUND(100.0 * SUM(status = 'no_show') / COUNT(*), 1) FROM appointments",
+  "kind": "number"
+ },
+ {
+  "id": "H06",
+  "question": "How much is still owed on completed appointments, i.e. their fees minus all payments received for them? Round to 2 decimals.",
+  "sql": "SELECT ROUND(SUM(a.fee - COALESCE(p.paid, 0)), 2) FROM appointments a LEFT JOIN (SELECT appointment_id, SUM(amount) paid FROM payments GROUP BY appointment_id) p ON p.appointment_id = a.id WHERE a.status = 'completed'",
+  "kind": "number"
+ },
+ {
+  "id": "H07",
+  "question": "Which patient paid the clinic the most in total (all payments received)? Answer with the patient's id (two patients share a name).",
+  "sql": "SELECT a.patient_id FROM payments p JOIN appointments a ON a.id = p.appointment_id GROUP BY a.patient_id ORDER BY SUM(p.amount) DESC LIMIT 1",
+  "kind": "number"
+ },
+ {
+  "id": "H08",
+  "question": "How many completed appointments were with doctors who no longer work at the clinic?",
+  "sql": "SELECT COUNT(*) FROM appointments a JOIN doctors d ON d.id = a.doctor_id WHERE a.status = 'completed' AND d.active = 0",
+  "kind": "number"
+ },
+ {
+  "id": "H09",
+  "question": "What is the average fee of a completed appointment? Round to 2 decimals.",
+  "sql": "SELECT ROUND(AVG(fee), 2) FROM appointments WHERE status = 'completed'",
+  "kind": "number"
+ },
+ {
+  "id": "H10",
+  "question": "How many completed appointments have not received any payment at all?",
+  "sql": "SELECT COUNT(*) FROM appointments a WHERE a.status = 'completed' AND NOT EXISTS (SELECT 1 FROM payments p WHERE p.appointment_id = a.id)",
+  "kind": "number"
+ }
+]

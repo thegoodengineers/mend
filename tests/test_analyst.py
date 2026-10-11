@@ -36,3 +36,10 @@ def test_guard_boundaries():
     hit = question_words
     assert hit("+check token usage before finishing") == [] and hit("+filter to USA only") == ["usa"]
     assert hit("+where order_date >= '2025-12-01'") == ["2025-"]
+
+
+def test_heldout_database():
+    import json
+    from mend.analyst_suite import HELDOUT
+    tasks = {t["id"]: t for t in json.loads(HELDOUT[0].read_text(encoding="utf-8"))}
+    assert correct(tasks["H07"], "8", HELDOUT[1]) and not correct(tasks["H07"], "2", HELDOUT[1])  # judged on clinic.db

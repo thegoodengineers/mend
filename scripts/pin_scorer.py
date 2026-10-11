@@ -12,7 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PATTERNS = ["tasks/*.json", "sandbox/tests/*.py", "hardware/tests/*.py", "schematics/tests/*.py", "security/tests/*.py",
-            "realworld/inflection/tests/*.py", "agents/analyst/shop.db"]  # the analyst's reference answers come from the db
+            "realworld/inflection/tests/*.py", "agents/analyst/*.db"]  # the analyst's reference answers come from its databases
 
 
 def pins() -> dict[str, str]:
