@@ -19,6 +19,7 @@ HERE = Path(__file__).parent
 ROOT = HERE.parent.parent
 LIVE = ROOT / "video" / "live" / "mend-live.mp4"
 VOICE, BG, PAD = "en-US-AndrewNeural", "e6e6dd", 0.7
+ZOOM, FADE = 0.04, 0.25  # still scenes push in by 4%; 0.25 s fade at each cut
 W, H = 1920, 1080
 
 # (id, narration, visual): visual is ("clip", start_s) | ("shot", css_selector) | ("card", label, title, body) | ("term", file)
@@ -124,10 +125,16 @@ def scene_clip(sid: str, vis: tuple, seconds: float, still: Path | None) -> Path
     out = HERE / "clips" / f"{sid}.mp4"
     out.parent.mkdir(exist_ok=True)
     fit = f"scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color=0x{BG},setsar=1,fps=30"
+    # soft dip to the page colour between scenes, so cuts don't jump
+    fade = f"fade=t=in:st=0:d={FADE}:c=0x{BG},fade=t=out:st={seconds - FADE:.2f}:d={FADE}:c=0x{BG}"
     if vis[0] == "clip":
-        cmd = ["-ss", f"{vis[1]}", "-t", f"{seconds:.2f}", "-i", str(LIVE), "-vf", fit, "-an"]
+        cmd = ["-ss", f"{vis[1]}", "-t", f"{seconds:.2f}", "-i", str(LIVE), "-vf", f"{fit},{fade}", "-an"]
     else:
-        cmd = ["-loop", "1", "-t", f"{seconds:.2f}", "-i", str(still), "-vf", fit]
+        # slow push-in (ZOOM over the whole scene), rendered at 2x first so the motion doesn't jitter
+        step = ZOOM / (seconds * 30)
+        push = (f"scale={W * 2}:{H * 2},zoompan=z='1+{step:.7f}*on':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
+                f":d=1:s={W}x{H}:fps=30")
+        cmd = ["-framerate", "30", "-loop", "1", "-t", f"{seconds:.2f}", "-i", str(still), "-vf", f"{fit},{push},{fade}"]
     subprocess.run(["ffmpeg", "-v", "error", "-y", *cmd, "-c:v", "libx264", "-crf", "20", "-pix_fmt", "yuv420p", str(out)], check=True)
     return out
 
