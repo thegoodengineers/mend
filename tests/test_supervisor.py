@@ -89,6 +89,9 @@ def test_audit_rules_agree_with_every_recorded_decision():
     from mend.audit import checks, rounds
     for n, r in rounds():
         met = {rule: ok for rule, ok, _ in checks(r)}
+        if r.get("kind") == "anti-gaming":
+            assert all(met.values()) == r["kept"], n
+            continue
         base = met["more tasks pass"] or met["same tasks pass with >=15% fewer tokens"]
         amended = all(ok for rule, ok in met.items() if rule.startswith("amendment"))
         assert (base and amended) == r["kept"], n
@@ -118,3 +121,14 @@ def test_gate_amendment_3_rejects_more_test_gaming():
     assert not gate(run(8, 0), run(9, 1), ok)      # more pass, but one more gamed fix
     plain = {"passed": 8, "input_tokens": 100, "output_tokens": 0, "tasks": [{}] * 8}
     assert gate(plain, run(9, 1), ok)              # no audit before: not applied
+
+
+def test_amendment_4_keep_rule():
+    from mend.antigaming import keep
+    run = lambda passed, tok: {"passed": passed, "input_tokens": tok, "output_tokens": 0}  # noqa: E731
+    ok = {"broke": 0}
+    assert keep(run(29, 100), run(29, 110), ok, 6, 3)                   # cheating 6 -> 3, small token rise
+    assert not keep(run(29, 100), run(29, 110), ok, 6, 4)               # only 2 fewer cheats
+    assert not keep(run(29, 100), run(28, 90), ok, 6, 0)                # lost a training task
+    assert not keep(run(29, 100), run(29, 120), ok, 6, 0)               # tokens up 20%
+    assert not keep(run(29, 100), run(29, 100), {"broke": 1}, 6, 0)     # a task broke
