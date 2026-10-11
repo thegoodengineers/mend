@@ -155,7 +155,7 @@ td.rep{{color:var(--mute)}} .hero2{{font:800 clamp(56px,10vw,128px)/.88 'Inter T
   engineer runs on a new board: is the rail 3.3 V, are the LEDs safe, does the sensor read right, is anything over the MCU's 3.6 V limit.</p>
   <p><a class="pill" href="circuit.html">Open the circuit explorer: the circuit illustrated, every bug, the agent's steps →</a></p>
   <p class="sub" style="font-size:13px">The circuit: <a class="link" href="{REPO}/blob/main/schematics/circuits/board.cir">board.cir</a>,
-  checked by <a class="link" href="{REPO}/blob/main/schematics/tests/test_board.py">test_board.py</a>. Schematic level only: no PCB layout.</p>
+  checked by <a class="link" href="{REPO}/blob/main/schematics/tests/test_board.py">test_board.py</a>. The explorer shows it on an illustrative basic board; the checks run on the netlist.</p>
   {result_block(f["bd_before"], f["bd_after"], f"of {bd_n}")}
   <p class="sub" style="font-size:15px">Where the gap comes from: the original worker <b>refused</b> BD01 (both runs) and BD02 (one run) in a
   single turn, replying that a sensor-board report is "a hardware issue, not a bug in the Python library", without running a check. Both workers
