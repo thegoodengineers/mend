@@ -16,6 +16,10 @@ keeps the fix only if a full re-run gets better.** Built during
 *Live recording (1:55, click): same task, same model. Original worker failed in 15 turns; after
 self-repair it passed in 4.*
 
+**At a glance:** 9 self-repair rounds, 5 kept and 4 reverted by a pre-registered gate · whole-file
+rewrites 31 → 0 · model calls 235 → 107 · cost per task $0.040 → $0.015 · bugs it never saw: 9/10 →
+10/10 · a real open-source library: 2–3/8 → 8/8 · every gate verdict written back into neatlogs.
+
 Every number in this README comes from a file in [`runs/`](runs/) or [`evidence/`](evidence/).
 If a number has no file behind it, it is not here.
 
@@ -27,7 +31,7 @@ If a number has no file behind it, it is not here.
 | You used neatlogs | [traced call](evidence/t02-first-traced-call.txt), [trace read back over MCP](evidence/t04-trace-readback.txt), [task 23 before](evidence/task23-before-trace.json) / [after](evidence/task23-after-trace.json) traces; 4 regression-guard detections ([`mend/detections.py`](mend/detections.py)); every gate verdict is also written back into neatlogs as a `mend-gate` trace, one span per keep rule, and a detection flags each revert ([`mend/audit.py`](mend/audit.py), [read-back](evidence/gate-audit-readback.md)); second opinion from neatlogs' own [neatroots](evidence/neatroots-check.md): a custom check flags all 4 original-worker runs and none of the repaired ones |
 | You used Entire | [round 4 checkpoint](https://entire.io/gh/thegoodengineers/mend/commit/7e2148e201fdaa9b2b3f921d1f2651950f537205) (the supervisor's own Claude Code session); the supervisor reads past checkpoints back as repair memory; [who wrote the worker](https://thegoodengineers.github.io/mend/#provenance): `entire blame` shows 69% of the worker's prompt was written by Mend's own sessions; `entire search` is the repair memory, so a proposed fix that repeats a reverted one is rejected before any re-run ([calibration](evidence/entire-search-repeat-guard.md)) |
 | You used cfo.ai | [business plan](docs/business-plan.md) and its [cfo.ai export](docs/business-plan-cfo-ai.xlsx) |
-| The improvement is real, not noise | [paired statistics per decision](#self-repair-rounds-five-kept-four-reverted) (rounds 3–5 solid; rounds 1–2 rest on one task flip, said plainly); [leave-one-out ablation](evidence/ablation.json) (removing round 5: +61% tokens); 2 fixes reverted by the gate; re-check every decision [in your browser](https://thegoodengineers.github.io/mend/#verify) |
+| The improvement is real, not noise | [paired statistics per decision](#self-repair-rounds-five-kept-four-reverted) (rounds 3–5 solid; rounds 1–2 rest on one task flip, said plainly); [leave-one-out ablation](evidence/ablation.json) (removing round 5: +61% tokens); 4 fixes reverted by the gate; re-check every decision [in your browser](https://thegoodengineers.github.io/mend/#verify) |
 | It knows when not to fix itself | [ask once, remember](#is-self-healing-self-defeating): a fix that is a choice stops for a person, and the answer becomes a precedent (answers neatlogs' "Self-healing is self-defeating") |
 | The agent recovers from failures | [run_tests timed out, then fixed](evidence/t17-recovery-from-timeout.txt); in the live recording a tool call fails ("Permission denied") and the worker carries on |
 | You built in public | [first #neatHack post](https://x.com/theintrodev/status/2108851736765141188) |
@@ -120,6 +124,10 @@ once":
 | 7 | `read_file` returns the whole file by default instead of a 200-line page | 29 → 29 / 29 | 302,153 → 288,229 (−4.6%) | `723015f`, **reverted** by `d1aabc9` | [diagnosis](runs/2026-10-10T13-28-51.diagnosis.md) |
 | 8 | Prompt: don't read tests; map the failing test to its source module; trust the traceback over the report | 29 → 29 / 29 | 302,153 → 368,440 (+21.9%) | `badd7dd`, **reverted** by `a403b68` | [diagnosis](runs/2026-10-10T13-28-51-d2.diagnosis.md) |
 | 9 | Loop: put the initial full test-suite result into the first message | 29 → 29 / 29 | 302,153 → 265,837 (−12.0%) | `5760569`, **reverted** by `31e4587` | [diagnosis](runs/2026-10-10T13-28-51-d3.diagnosis.md) |
+
+**Plateau.** Since round 5, four proposals in a row failed the gate. On these 29 tasks the worker now
+solves everything in about 3 turns, so the next real gain needs harder tasks, not more rounds. Knowing
+when to stop is part of the result.
 
 Round records: the `*.round.json` files in [`runs/`](runs/). Rounds 2 and 3 were run back to back with
 `python -m mend.supervisor <run> --rounds 2`; rounds 4-9 ran from a clean runner clone. **Round 9** saved a real 12.0% (paired interval [0.781, 0.985], entirely below 1). That is under the pre-registered 15% bar, so it was reverted anyway: the rule is the rule. **Round 8** was the first under [gate amendment 1](docs/GATE.md); it made the worker significantly worse (+21.9% tokens, paired interval [1.099, 1.355] entirely above 1) and was reverted. **Round 7** (11 Oct, the first run with the ask-once judgment step, which judged its fix a correction, not a choice) was also reverted: −4.6% tokens is under the 15% bar. **Round 6 was reverted automatically:** it still solved 29/29 but used 3.8% more tokens, so the gate rejected it. Round 5 also created its own neatlogs regression guard ("Mend: slow solve (6+ turns)", matched 5 real spans). Rounds 2-3 "after" figures are single runs. The worker after round 4 was run three times: 29/29 each time ([10-59-46](runs/2026-10-10T10-59-46-after.json) 432,858, [11-13-11](runs/2026-10-10T11-13-11.json) 451,105, [11-18-45](runs/2026-10-10T11-18-45.json) 456,563 tokens). The worker after round 5 was also run three times: 29/29 each time ([11-50-52](runs/2026-10-10T11-50-52-after.json) 347,960, [13-23-02](runs/2026-10-10T13-23-02.json) 346,214, [13-28-51](runs/2026-10-10T13-28-51.json) 302,153 tokens). **Caveat:** the supervisor learns from the same 29 tasks it is scored on, and round 3's prompt includes a rule for hanging test suites learned from task 29; on a held-out set it never sees, it also improved (below).
