@@ -83,4 +83,4 @@ build a 2:20 cut.
 - [x] ~~At least 4 more #neatHack posts~~ dropped by the team on 12 Oct; any post that does go out still gets listed in `hackathon.md`
 - [ ] Freeze: no code changes after 5 PM; docs only
 - [x] Quote post published with the video and all three tags: https://x.com/theintrodev/status/2109643747185373531 (12 Oct)
-- [ ] Submission form completed
+- [x] Submission form completed (12 Oct, evening)

@@ -651,3 +651,4 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
   export is kept as `docs/business-plan-cfo-ai-10oct.xlsx`. Corrected our earlier "77%", which had left
   infrastructure out.
 - 12 Oct evening: submission quote post published, with the demo video and the three tags: https://x.com/theintrodev/status/2109643747185373531
+- 12 Oct evening: submission form completed. Both mandatory steps done.
