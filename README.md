@@ -4,7 +4,7 @@
 keeps the fix only if a full re-run gets better.** Built during
 [neatHack](https://neatlogs.com/hackathon), 10–12 October 2026, by team The Good Engineers.
 
-**Website:** https://thegoodengineers.github.io/mend/ · **Full data report:**
+**Website:** https://thegoodengineers.github.io/mend/ · **Submission post:** [on X](https://x.com/theintrodev/status/2109643747185373531) · **Full data report:**
 [report.html](https://thegoodengineers.github.io/mend/report.html) · **Build log:**
 [hackathon.md](hackathon.md)
 
@@ -36,7 +36,7 @@ If a number has no file behind it, it is not here.
 | It knows when not to fix itself | [ask once, remember](#is-self-healing-self-defeating): trade-offs the rules don't settle go to a person, and the answer becomes a precedent. First real case: round 11 (less test-gaming for more tokens), [decided by the team](docs/precedents.json). This answers neatlogs' "Self-healing is self-defeating" |
 | It is not tied to one agent | [a second, different agent](#a-second-agent-mend-repairs-a-data-analyst-it-was-not-built-for): a SQL data analyst; the same supervisor and gate cut its tokens by 36.5% (two runs each side) in one round, no answer lost; on a held-out database −42.4%, with one new failure shown |
 | The agent recovers from failures | [run_tests timed out, then fixed](evidence/t17-recovery-from-timeout.txt); in the live recording a tool call fails ("Permission denied") and the worker carries on |
-| You built in public | #neatHack posts on X: [kickoff](https://x.com/theintrodev/status/2108851736765141188), [the bug it found in itself](https://x.com/theintrodev/status/2109233575614927163), [hardware it never saw](https://x.com/theintrodev/status/2109300098023006412); full list in [hackathon.md](hackathon.md#neathack-posts-on-x) |
+| You built in public | #neatHack posts on X: [kickoff](https://x.com/theintrodev/status/2108851736765141188), [the bug it found in itself](https://x.com/theintrodev/status/2109233575614927163), [hardware it never saw](https://x.com/theintrodev/status/2109300098023006412), [the submission](https://x.com/theintrodev/status/2109643747185373531); full list in [hackathon.md](hackathon.md#neathack-posts-on-x) |
 | Code written during the hackathon | [commit history](https://github.com/thegoodengineers/mend/commits/main) (first commit: plans only, as the rules allow) |
 
 Every number in this README is recomputed from the run files by [`mend/verify.py`](mend/verify.py) on

@@ -82,4 +82,5 @@ build a 2:20 cut.
 - [x] cfo.ai model refreshed with the measured $0.57 per round and re-exported (12 Oct): margin 30.6% → 68.6%; first version kept as `docs/business-plan-cfo-ai-10oct.xlsx`
 - [x] ~~At least 4 more #neatHack posts~~ dropped by the team on 12 Oct; any post that does go out still gets listed in `hackathon.md`
 - [ ] Freeze: no code changes after 5 PM; docs only
-- [ ] 7:00 PM: quote-tweet the launch post with all three tags, then fill in the form; confirm the post shows publicly while logged out
+- [x] Quote post published with the video and all three tags: https://x.com/theintrodev/status/2109643747185373531 (12 Oct)
+- [ ] Submission form completed

@@ -650,3 +650,4 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
   base cash cliff May → July 2027, growth case ends March 2028 at −$3,874 instead of −$46,281. The old
   export is kept as `docs/business-plan-cfo-ai-10oct.xlsx`. Corrected our earlier "77%", which had left
   infrastructure out.
+- 12 Oct evening: submission quote post published, with the demo video and the three tags: https://x.com/theintrodev/status/2109643747185373531
