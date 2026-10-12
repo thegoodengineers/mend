@@ -47,7 +47,7 @@ Site: https://thegoodengineers.github.io/mend/
 | Demo video, 3 minutes or less | done (2:58, 17 scenes; 12 Oct cut adds the neatlogs incident, hardware, explorer, fix audit, anti-gaming, second agent) | `video/demo/mend-demo.mp4`, built by `video/demo/build.py` |
 | Video covers neatlogs, Entire and cfo.ai: architecture, implementation, runtime, reasoning, result for each | done in the 12 Oct cut | neatlogs: arch, runtime, reasoning, incident, gate, explorer; Entire: entire; cfo.ai: business |
 | Evidence: before/after runs with numbers | done | README rounds table, repeats, held-out, real-world; `mend.verify` |
-| Evidence: neatlogs traces (links or screenshots) | partial | trace read-backs in `evidence/`; **todo: dashboard screenshots** |
+| Evidence: neatlogs traces (links or screenshots) | done | trace read-backs in `evidence/`; the Incidents page with our incident resolved: `docs/img/neatlogs-incident-resolved.png` |
 | Evidence: Entire checkpoints or entire-graph output | done | checkpoints for 7e2148e, c07f702 (and round 6); entire-graph enabled in the runner |
 | Evidence: cfo.ai business plan (pricing, costs, revenue, runway) | done, refresh pending | `docs/business-plan.md`, `docs/business-plan-cfo-ai.xlsx` |
 | Evidence: a failed action and what the agent did next | done | `evidence/t17-recovery-from-timeout.txt`; live recording ("Permission denied", then continues) |
@@ -55,8 +55,8 @@ Site: https://thegoodengineers.github.io/mend/
 
 ## Pre-flight (Monday, before 7 PM)
 - [x] Video under 3:00 (2:58) and served at the Pages link above (YouTube optional)
-- [ ] `python -m mend.verify` and CI green on the final commit
-- [ ] README judges' block links all open (check in an incognito window): site, video, checkpoints, business plan
+- [x] `python -m mend.verify` and CI green (checked 12 Oct ~12:10 IST on `6195f3b`: verify 99 numbers, 39 tests, CI and Pages green); re-check after any later commit
+- [x] README links: 131 file links exist, 19 web links load, 7 anchors match (checked 12 Oct; X links not checked by script). Live video = latest cut (30,329,358 bytes)
 - [x] The 2 leftover leaky checkpoint refs deleted (done 11 Oct; remote now holds only 3A, V2, 9N) (`git ls-remote origin 'refs/entire/*'` shows only clean ones)
 - [ ] cfo.ai model refreshed with measured costs and re-exported
 - [ ] At least 4 more #neatHack posts published and listed in `hackathon.md`
