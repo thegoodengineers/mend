@@ -7,11 +7,11 @@ dependencies = ["neatlogs[anthropic]", "anthropic", "mcp"]
 
 [project.optional-dependencies]
 dev = ["pytest", "amaranth==0.5.4"]  # amaranth: the HDL the hardware transfer test is written in
-verilog = ["amaranth-yosys"]  # only for exporting the hardware designs as Verilog
+verilog = ["amaranth-yosys==0.50.0.0.post129"]  # Verilog export; pinned because hwkit tests the generated files byte for byte
 drawings = ["schemdraw==0.19"]  # only for redrawing docs/img/schematics
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "hwkit/tests"]
 
 [tool.setuptools]
 packages = ["mend"]

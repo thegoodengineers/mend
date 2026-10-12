@@ -4,6 +4,7 @@
 """
 
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -30,13 +31,17 @@ def prepare(task: dict) -> Path:
     """A fresh temp copy of the sandbox with the task's bug applied."""
     work = Path(tempfile.mkdtemp(prefix=f"mend-{task['id']}-"))
     source = ROOT / task["sandbox"] if task.get("sandbox") else SANDBOX
-    shutil.copytree(source, work, dirs_exist_ok=True, ignore=shutil.ignore_patterns("__pycache__", ".pytest_cache"))
-    for edit in task["edits"]:
-        path = work / edit["file"]
-        text = path.read_text(encoding="utf-8")
-        if text.count(edit["find"]) != 1:
-            raise ValueError(f"task {task['id']}: find text must occur exactly once in {edit['file']}")
-        path.write_text(text.replace(edit["find"], edit["replace"]), encoding="utf-8")
+    try:
+        shutil.copytree(source, work, dirs_exist_ok=True, ignore=shutil.ignore_patterns("__pycache__", ".pytest_cache"))
+        for edit in task["edits"]:
+            path = work / edit["file"]
+            text = path.read_text(encoding="utf-8")
+            if text.count(edit["find"]) != 1:
+                raise ValueError(f"task {task['id']}: find text must occur exactly once in {edit['file']}")
+            path.write_text(text.replace(edit["find"], edit["replace"]), encoding="utf-8")
+    except BaseException:
+        shutil.rmtree(work, ignore_errors=True)
+        raise
     return work
 
 
@@ -45,8 +50,10 @@ def run_tests(work: Path, pattern: str = "", timeout: int = 60) -> tuple[bool, s
     cmd = [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider"]
     if pattern:
         cmd += ["-k", pattern]
+    env = {**os.environ, "PYTHONIOENCODING": "utf-8"}  # test output can hold non-ASCII (e.g. realworld/inflection)
     try:
-        proc = subprocess.run(cmd, cwd=work, capture_output=True, text=True, timeout=timeout)
+        proc = subprocess.run(cmd, cwd=work, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                              env=env, timeout=timeout)
     except subprocess.TimeoutExpired:
         return False, f"pytest timed out after {timeout}s"
     return proc.returncode == 0, (proc.stdout + proc.stderr)[-4000:]

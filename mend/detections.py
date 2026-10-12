@@ -43,7 +43,7 @@ def _regex(guard: dict) -> tuple[dict, dict]:
 
 def group_id() -> str:
     groups = _run("list_detection_groups", {})
-    for g in groups.get("groups", groups if isinstance(groups, list) else []):
+    for g in groups if isinstance(groups, list) else groups.get("groups", []):
         if g.get("name") == GROUP:
             return g["id"]
     created = _run("create_detection_group", {"name": GROUP})
@@ -59,7 +59,7 @@ def preview(guard: dict, days: int = 14) -> int:
 
 def existing_names() -> set[str]:
     listed = _run("list_detections", {})
-    items = listed.get("detections", listed if isinstance(listed, list) else [])
+    items = listed if isinstance(listed, list) else listed.get("detections", [])
     return {d.get("display_name") or d.get("name") for d in items}
 
 

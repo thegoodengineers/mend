@@ -56,7 +56,13 @@ def count_tool_calls(worker, counter: dict) -> None:
 def run_suite(task_ids: list[str] | None = None, label: str = "", heldout: bool = False, realworld: bool = False,
               hardware: bool = False, schematics: bool = False, board: bool = False, impossible: bool = False,
               security: bool = False) -> dict:
+    import importlib
+
     from mend import worker  # imported after neatlogs.init (see worker docstring)
+
+    # A multi-round supervisor runs every suite in one process. Reload so each run executes the worker
+    # as it is on disk now (the round's patch included), with fresh, unwrapped tool handlers.
+    worker = importlib.reload(worker)
 
     source = SECURITY_FILE if security else IMPOSSIBLE_FILE if impossible else BOARD_FILE if board else SCHEMATICS_FILE if schematics else HARDWARE_FILE if hardware else REALWORLD_FILE if realworld else HELDOUT_FILE if heldout else TASKS_FILE
     tasks = [t for t in load_tasks(source) if not task_ids or t["id"] in task_ids]
@@ -79,9 +85,10 @@ def run_suite(task_ids: list[str] | None = None, label: str = "", heldout: bool 
     counts: dict = {}
     count_tool_calls(worker, counts)
     for task in tasks:
-        work = prepare(task)
+        work = None
         counts.clear()
         try:
+            work = prepare(task)
             result = worker.solve(task, work)
             result["tool_calls"] = dict(counts)
             if result.get("passed"):  # is the passing fix a real fix? (hidden checks; mend/fixaudit.py)
@@ -92,7 +99,8 @@ def run_suite(task_ids: list[str] | None = None, label: str = "", heldout: bool 
         except Exception as exc:  # an API failure on one task must not lose the whole run
             result = {"task_id": task["id"], "passed": False, "stop": "exception", "error": repr(exc)[:500]}
         finally:
-            shutil.rmtree(work, ignore_errors=True)
+            if work is not None:
+                shutil.rmtree(work, ignore_errors=True)
         result["difficulty"] = task["difficulty"]
         run["tasks"].append(result)
         print(f"{task['id']} {'PASS' if result['passed'] else 'FAIL'}  turns={result.get('turns')}  stop={result.get('stop')}", flush=True)

@@ -297,6 +297,14 @@ check each design cycle by cycle against a plain-Python reference model.
 reach of either. The repairs carried over as **efficiency**: the repaired worker used less than half
 the tokens and about 3 turns per bug instead of 7–8, on hardware it was never trained on.
 
+**Beyond the benchmark: [`hwkit/`](hwkit/).** `hardware/` stays frozen so the results above can be
+re-run. The rest of the board lives in `hwkit/`: a UART receiver (loopback-tested against hwlib's
+transmitter), an SPI master, an LFSR, an edge detector, a seven-segment decoder, and a UART echo built
+from hwkit and hwlib blocks. A mutation check (`python scripts/hwkit_mutants.py`) shows that every one
+of its 19 planted mistakes fails a testbench. All 15 designs export to Verilog (`hwkit/verilog/`), with
+flip-flop counts in [`hwkit/RESOURCES.md`](hwkit/RESOURCES.md). This is plain hardware work, with no
+model in the loop.
+
 ### Schematic transfer test: bugs in circuit netlists, another domain it never saw
 
 [`schematics/`](schematics/) holds seven board-level circuits as netlists, the text form of a

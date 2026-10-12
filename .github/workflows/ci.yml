@@ -8,10 +8,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install -e ".[dev]"
+      - run: pip install -e ".[dev,verilog]"  # verilog: hwkit checks its generated Verilog is current
       - name: Unit tests (no API keys needed)
         run: pytest -q
       - name: Every planted bug breaks the sandbox, correct code passes
         run: python -m mend.tasks --check
+      - name: Every hwkit mutant is caught by its testbenches
+        run: python scripts/hwkit_mutants.py
       - name: Recompute every README number from the run files
         run: python -m mend.verify
