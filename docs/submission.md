@@ -59,6 +59,6 @@ Site: https://thegoodengineers.github.io/mend/
 - [x] README links: 131 file links exist, 19 web links load, 7 anchors match (checked 12 Oct; X links not checked by script). Live video = latest cut (30,329,358 bytes)
 - [x] The 2 leftover leaky checkpoint refs deleted (done 11 Oct; remote now holds only 3A, V2, 9N) (`git ls-remote origin 'refs/entire/*'` shows only clean ones)
 - [ ] cfo.ai model refreshed with measured costs and re-exported
-- [ ] At least 4 more #neatHack posts published and listed in `hackathon.md`
+- [x] ~~At least 4 more #neatHack posts~~ dropped by the team on 12 Oct; any post that does go out still gets listed in `hackathon.md`
 - [ ] Freeze: no code changes after 5 PM; docs only
 - [ ] Post the quote at 7:00 PM, then confirm it shows publicly while logged out
