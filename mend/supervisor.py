@@ -18,6 +18,7 @@ Every later diagnosis sees those decisions and follows them, so each question is
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 
@@ -273,27 +274,56 @@ def write_diagnosis(run_id: str, diagnosis: dict) -> str:
     return str(path.relative_to(ROOT))
 
 
-def apply_patch(fix: dict, diagnosis_file: str) -> tuple[bool, str]:
+def untracked() -> set[str]:
+    return set(git("ls-files", "--others", "--exclude-standard").splitlines())
+
+
+def mentions_task_code(added: str) -> bool:
+    """Does added diff text name specific library code? File names and identifiers (money.py, ROUND_HALF
+    as in ROUND_HALF_UP) match anywhere; plain words only as whole words, so "managing" does not trip
+    "aging" and "interesting" does not trip "interest"."""
+    added = added.lower()
+    return any(word.lower() in added if not word.isalpha() else re.search(rf"\b{re.escape(word.lower())}\b", added)
+               for word in TASK_SPECIFIC)
+
+
+def apply_patch(fix: dict, diagnosis_file: str, untracked_before: set[str] = frozenset()) -> tuple[bool, str]:
     """Let headless Claude Code edit the worker, then check the change stays in bounds."""
     prompt = (f"Read {diagnosis_file}. Make exactly the change it describes under 'Chosen fix', "
               f"editing only {fix['target_file']}. Keep the change small. Do not edit any other file, "
               "do not run anything, and do not mention specific library modules or bugs.")
-    subprocess.run(["claude", "-p", prompt, "--allowedTools", "Read", "Edit", "--permission-mode", "acceptEdits"],
-                   cwd=ROOT, capture_output=True, text=True, timeout=600)
-    changed = set(git("diff", "--name-only").splitlines())
+    try:  # output is not used; discarding it also avoids decoding it with the Windows code page
+        subprocess.run([shutil.which("claude") or "claude", "-p", prompt, "--allowedTools", "Read", "Edit",
+                        "--permission-mode", "acceptEdits"],
+                       cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=600)
+    except subprocess.TimeoutExpired:
+        return False, "patch step timed out"
+    except FileNotFoundError:
+        return False, "claude CLI not found"
+    changed = set(git("diff", "--name-only").splitlines()) | (untracked() - untracked_before - {diagnosis_file})
     if not changed:
         return False, "no change made"
     if not changed <= ALLOWED_FILES:
         return False, f"touched files outside the worker: {sorted(changed - ALLOWED_FILES)}"
-    diff = git("diff").lower()
+    diff = git("diff")
     added = "\n".join(l for l in diff.splitlines() if l.startswith("+"))
-    if any(word.lower() in added for word in TASK_SPECIFIC):
+    if mentions_task_code(added):
         return False, "patch mentions specific library code (task-specific hack)"
-    tests = subprocess.run([sys.executable, "-m", "pytest", "-q", "tests/test_smoke.py", "tests/test_traces.py"],
-                           cwd=ROOT, capture_output=True, text=True)
+    try:
+        tests = subprocess.run([sys.executable, "-m", "pytest", "-q", "tests/test_smoke.py", "tests/test_traces.py"],
+                               cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=300)
+    except subprocess.TimeoutExpired:
+        return False, "worker unit tests timed out"
     if tests.returncode != 0:
         return False, "worker no longer imports / unit tests fail"
     return True, f"changed {sorted(changed)}"
+
+
+def discard_patch(untracked_before: set[str], keep: str) -> None:
+    """Undo everything a rejected patch step touched, not just the two files it was allowed to touch."""
+    subprocess.run(["git", "checkout", "--", "."], cwd=ROOT)
+    for rel in untracked() - untracked_before - {keep}:
+        (ROOT / rel).unlink(missing_ok=True)
 
 
 def gate(before: dict, after: dict, stats: dict) -> bool:
@@ -333,9 +363,10 @@ def one_round(run_id: str) -> dict:
               f"answer with: python -m mend.supervisor --answer {stem} \"<your decision>\"")
         return record
     repeat = repeats_reverted_fix(diagnosis["fix"]["title"])  # don't pay for a re-run Entire says already failed
-    ok, why = (False, repeat) if repeat else apply_patch(diagnosis["fix"], diagnosis_file)
+    untracked_before = untracked() - {diagnosis_file.replace("\\", "/")}
+    ok, why = (False, repeat) if repeat else apply_patch(diagnosis["fix"], diagnosis_file.replace("\\", "/"), untracked_before)
     if not ok:
-        subprocess.run(["git", "checkout", "--", *ALLOWED_FILES], cwd=ROOT)
+        discard_patch(untracked_before, keep=diagnosis_file.replace("\\", "/"))
         print(f"patch rejected: {why}")
         record = {"before": run_id, "kept": False, "rejected": True, "reason": why,
                   "title": diagnosis["fix"]["title"], "diagnosis": diagnosis_file}
@@ -346,9 +377,13 @@ def one_round(run_id: str) -> dict:
                     "-m", f"Proposed by the Mend supervisor from neatlogs traces of run {run_id}; see {diagnosis_file}."],
                    cwd=ROOT, check=True)
     commit = git("rev-parse", "--short", "HEAD")
-    after = run_suite([t["task_id"] for t in before["tasks"]], label="after")
+    try:
+        after = run_suite([t["task_id"] for t in before["tasks"]], label="after")
+        stats = round_stats({"before": run_id, "after": after["run_id"], "kept": None})
+    except BaseException:  # never leave an unjudged patch committed
+        subprocess.run(["git", "revert", "--no-edit", "HEAD"], cwd=ROOT, check=True, capture_output=True)
+        raise
     tokens = lambda r: r.get("input_tokens", 0) + r.get("output_tokens", 0)  # noqa: E731
-    stats = round_stats({"before": run_id, "after": after["run_id"], "kept": None})
     kept = gate(before, after, stats)
     if not kept:
         subprocess.run(["git", "revert", "--no-edit", "HEAD"], cwd=ROOT, check=True, capture_output=True)

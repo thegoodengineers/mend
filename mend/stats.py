@@ -10,12 +10,14 @@ arXiv:2411.00640):
 """
 
 import json
+import os
 import random
 from math import comb
+from pathlib import Path
 
 from mend.tasks import ROOT
 
-RUNS = ROOT / "runs"
+RUNS = Path(os.environ.get("MEND_RUNS_DIR", ROOT / "runs"))  # same override as mend.suite, which writes the runs
 OUT = ROOT / "evidence" / "gate-stats.json"
 BOOT = 10_000
 
@@ -31,12 +33,15 @@ def sign_test(fixed: int, broke: int) -> float:
 
 def token_ratio_ci(pairs: list[tuple[int, int]], seed: int = 0) -> tuple[float, float, float]:
     """Total-after / total-before, with a 95% bootstrap interval over tasks."""
+    if not pairs or not sum(b for b, _ in pairs):  # nothing to compare: no evidence either way
+        return float("nan"), float("nan"), float("nan")
     rng = random.Random(seed)
     ratio = sum(a for _, a in pairs) / sum(b for b, _ in pairs)
     sims = []
     for _ in range(BOOT):
         s = [pairs[rng.randrange(len(pairs))] for _ in pairs]
-        sims.append(sum(a for _, a in s) / sum(b for b, _ in s))
+        before = sum(b for b, _ in s)
+        sims.append(sum(a for _, a in s) / before if before else float("inf"))
     sims.sort()
     return ratio, sims[int(0.025 * BOOT)], sims[int(0.975 * BOOT) - 1]
 
@@ -47,7 +52,7 @@ def round_stats(record: dict) -> dict:
     common = sorted(before.keys() & after.keys())
     fixed = sum(not before[k]["passed"] and after[k]["passed"] for k in common)
     broke = sum(before[k]["passed"] and not after[k]["passed"] for k in common)
-    tok = lambda t: t["input_tokens"] + t["output_tokens"]  # noqa: E731
+    tok = lambda t: t.get("input_tokens", 0) + t.get("output_tokens", 0)  # noqa: E731  (a task that raised has none)
     ratio, lo, hi = token_ratio_ci([(tok(before[k]), tok(after[k])) for k in common])
     return {"before": record["before"], "after": record["after"], "kept": record["kept"], "tasks": len(common),
             "fixed": fixed, "broke": broke, "p_passes": round(sign_test(fixed, broke), 4),

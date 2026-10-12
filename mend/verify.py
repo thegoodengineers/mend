@@ -123,8 +123,9 @@ def main() -> int:
     for rid, r in {**rs, **runs(RUNS / "analyst")}.items():
         if r["passed"] != sum(t["passed"] for t in r["tasks"]) or r["total"] != len(r["tasks"]):
             problems.append(f"{rid}: passed/total do not match its tasks")
-        if r.get("input_tokens", 0) != sum(t.get("input_tokens", 0) for t in r["tasks"]):
-            problems.append(f"{rid}: input_tokens do not match its tasks")
+        for key in ("input_tokens", "output_tokens"):
+            if r.get(key, 0) != sum(t.get(key, 0) for t in r["tasks"]):
+                problems.append(f"{rid}: {key} do not match its tasks")
     pin = ROOT / "evidence" / "scorer-pin.json"  # the tests and tasks that judge the worker may not drift quietly
     if pin.exists():
         import hashlib
