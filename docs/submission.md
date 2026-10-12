@@ -14,18 +14,23 @@ A human posts this; agents never post.
 
 Window: 7:00-11:55 PM IST. They engage with the first 50 quote-tweets.
 
-## Quote-tweet text (250/280 as X counts it, links = 23)
-The demo link is the video served by GitHub Pages (HTTP 200, `video/mp4`), so no upload is needed. X only
-takes videos up to 2:20 from non-Premium accounts, so link the 2:58 file instead of attaching it.
+## Quote-tweet text, in the form's template (276/280 as X counts it, links = 23)
+The official form (step 1 of 3) gives a template: "Our #neatHack submission / [your story] / Built with
+@arithecfo @EntireHQ @neatlogs", and asks to **attach the demo video** and keep the post public with the
+launch post attached. Its "Quote on X" button opens the right launch post.
 
 ```
-Team: The Good Engineers
-Project: Mend, an agent that reads its own traces, fixes its own code, and keeps a fix only if a re-run proves it
-Built with @neatlogs @EntireHQ @arithecfo
-Repo: https://github.com/thegoodengineers/mend
-Demo: https://thegoodengineers.github.io/mend/video/demo/mend-demo.mp4
-#neatHack
+Our #neatHack submission
+
+our agent caught itself deleting half a file to fix one line. now it reads its own traces, patches itself, and keeps a fix only if a re-run proves it. it threw out 6 of its 11 fixes.
+
+https://github.com/thegoodengineers/mend
+
+Built with @arithecfo @EntireHQ @neatlogs
 ```
+
+Attach `video/demo/mend-demo.mp4` (2:58). X takes up to 2:20 on accounts without Premium; if it refuses,
+build a 2:20 cut.
 
 ## Answers ready for the form (fields unknown until 7 PM)
 - Team: The Good Engineers
