@@ -516,7 +516,7 @@ document.getElementById('vbtn').onclick = async () => {{
   <div class="tools">
     <div class="tool card"><h3>neatlogs</h3><p>Traces every run. The supervisor reads those traces back over MCP to diagnose failures, then writes every keep/revert verdict back into neatlogs as its own trace, with a detection on each revert.</p><a class="link" href="{REPO}/tree/main/evidence">trace evidence →</a></div>
     <div class="tool card"><h3>Entire</h3><p>Every fix Mend makes to itself is a Claude Code session linked to its commit as a checkpoint. <code>entire blame</code> traces each line of the worker back to the session that wrote it, and <code>entire search</code> stops Mend paying twice for a fix that already failed.</p><a class="link" href="{ENTIRE}7e2148e201fdaa9b2b3f921d1f2651950f537205">a clean self-fix checkpoint →</a></div>
-    <div class="tool card"><h3>cfo.ai</h3><p>Prices Mend from measured cost per repair round. It showed our first price leaves a 31% margin, so pricing changes next.</p><a class="link" href="{REPO}/blob/main/docs/business-plan.md">business plan →</a></div>
+    <div class="tool card"><h3>cfo.ai</h3><p>Prices Mend from measured cost per repair round. Putting the measured $0.57 into cfo.ai (estimate: $1.50) lifted the gross margin from 31% to 69% and moved the cash cliff two months later. Price is the next lever.</p><a class="link" href="{REPO}/blob/main/docs/business-plan.md">business plan →</a></div>
   </div>
 </div></section>
 

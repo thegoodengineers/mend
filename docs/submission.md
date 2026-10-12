@@ -58,7 +58,7 @@ Site: https://thegoodengineers.github.io/mend/
 - [x] `python -m mend.verify` and CI green (checked 12 Oct ~12:10 IST on `6195f3b`: verify 99 numbers, 39 tests, CI and Pages green); re-check after any later commit
 - [x] README links: 131 file links exist, 19 web links load, 7 anchors match (checked 12 Oct; X links not checked by script). Live video = latest cut (30,329,358 bytes)
 - [x] The 2 leftover leaky checkpoint refs deleted (done 11 Oct; remote now holds only 3A, V2, 9N) (`git ls-remote origin 'refs/entire/*'` shows only clean ones)
-- [ ] cfo.ai model refreshed with measured costs and re-exported
+- [x] cfo.ai model refreshed with the measured $0.57 per round and re-exported (12 Oct): margin 30.6% → 68.6%; first version kept as `docs/business-plan-cfo-ai-10oct.xlsx`
 - [x] ~~At least 4 more #neatHack posts~~ dropped by the team on 12 Oct; any post that does go out still gets listed in `hackathon.md`
 - [ ] Freeze: no code changes after 5 PM; docs only
 - [ ] Post the quote at 7:00 PM, then confirm it shows publicly while logged out

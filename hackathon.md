@@ -645,3 +645,8 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
   `mend.incidents` now lists every status (triage_list defaults to open only, which briefly emptied the
   report; restored from git) and never overwrites the evidence with an empty answer. The video's incident
   scene shows the real Incidents page with the card under Resolved. 2:58 (177.5 s).
+- ~13:15 IST: the cfo.ai model re-run with the measured repair cost ($0.57 = $0.13 diagnosis + $0.44
+  re-run; the 10 Oct model assumed $1.50). cfo.ai's new export: gross margin at 50 teams 30.6% → 68.6%,
+  base cash cliff May → July 2027, growth case ends March 2028 at −$3,874 instead of −$46,281. The old
+  export is kept as `docs/business-plan-cfo-ai-10oct.xlsx`. Corrected our earlier "77%", which had left
+  infrastructure out.
