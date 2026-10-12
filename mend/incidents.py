@@ -60,7 +60,7 @@ def check(card: dict, runs: list[dict]) -> dict:
                 "mean_turns": mean(turns), "slow_share": mean([float(x >= SLOW) for x in turns]),
                 "meets_check": mean(turns) is not None and mean(turns) < limit}
     return {"triage_id": card["triage_id"], "title": card["title"], "severity": card["severity"], "status": card["status"],
-            "workflow": card.get("workflow_name"), "created_at": card["created_at"], "root_cause": card["root_cause"],
+            "workflow": card.get("workflow_name"), "created_at": card["created_at"], "resolved_at": card.get("resolved_at"), "root_cause": card["root_cause"],
             "recommended_action": card.get("recommended_action", {}), "linked": linked, "tasks": compared,
             "check": f"mean turns on the linked tasks below {limit}", "original": side(original), "current": side(fresh)}
 
@@ -72,7 +72,8 @@ def report(results: list[dict]) -> str:
         o, c = r["original"], r["current"]
         cause = re.sub(r"`?\{\{trace:([0-9a-f]+)\}\}`?", r"`\1`", r["root_cause"])
         lines += [f"## {r['title']}", "",
-                  f"neatlogs triage `{r['triage_id']}` · {r['severity']} · {r['status']} · workflow `{r['workflow']}` · raised {r['created_at'][:16]} UTC", "",
+                  f"neatlogs triage `{r['triage_id']}` · {r['severity']} · {r['status']} · workflow `{r['workflow']}` · raised {r['created_at'][:16]} UTC"
+                  + (f" · resolved in neatlogs {str(r['resolved_at'])[:16]} UTC by a team member" if r.get("resolved_at") else ""), "",
                   f"**neatlogs' root cause:** {cause}", "",
                   "**Where its linked traces come from:**", "", "| Trace | Run file | Worker | Task | Turns | Passed |", "|---|---|---|---|---|---|"]
         lines += [f"| `{x['trace_id'][:12]}` | [{Path(x['run']).name}](../{x['run']}) | `{x['worker']}` | {x['task']} | {x['turns']} | {x['passed']} |"
@@ -87,7 +88,11 @@ def report(results: list[dict]) -> str:
 
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
-    cards = asyncio.run(_call("triage_list", {})).get("triage_cards", [])
+    cards = [c for status in ("open", "in_progress", "resolved", "draft", "archived")  # triage_list defaults to open only
+             for c in asyncio.run(_call("triage_list", {"status": status})).get("triage_cards", [])]
+    if not cards:  # never overwrite the evidence with an empty answer
+        print("neatlogs returned no incidents; evidence left unchanged")
+        return 1
     runs = run_files()
     results = [check(asyncio.run(_call("triage_get", {"triage_id": c["triage_id"]})), runs) for c in cards]
     OUT.with_suffix(".json").write_text(json.dumps(results, indent=2), encoding="utf-8")

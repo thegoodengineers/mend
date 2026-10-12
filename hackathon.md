@@ -641,3 +641,7 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
 - Resolving the card in neatlogs records a team member's email, so that is left to a person.
 - Video: problem stated again, an incident scene added; title, ablation and guards scenes merged or cut.
   2:56 (176.4 s).
+- ~09:32 IST: a team member marked the incident resolved in neatlogs (`docs/img/neatlogs-incident-resolved.png`).
+  `mend.incidents` now lists every status (triage_list defaults to open only, which briefly emptied the
+  report; restored from git) and never overwrites the evidence with an empty answer. The video's incident
+  scene shows the real Incidents page with the card under Resolved. 2:58 (177.5 s).

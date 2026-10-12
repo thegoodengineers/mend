@@ -8,7 +8,7 @@ keeps the fix only if a full re-run gets better.** Built during
 [report.html](https://thegoodengineers.github.io/mend/report.html) · **Build log:**
 [hackathon.md](hackathon.md)
 
-**Demo video (2:56):** [watch in the browser](https://thegoodengineers.github.io/mend/video/demo/mend-demo.mp4) ([file](video/demo/mend-demo.mp4)) · **Keep/revert rules:** [`docs/GATE.md`](docs/GATE.md) · **Evidence index:** [`evidence/INDEX.md`](evidence/INDEX.md)
+**Demo video (2:58):** [watch in the browser](https://thegoodengineers.github.io/mend/video/demo/mend-demo.mp4) ([file](video/demo/mend-demo.mp4)) · **Keep/revert rules:** [`docs/GATE.md`](docs/GATE.md) · **Evidence index:** [`evidence/INDEX.md`](evidence/INDEX.md)
 
 [![Mend website](docs/img/site-hero.png)](https://thegoodengineers.github.io/mend/)
 
@@ -239,8 +239,9 @@ trace to the run file it came from, and applies that check to fresh runs
 | original (the runs that triggered it) | 2 | 8 of 8 | 8.38 | all |
 | current, fresh runs on 12 Oct ([`runs/incident/`](runs/incident/)) | 2 | 8 of 8 | 3.25 | none |
 
-Mean turns 8.38 → 3.25, so neatlogs' own check passes. Marking the card resolved in neatlogs records a
-team member's email, so a person does that, not Mend.
+Mean turns 8.38 → 3.25, so neatlogs' own check passes. A team member then marked the incident
+**resolved** in neatlogs (12 Oct, 09:32 IST; [screenshot](docs/img/neatlogs-incident-resolved.png)). Mend
+does not close cards itself, because closing one records a person's email.
 
 ### Repeatable, not lucky: same 28 tasks, 3 runs each
 

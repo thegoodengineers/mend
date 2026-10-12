@@ -3,9 +3,10 @@
     "triage_id": "e7e88b92-05b9-44d7-be37-3e531035dabc",
     "title": "Excessive agent turns and conversational filler causing orchestration inefficiency",
     "severity": "medium",
-    "status": "open",
+    "status": "resolved",
     "workflow": "mend-worker",
     "created_at": "2026-10-11 11:54:02.564694+00:00",
+    "resolved_at": "2026-10-12 04:02:14.430012+00:00",
     "root_cause": "The agent exhibits orchestration inefficiency by taking an excessive number of turns (9 to 10 turns) to resolve simple debugging tasks, as observed in `{{trace:5fe680f6c239a71dd71e6835f7db636b}}` and `{{trace:6d62a5e4004373a5ccf536174ec03e18}}`. This is caused by a lack of strict formatting and efficiency constraints in the system prompt, which allows the LLM to output conversational filler and perform redundant reasoning steps instead of directly executing tools. This verbose behavior increases latency and token consumption without improving success rates.",
     "recommended_action": {
       "title": "Optimize system prompt to enforce conciseness and direct tool execution",

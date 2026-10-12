@@ -10,7 +10,7 @@ A human posts this; agents never post.
 ## Quote-post text (279/280 as X counts it, links = 23)
 The demo link is the video served by GitHub Pages (checked 12 Oct: HTTP 200, `video/mp4`, 32.5 MB), so no
 upload is needed. X itself only takes videos up to 2:20 from non-Premium accounts, so do not attach the
-2:56 file; link it. A YouTube link can replace it, if you upload one.
+2:58 file; link it. A YouTube link can replace it, if you upload one.
 
 ```
 Team: The Good Engineers
@@ -37,14 +37,14 @@ Site: https://thegoodengineers.github.io/mend/
 | The problem your agent solves | `problem` ("Agents fail quietly..."), then `hook` and `runtime` show it happening |
 | How cfo.ai and Entire were part of the project | `entire` (checkpoints, repair memory, blame: 69%); `business` (cfo.ai plan from measured costs) |
 | How neatlogs identified and resolved the incidents your agent ran into | `arch`, `runtime`, `reasoning` (the failure found in the neatlogs trace); `incident` (neatlogs' triage raised its own incident; its check passes, 8.38 → 3.25 turns, `evidence/neatlogs-incidents.md`); `gate` (every verdict written back); `explorer` |
-| Show the critical-incidents feature itself | The `incident` scene is a card built from the real incident read over MCP. **A dashboard screenshot is better:** save it as `video/demo/screens/incident.png` and rebuild; it replaces the card automatically |
+| Show the critical-incidents feature itself | Done: the `incident` scene shows the real neatlogs Incidents page with the card under Resolved (`video/demo/screens/incident.png`) |
 
 ## Required pieces and where they are
 | Requirement (official) | Status | Where |
 |---|---|---|
 | Public code repository | done | https://github.com/thegoodengineers/mend |
 | Commits dated during the hackathon | done | first commit holds only pre-event plans (allowed); all code after 10 Oct 13:39 IST |
-| Demo video, 3 minutes or less | done (2:56, 17 scenes; 12 Oct cut adds the neatlogs incident, hardware, explorer, fix audit, anti-gaming, second agent) | `video/demo/mend-demo.mp4`, built by `video/demo/build.py` |
+| Demo video, 3 minutes or less | done (2:58, 17 scenes; 12 Oct cut adds the neatlogs incident, hardware, explorer, fix audit, anti-gaming, second agent) | `video/demo/mend-demo.mp4`, built by `video/demo/build.py` |
 | Video covers neatlogs, Entire and cfo.ai: architecture, implementation, runtime, reasoning, result for each | done in the 12 Oct cut | neatlogs: arch, runtime, reasoning, incident, gate, explorer; Entire: entire; cfo.ai: business |
 | Evidence: before/after runs with numbers | done | README rounds table, repeats, held-out, real-world; `mend.verify` |
 | Evidence: neatlogs traces (links or screenshots) | partial | trace read-backs in `evidence/`; **todo: dashboard screenshots** |
@@ -54,7 +54,7 @@ Site: https://thegoodengineers.github.io/mend/
 | Evidence: #neatHack posts | 3 so far | [kickoff](https://x.com/theintrodev/status/2108851736765141188), [bug it found in itself](https://x.com/theintrodev/status/2109233575614927163), [hardware](https://x.com/theintrodev/status/2109300098023006412); next ones in `docs/post-pack.html` |
 
 ## Pre-flight (Monday, before 7 PM)
-- [x] Video under 3:00 (2:56) and served at the Pages link above (YouTube optional)
+- [x] Video under 3:00 (2:58) and served at the Pages link above (YouTube optional)
 - [ ] `python -m mend.verify` and CI green on the final commit
 - [ ] README judges' block links all open (check in an incognito window): site, video, checkpoints, business plan
 - [x] The 2 leftover leaky checkpoint refs deleted (done 11 Oct; remote now holds only 3A, V2, 9N) (`git ls-remote origin 'refs/entire/*'` shows only clean ones)

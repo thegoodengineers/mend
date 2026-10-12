@@ -42,7 +42,7 @@ SCENES = [
      ("term", "entire-explain.txt")),
     ("result", "Same task, same model, after the fix: four turns, and it passes.", ("clip", 88.5)),
     ("incident", "neatlogs watches too. Its triage raised an incident on the original worker, too many turns, through a detection "
-                 "Mend created. Its own check now passes: eight point four turns, down to three point three.",
+                 "Mend created. Its own check passed, eight point four turns down to three point three, and the incident is resolved.",
      ("card", "neatlogs triage · incident it raised by itself · read over MCP", "Excessive agent turns.",
       "Found via Mend's own 'slow solve' detection. neatlogs' check, mean turns below 5: original worker 8.38, current worker 3.25, 8 of 8 passing.")),
     ("gate", "Every change must earn its place: Mend re-runs all twenty-nine tasks and keeps a fix only if the numbers improve. "
