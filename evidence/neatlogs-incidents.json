@@ -1,0 +1,146 @@
+[
+  {
+    "triage_id": "e7e88b92-05b9-44d7-be37-3e531035dabc",
+    "title": "Excessive agent turns and conversational filler causing orchestration inefficiency",
+    "severity": "medium",
+    "status": "open",
+    "workflow": "mend-worker",
+    "created_at": "2026-10-11 11:54:02.564694+00:00",
+    "root_cause": "The agent exhibits orchestration inefficiency by taking an excessive number of turns (9 to 10 turns) to resolve simple debugging tasks, as observed in `{{trace:5fe680f6c239a71dd71e6835f7db636b}}` and `{{trace:6d62a5e4004373a5ccf536174ec03e18}}`. This is caused by a lack of strict formatting and efficiency constraints in the system prompt, which allows the LLM to output conversational filler and perform redundant reasoning steps instead of directly executing tools. This verbose behavior increases latency and token consumption without improving success rates.",
+    "recommended_action": {
+      "title": "Optimize system prompt to enforce conciseness and direct tool execution",
+      "steps": [
+        {
+          "type": "step",
+          "title": "Modify the system prompt template for the `solve_task` workflow to include explicit instructions for efficiency and directness.",
+          "content": "",
+          "code_location": ""
+        },
+        {
+          "type": "step",
+          "title": "Add instructions such as: 'Be extremely concise. Do not output conversational filler or explain what you are about to do. Execute tools immediately when information is needed. Combine or batch tool calls where possible to minimize turns.'",
+          "content": "",
+          "code_location": ""
+        }
+      ],
+      "verification": [
+        "Run a batch evaluation of the `solve_task` workflow on a subset of tasks (e.g., SC04, SC07).",
+        "Verify that the average number of turns decreases below 5 and latency decreases accordingly.",
+        "Monitor the `Mend: slow solve (6+ turns)` detection group to ensure the rate of negative detections drops."
+      ],
+      "risk_assessment": "There is a minor risk that over-constraining the agent's reasoning might lead to lower success rates if it fails to plan complex steps. However, for these simple circuit debugging tasks, the risk is low.",
+      "rollback_plan": "Revert the system prompt template to the original version by removing the conciseness and directness constraints."
+    },
+    "linked": [
+      {
+        "trace_id": "02bf7b8968c6aa543199a4a3b450574c",
+        "run": "runs/2026-10-11T11-38-35-schematics-v0-r2.json",
+        "worker": "13defdb",
+        "task": "SC03",
+        "turns": 9,
+        "passed": true
+      },
+      {
+        "trace_id": "eaa63c0fb35fe029c0c784eba0ad884d",
+        "run": "runs/2026-10-11T11-38-35-schematics.json",
+        "worker": "90b7284",
+        "task": "SC04",
+        "turns": 3,
+        "passed": true
+      },
+      {
+        "trace_id": "6d62a5e4004373a5ccf536174ec03e18",
+        "run": "runs/2026-10-11T11-38-35-schematics-v0-r2.json",
+        "worker": "13defdb",
+        "task": "SC04",
+        "turns": 9,
+        "passed": true
+      },
+      {
+        "trace_id": "5fe680f6c239a71dd71e6835f7db636b",
+        "run": "runs/2026-10-11T11-38-35-schematics-v0-r2.json",
+        "worker": "13defdb",
+        "task": "SC07",
+        "turns": 10,
+        "passed": true
+      },
+      {
+        "trace_id": "395c4fd74f7d38392a81922f5d32bf48",
+        "run": "runs/2026-10-11T11-38-35-schematics-r2.json",
+        "worker": "90b7284",
+        "task": "SC04",
+        "turns": 3,
+        "passed": true
+      },
+      {
+        "trace_id": "8b9b18dc00ca05dce392999e48584140",
+        "run": "runs/2026-10-11T11-12-23-hardware-v0.json",
+        "worker": "13defdb",
+        "task": "HW07",
+        "turns": 8,
+        "passed": true
+      },
+      {
+        "trace_id": "ce0126fa99c15c5ddd2a1ad25f7cc35c",
+        "run": "runs/2026-10-11T11-38-35-schematics-v0.json",
+        "worker": "13defdb",
+        "task": "SC02",
+        "turns": 8,
+        "passed": true
+      },
+      {
+        "trace_id": "bce241c68024f8d6c726ede19d823420",
+        "run": "runs/2026-10-11T11-38-35-schematics-v0.json",
+        "worker": "13defdb",
+        "task": "SC04",
+        "turns": 8,
+        "passed": true
+      },
+      {
+        "trace_id": "d2a2a8a9ac6412fef96d35f879e058af",
+        "run": "runs/2026-10-11T11-38-35-schematics-v0-r2.json",
+        "worker": "13defdb",
+        "task": "SC02",
+        "turns": 6,
+        "passed": true
+      },
+      {
+        "trace_id": "dc3fc57140a4afd7cb0e5c3831efd8d6",
+        "run": "runs/2026-10-11T11-38-35-schematics-v0.json",
+        "worker": "13defdb",
+        "task": "SC03",
+        "turns": 8,
+        "passed": true
+      }
+    ],
+    "tasks": [
+      "SC02",
+      "SC03",
+      "SC04",
+      "SC07"
+    ],
+    "check": "mean turns on the linked tasks below 5",
+    "original": {
+      "runs": [
+        "runs/2026-10-11T11-38-35-schematics-v0-r2.json",
+        "runs/2026-10-11T11-38-35-schematics-v0.json"
+      ],
+      "tasks": 8,
+      "passed": 8,
+      "mean_turns": 8.38,
+      "slow_share": 1.0,
+      "meets_check": false
+    },
+    "current": {
+      "runs": [
+        "runs/incident/2026-10-12T01-45-29-schematics-incident-r2.json",
+        "runs/incident/2026-10-12T01-45-29-schematics-incident.json"
+      ],
+      "tasks": 8,
+      "passed": 8,
+      "mean_turns": 3.25,
+      "slow_share": 0.0,
+      "meets_check": true
+    }
+  }
+]

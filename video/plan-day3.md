@@ -1,6 +1,6 @@
 # Video plan for Monday (draft 3): fit tonight's results into 3:00
 
-**Done 12 Oct, 04:50 IST: 2:59 (178.7 s), 19 scenes.** Before: 2:43 (17 scenes, `video/demo/build.py`). Tonight's work adds four stories judges will
+**Done 12 Oct, 04:50 IST: 2:59 (178.7 s), 19 scenes. Revised ~08:00 IST for the organizers' brief: 2:56 (176.4 s), 17 scenes, with the problem stated and the neatlogs incident.** Before: 2:43 (17 scenes, `video/demo/build.py`). Tonight's work adds four stories judges will
 care about: hardware transfer, fix audit plus impossible probes, the anti-gaming rounds, and a second agent. Budget: about
 2:58 with scene 5. Every number below is in the README and checked by `mend.verify`; re-check before recording.
 

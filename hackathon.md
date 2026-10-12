@@ -628,3 +628,16 @@ Post drafts are in [`docs/posts.md`](docs/posts.md). Add the live URL here as ea
   - New: hardware (`hardware.html`), explorer (`circuit.html`, BD08 lit), fix audit and impossible
     probes (`#real`), anti-gaming round 11 with the person's decision, and the second agent.
   - New visual type in `build.py`: a full screen of any page, scrolled to a section.
+
+### 2026-10-12 ~07:00-08:00 IST - neatlogs' own incident, checked; video revised for the organizers' brief
+- The organizers asked every team to show neatlogs' critical-incidents feature and the problem the agent
+  solves. neatlogs' triage (read over MCP with `triage_list` / `triage_get`) had raised one incident by itself
+  on 11 Oct: "Excessive agent turns and conversational filler", found through Mend's own "slow solve (6+
+  turns)" detection.
+  - 8 of its 10 linked traces are original-worker runs (6-10 turns); 2 are the repaired worker (3 turns).
+- `mend/incidents.py` maps each linked trace to its run file and applies neatlogs' own check (mean turns
+  below 5) to two fresh runs of the current worker (`runs/incident/`, 8/8 both): 8.38 → 3.25 turns,
+  check met (`evidence/neatlogs-incidents.md`). verify recomputes it.
+- Resolving the card in neatlogs records a team member's email, so that is left to a person.
+- Video: problem stated again, an incident scene added; title, ablation and guards scenes merged or cut.
+  2:56 (176.4 s).

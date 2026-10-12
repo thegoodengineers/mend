@@ -8,7 +8,7 @@ keeps the fix only if a full re-run gets better.** Built during
 [report.html](https://thegoodengineers.github.io/mend/report.html) · **Build log:**
 [hackathon.md](hackathon.md)
 
-**Demo video (2:59):** [watch in the browser](https://thegoodengineers.github.io/mend/video/demo/mend-demo.mp4) ([file](video/demo/mend-demo.mp4)) · **Keep/revert rules:** [`docs/GATE.md`](docs/GATE.md) · **Evidence index:** [`evidence/INDEX.md`](evidence/INDEX.md)
+**Demo video (2:56):** [watch in the browser](https://thegoodengineers.github.io/mend/video/demo/mend-demo.mp4) ([file](video/demo/mend-demo.mp4)) · **Keep/revert rules:** [`docs/GATE.md`](docs/GATE.md) · **Evidence index:** [`evidence/INDEX.md`](evidence/INDEX.md)
 
 [![Mend website](docs/img/site-hero.png)](https://thegoodengineers.github.io/mend/)
 
@@ -28,7 +28,7 @@ If a number has no file behind it, it is not here.
 | neatHack evidence item | Where to check it |
 |---|---|
 | The agent improved (before/after with numbers) | [rounds table](#self-repair-rounds-five-kept-six-reverted), [3-vs-3 repeat runs](#repeatable-not-lucky-same-28-tasks-3-runs-each), [held-out test](#held-out-test-10-bugs-the-supervisor-never-saw), [real-world library](#real-world-test-bugs-in-an-open-source-library-it-never-saw); [live recording](video/live/mend-live.mp4) |
-| You used neatlogs | [traced call](evidence/t02-first-traced-call.txt), [trace read back over MCP](evidence/t04-trace-readback.txt), [task 23 before](evidence/task23-before-trace.json) / [after](evidence/task23-after-trace.json) traces; 4 regression-guard detections ([`mend/detections.py`](mend/detections.py)); every gate verdict is also written back into neatlogs as a `mend-gate` trace, one span per keep rule, and a detection flags each revert ([`mend/audit.py`](mend/audit.py), [read-back](evidence/gate-audit-readback.md)); a detection also marks every honest refusal, when the worker names a test that contradicts the bug report instead of bending the code (5 real spans when created); second opinion from neatlogs' own [neatroots](evidence/neatroots-check.md): a custom check flags all 4 original-worker runs and none of the repaired ones |
+| You used neatlogs | [traced call](evidence/t02-first-traced-call.txt), [trace read back over MCP](evidence/t04-trace-readback.txt), [task 23 before](evidence/task23-before-trace.json) / [after](evidence/task23-after-trace.json) traces; 4 regression-guard detections ([`mend/detections.py`](mend/detections.py)); every gate verdict is also written back into neatlogs as a `mend-gate` trace, one span per keep rule, and a detection flags each revert ([`mend/audit.py`](mend/audit.py), [read-back](evidence/gate-audit-readback.md)); neatlogs' own triage raised an incident on the original worker (excessive turns, found via a Mend detection), and its verification check passes on the current worker: mean turns 8.38 → 3.25 ([report](evidence/neatlogs-incidents.md)); a detection also marks every honest refusal, when the worker names a test that contradicts the bug report instead of bending the code (5 real spans when created); second opinion from neatlogs' own [neatroots](evidence/neatroots-check.md): a custom check flags all 4 original-worker runs and none of the repaired ones |
 | You used Entire | [round 4 checkpoint](https://entire.io/gh/thegoodengineers/mend/commit/7e2148e201fdaa9b2b3f921d1f2651950f537205) and its [public session](https://entire.io/gh/thegoodengineers/mend/session/62aefdcc-7ca4-499e-a381-6a3a56663cc6) (readable logged out: the supervisor's instruction to Claude Code, its 4 tool calls and its summary of the fix it made to Mend); the supervisor reads past checkpoints back as repair memory; [who wrote the worker](https://thegoodengineers.github.io/mend/#provenance): `entire blame` shows 69% of the worker's prompt was written by Mend's own sessions; `entire search` is the repair memory, so a proposed fix that repeats a reverted one is rejected before any re-run ([calibration](evidence/entire-search-repeat-guard.md)); check from a fresh clone: `git ls-remote origin 'refs/entire/checkpoints/*'` |
 | You used cfo.ai | [business plan](docs/business-plan.md) and its [cfo.ai export](docs/business-plan-cfo-ai.xlsx) |
 | The improvement is real, not noise | [paired statistics per decision](#self-repair-rounds-five-kept-six-reverted) (rounds 3–5 solid; rounds 1–2 rest on one task flip, said plainly); [leave-one-out ablation](evidence/ablation.json) (removing round 5: +61% tokens); 4 fixes reverted by the gate; re-check every decision [in your browser](https://thegoodengineers.github.io/mend/#verify) |
@@ -217,6 +217,30 @@ These counts were read back from the neatlogs traces of every task in each run
 
 Round 1 replaced the destructive habit, rewriting whole files, with precise edits. Rounds 3–5
 cut wasted turns, so model calls fell by more than half.
+
+### neatlogs raised an incident by itself, and its own check confirms the fix
+
+neatlogs' triage watches our traces. On 11 Oct (17:24 IST) it raised one incident on workflow
+`mend-worker` by itself: **"Excessive agent turns and conversational filler causing orchestration
+inefficiency"** (medium).
+- It found the incident through "Mend: slow solve (6+ turns)", one of the detections Mend had created
+  from its own failures.
+- It recommended a prompt change, with a check: run SC04 and SC07 and see mean turns drop below 5.
+
+[`mend/incidents.py`](mend/incidents.py) reads the incident over the neatlogs MCP server, maps each linked
+trace to the run file it came from, and applies that check to fresh runs
+([report](evidence/neatlogs-incidents.md)):
+- 8 of the 10 linked traces come from the original worker, at 6–10 turns. The other 2 are the repaired
+  worker on the same task, at 3 turns.
+- Mend had already cut that waste in rounds 3–5, in the loop and the tools rather than the prompt.
+
+| Worker on the incident's tasks (SC02, SC03, SC04, SC07) | Runs | Passed | Mean turns | Tasks with 6+ turns |
+|---|---|---|---|---|
+| original (the runs that triggered it) | 2 | 8 of 8 | 8.38 | all |
+| current, fresh runs on 12 Oct ([`runs/incident/`](runs/incident/)) | 2 | 8 of 8 | 3.25 | none |
+
+Mean turns 8.38 → 3.25, so neatlogs' own check passes. Marking the card resolved in neatlogs records a
+team member's email, so a person does that, not Mend.
 
 ### Repeatable, not lucky: same 28 tasks, 3 runs each
 

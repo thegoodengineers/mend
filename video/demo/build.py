@@ -26,8 +26,10 @@ W, H = 1920, 1080
 # | ("card", label, title, body) | ("term", file)
 SCENES = [
     ("hook", "Our agent just broke working code to fix one line. Then it found out why, and fixed itself.", ("clip", 40.0)),
-    ("title", "This is Mend: an agent that fixes itself, and proves it.", ("shot", "header")),
-    ("arch", "A worker agent does the job. neatlogs traces every model call and tool call. A supervisor reads those traces back over "
+    ("problem", "The problem: agents fail quietly. Finding out why takes hours in traces, and most fixes are never checked. "
+                "Mend reads its own traces, fixes itself, and proves it.",
+     ("card", "The problem", "Agents fail quietly.", "Hours in traces to find out why. Most fixes are never checked. Mend reads the traces, fixes itself, and proves the fix.")),
+    ("arch", "A worker agent does the job, and neatlogs traces every call. A supervisor reads the traces back over "
              "the neatlogs MCP server, diagnoses the failure, and has Claude Code patch the worker.", ("shot", "#how")),
     ("runtime", "Here is a live run, at real speed. The worker reads part of a long file, then rewrites all of it, and the test suite breaks.",
      ("clip", 22.0)),
@@ -39,14 +41,16 @@ SCENES = [
                "so it never retries a fix that failed. And Entire's blame shows Mend wrote sixty-nine percent of the worker's instructions.",
      ("term", "entire-explain.txt")),
     ("result", "Same task, same model, after the fix: four turns, and it passes.", ("clip", 88.5)),
-    ("gate", "Every change must earn its place. Mend re-runs all twenty-nine tasks and keeps a fix only if the numbers improve. "
-             "Five fixes were kept. Six were reverted.", ("shot", "#rounds .card")),
-    ("ablation", "Take a kept fix out again, and costs rise by up to sixty-one percent.", ("shot", "#ablation")),
-    ("heldout", "Is it overfitting? On ten bugs it never saw, it went from nine out of ten to ten out of ten.", ("shot", "#heldout")),
-    ("realworld", "On bugs in a real open-source library, from two or three out of eight, to eight out of eight, with eighty-two percent fewer tokens.",
-     ("shot", "#realworld")),
-    ("hardware", "Then, domains it was never built for. On chip designs and circuits: the same fixes, with about sixty percent fewer tokens. "
-                 "On a larger sensor circuit, the original refused some bugs. The repaired worker fixed all eight.",
+    ("incident", "neatlogs watches too. Its triage raised an incident on the original worker, too many turns, through a detection "
+                 "Mend created. Its own check now passes: eight point four turns, down to three point three.",
+     ("card", "neatlogs triage · incident it raised by itself · read over MCP", "Excessive agent turns.",
+      "Found via Mend's own 'slow solve' detection. neatlogs' check, mean turns below 5: original worker 8.38, current worker 3.25, 8 of 8 passing.")),
+    ("gate", "Every change must earn its place: Mend re-runs all twenty-nine tasks and keeps a fix only if the numbers improve. "
+             "Five kept, six reverted, every verdict written back into neatlogs.", ("shot", "#rounds .card")),
+    ("heldout", "Is it overfitting? On bugs it never saw: nine out of ten, to ten. In a real open-source library: two or three out of eight, to eight.",
+     ("shot", "#heldout")),
+    ("hardware", "Then, domains it was never built for: chip designs and circuits, the same fixes with about sixty percent fewer tokens. "
+                 "On a sensor circuit, the original refused some bugs; the repaired worker fixed all eight.",
      ("page", "hardware.html", None)),
     ("explorer", "Every step it took is read back from its neatlogs trace.", ("page", "circuit.html", None)),
     ("honesty", "But a pass isn't proof. Mend audits every passing fix against the correct design, and impossible tasks catch cheating. "
@@ -55,15 +59,10 @@ SCENES = [
                    "That is a judgment call, so a person made it, once, and it is on record.",
      ("card", "Round 11 · anti-gaming", "Cheating 6 → 2 of 12.",
       "Tokens +17%, over the gate's 15% limit, so the gate reverted it. A person accepted the trade-off, once. It is now a precedent every diagnosis follows.")),
-    ("second", "And it isn't tied to one agent. On a SQL analyst it had never seen: one round, the same answers, thirty-seven percent cheaper. "
-               "Forty-two, on a database it never saw.",
+    ("second", "And it isn't tied to one agent: on a SQL analyst it had never seen, one round, the same answers, thirty-seven percent cheaper.",
      ("card", "A second agent · SQL data analyst", "Same answers. 37% cheaper.",
       "One Mend round, the same supervisor, the same gate. On a database it never saw: 42% cheaper, and one new mistake, reported.")),
-    ("guards", "Every failure becomes a neatlogs detection, and every gate verdict is written back into neatlogs as a trace.",
-     ("card", "neatlogs regression guards · audit log", "Failures become detections.",
-      "4 detections from Mend's own failures. Every keep or revert is a mend-gate trace. neatroots: 4 of 4 original runs flagged, 0 of 4 repaired.")),
-    ("business", "We planned the business in cfo.ai. Self-repair cut our cost per task from four cents to one and a half, "
-                 "and a full repair round now costs about fifty-seven cents.",
+    ("business", "We planned the business in cfo.ai, from measured costs: self-repair cut cost per task from four cents to one and a half.",
      ("card", "cfo.ai business plan · measured costs", "$0.040 → $0.015 per task.",
       "A full repair round: about $0.57 (diagnosis $0.13 + re-run $0.44). Pricing, revenue and runway modelled in cfo.ai.")),
     ("close", "Mend. Agents that fix themselves, and prove it.",
@@ -109,6 +108,9 @@ def stills() -> dict[str, Path]:
         view = b.new_page(viewport={"width": 1600, "height": 900}, reduced_motion="reduce", device_scale_factor=1.2)  # 1920x1080
         for sid, _, vis in SCENES:
             f = img / f"{sid}.png"
+            if (HERE / "screens" / f"{sid}.png").exists():  # a real screenshot dropped in by a person replaces the visual
+                out[sid] = HERE / "screens" / f"{sid}.png"
+                continue
             if vis[0] == "shot":
                 site.locator(vis[1]).first.screenshot(path=str(f))
             elif vis[0] == "page":  # one full screen of a page, scrolled to a section

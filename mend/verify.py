@@ -74,6 +74,13 @@ def expected_strings(rs: dict[str, dict]) -> list[str]:
         if len(groups) > 1:
             mb, ma = (sum(map(tokens, g)) / len(g) for g in (groups[0], groups[-1]))
             out.append(f"{mb:,.0f} → {ma:,.0f} ({pct(mb, ma)})")
+    inc = ROOT / "evidence" / "neatlogs-incidents.json"  # recompute neatlogs' check from the run files
+    if inc.exists():
+        from mend.incidents import check, run_files
+        files = run_files()
+        for r in json.loads(inc.read_text(encoding="utf-8")):
+            again = check({**r, "linked_trace_ids": [x["trace_id"] for x in r["linked"]], "workflow_name": r["workflow"]}, files)
+            out.append(f"Mean turns {again['original']['mean_turns']} → {again['current']['mean_turns']}")
     from mend.stats import all_rounds
     for i, r in enumerate(all_rounds(), 1):
         out.append(f"| {i} | {r['fixed']} / {r['broke']} | {r['p_passes']} | {r['token_ratio']} | [{r['ci_low']}, {r['ci_high']}] |")
