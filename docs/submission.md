@@ -7,29 +7,45 @@ not submit; it must be published. Late submissions are not judged. neatlogs and 
 the first 50 quote posts, so post at 7:00 PM sharp. The final cutoff is announced on Discord.
 A human posts this; agents never post.
 
-## Quote-post text (279/280 as X counts it, links = 23)
-The demo link is the video served by GitHub Pages (checked 12 Oct: HTTP 200, `video/mp4`, 32.5 MB), so no
-upload is needed. X itself only takes videos up to 2:20 from non-Premium accounts, so do not attach the
-2:58 file; link it. A YouTube link can replace it, if you upload one.
+## Two mandatory steps (organizers' Discord, 12 Oct)
+1. **Quote-tweet the official @neatlogs launch post** (link shared at 7 PM IST). It **must tag @neatlogs,
+   @EntireHQ and @arithecfo**; that is how their system detects a submission.
+2. **Fill in the submission form** (link shared at 7 PM). The form alone does not count.
+
+Window: 7:00-11:55 PM IST. They engage with the first 50 quote-tweets.
+
+## Quote-tweet text (250/280 as X counts it, links = 23)
+The demo link is the video served by GitHub Pages (HTTP 200, `video/mp4`), so no upload is needed. X only
+takes videos up to 2:20 from non-Premium accounts, so link the 2:58 file instead of attaching it.
 
 ```
 Team: The Good Engineers
-Project: Mend, an agent that reads its own @neatlogs traces, fixes its own code, and keeps a fix only if a re-run proves it
+Project: Mend, an agent that reads its own traces, fixes its own code, and keeps a fix only if a re-run proves it
+Built with @neatlogs @EntireHQ @arithecfo
 Repo: https://github.com/thegoodengineers/mend
 Demo: https://thegoodengineers.github.io/mend/video/demo/mend-demo.mp4
-bugs it never saw 9/10 -> 10/10, a real library 2-3/8 -> 8/8 #neatHack
-```
-
-Shorter fallback (253/280), if X counts differently:
-
-```
-Team: The Good Engineers
-Project: Mend, an agent that reads its own @neatlogs traces, fixes its own code, and keeps a fix only if a full re-run proves it
-Repo: https://github.com/thegoodengineers/mend
-Demo: https://thegoodengineers.github.io/mend/video/demo/mend-demo.mp4
-Site: https://thegoodengineers.github.io/mend/
 #neatHack
 ```
+
+## Answers ready for the form (fields unknown until 7 PM)
+- Team: The Good Engineers
+- Project name: Mend
+- One line: an agent that reads its own neatlogs traces, fixes its own code, and keeps a fix only if a full
+  re-run proves it better.
+- Repo: https://github.com/thegoodengineers/mend
+- Demo video: https://thegoodengineers.github.io/mend/video/demo/mend-demo.mp4
+- Website: https://thegoodengineers.github.io/mend/
+- How neatlogs was used: every model and tool call traced; the supervisor reads traces back over the
+  neatlogs MCP server to diagnose; Mend creates neatlogs detections from its own failures; every gate verdict
+  is written back as a trace; neatlogs' triage raised an incident (excessive turns) that Mend had fixed, its
+  own check passes (8.38 -> 3.25 turns) and the incident is resolved.
+- How Entire was used: every self-repair commit is linked to the Claude Code session that wrote it;
+  the supervisor reads past checkpoints back as repair memory and `entire search` blocks repeating a
+  reverted fix; `entire blame` shows 69% of the worker's prompt was written by Mend's own sessions.
+- How cfo.ai was used: pricing, costs, revenue and runway; re-run with the measured $0.57 per repair
+  round, gross margin 30.6% -> 68.6%.
+- Results: 11 self-repair rounds (5 kept, 6 reverted by a pre-registered gate); bugs it never saw
+  9/10 -> 10/10; a real open-source library 2-3/8 -> 8/8; a second agent: same answers, 37% fewer tokens.
 
 ## The organizers' video brief (Discord, 12 Oct) and where the video covers it
 | They asked for | Scenes |
@@ -61,4 +77,4 @@ Site: https://thegoodengineers.github.io/mend/
 - [x] cfo.ai model refreshed with the measured $0.57 per round and re-exported (12 Oct): margin 30.6% → 68.6%; first version kept as `docs/business-plan-cfo-ai-10oct.xlsx`
 - [x] ~~At least 4 more #neatHack posts~~ dropped by the team on 12 Oct; any post that does go out still gets listed in `hackathon.md`
 - [ ] Freeze: no code changes after 5 PM; docs only
-- [ ] Post the quote at 7:00 PM, then confirm it shows publicly while logged out
+- [ ] 7:00 PM: quote-tweet the launch post with all three tags, then fill in the form; confirm the post shows publicly while logged out
